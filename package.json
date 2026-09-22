@@ -7,13 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "validate": "node scripts/validateTopology.mjs",
+    "generate:buildings": "node scripts/generateBuildingMapping.mjs"
   },
   "dependencies": {
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "reagraph": "^4.32.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

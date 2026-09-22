@@ -1,0 +1,632 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-18T08:55:28.472Z",
+  "description": "Visual grouping layer only. Buildings are NOT network devices and are never added to the node dataset. Every rule below selects switches that already exist in public/network-topology-dataset.json.",
+  "options": {
+    "autoAssignUnmatched": true,
+    "unmatchedBuildingNameTemplate": "{site} · Unassigned",
+    "defaultFloorCount": 4
+  },
+  "buildings": [
+    {
+      "id": "B-001",
+      "name": "DC1 Building A",
+      "shortName": "Building A",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0011",
+          "R-0016",
+          "R-0021",
+          "R-0026",
+          "R-0031"
+        ]
+      },
+      "derivedSwitchCount": 56
+    },
+    {
+      "id": "B-002",
+      "name": "DC1 Building B",
+      "shortName": "Building B",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0036",
+          "R-0041",
+          "R-0046",
+          "R-0051",
+          "R-0056"
+        ]
+      },
+      "derivedSwitchCount": 36
+    },
+    {
+      "id": "B-003",
+      "name": "DC1 Building C",
+      "shortName": "Building C",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0061",
+          "R-0066",
+          "R-0071",
+          "R-0076",
+          "R-0081"
+        ]
+      },
+      "derivedSwitchCount": 47
+    },
+    {
+      "id": "B-004",
+      "name": "DC1 Building D",
+      "shortName": "Building D",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0086",
+          "R-0091",
+          "R-0096",
+          "R-0101",
+          "R-0106"
+        ]
+      },
+      "derivedSwitchCount": 33
+    },
+    {
+      "id": "B-005",
+      "name": "DC1 Building E",
+      "shortName": "Building E",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0111",
+          "R-0116",
+          "R-0121",
+          "R-0126",
+          "R-0131"
+        ]
+      },
+      "derivedSwitchCount": 49
+    },
+    {
+      "id": "B-006",
+      "name": "DC1 Building F",
+      "shortName": "Building F",
+      "site": "Data Center 1",
+      "siteCode": "DC1",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 1"
+        ],
+        "uplinkRouters": [
+          "R-0136",
+          "R-0141",
+          "R-0146"
+        ]
+      },
+      "derivedSwitchCount": 20
+    },
+    {
+      "id": "B-007",
+      "name": "DC2 Building A",
+      "shortName": "Building A",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0012",
+          "R-0017",
+          "R-0022",
+          "R-0027",
+          "R-0032"
+        ]
+      },
+      "derivedSwitchCount": 46
+    },
+    {
+      "id": "B-008",
+      "name": "DC2 Building B",
+      "shortName": "Building B",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0037",
+          "R-0042",
+          "R-0047",
+          "R-0052",
+          "R-0057"
+        ]
+      },
+      "derivedSwitchCount": 38
+    },
+    {
+      "id": "B-009",
+      "name": "DC2 Building C",
+      "shortName": "Building C",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0062",
+          "R-0067",
+          "R-0072",
+          "R-0077",
+          "R-0082"
+        ]
+      },
+      "derivedSwitchCount": 43
+    },
+    {
+      "id": "B-010",
+      "name": "DC2 Building D",
+      "shortName": "Building D",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0087",
+          "R-0092",
+          "R-0097",
+          "R-0102",
+          "R-0107"
+        ]
+      },
+      "derivedSwitchCount": 43
+    },
+    {
+      "id": "B-011",
+      "name": "DC2 Building E",
+      "shortName": "Building E",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0112",
+          "R-0117",
+          "R-0122",
+          "R-0127",
+          "R-0132"
+        ]
+      },
+      "derivedSwitchCount": 40
+    },
+    {
+      "id": "B-012",
+      "name": "DC2 Building F",
+      "shortName": "Building F",
+      "site": "Data Center 2",
+      "siteCode": "DC2",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 2"
+        ],
+        "uplinkRouters": [
+          "R-0137",
+          "R-0142",
+          "R-0147"
+        ]
+      },
+      "derivedSwitchCount": 17
+    },
+    {
+      "id": "B-013",
+      "name": "DC3 Building A",
+      "shortName": "Building A",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0013",
+          "R-0018",
+          "R-0023",
+          "R-0028",
+          "R-0033"
+        ]
+      },
+      "derivedSwitchCount": 90
+    },
+    {
+      "id": "B-014",
+      "name": "DC3 Building B",
+      "shortName": "Building B",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0038",
+          "R-0043",
+          "R-0048",
+          "R-0053",
+          "R-0058"
+        ]
+      },
+      "derivedSwitchCount": 60
+    },
+    {
+      "id": "B-015",
+      "name": "DC3 Building C",
+      "shortName": "Building C",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0063",
+          "R-0068",
+          "R-0073",
+          "R-0078",
+          "R-0083"
+        ]
+      },
+      "derivedSwitchCount": 64
+    },
+    {
+      "id": "B-016",
+      "name": "DC3 Building D",
+      "shortName": "Building D",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0088",
+          "R-0093",
+          "R-0098",
+          "R-0103",
+          "R-0108"
+        ]
+      },
+      "derivedSwitchCount": 59
+    },
+    {
+      "id": "B-017",
+      "name": "DC3 Building E",
+      "shortName": "Building E",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0113",
+          "R-0118",
+          "R-0123",
+          "R-0128",
+          "R-0133"
+        ]
+      },
+      "derivedSwitchCount": 56
+    },
+    {
+      "id": "B-018",
+      "name": "DC3 Building F",
+      "shortName": "Building F",
+      "site": "Data Center 3",
+      "siteCode": "DC3",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 3"
+        ],
+        "uplinkRouters": [
+          "R-0138",
+          "R-0143",
+          "R-0148"
+        ]
+      },
+      "derivedSwitchCount": 27
+    },
+    {
+      "id": "B-019",
+      "name": "DC4 Building A",
+      "shortName": "Building A",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0014",
+          "R-0019",
+          "R-0024",
+          "R-0029",
+          "R-0034"
+        ]
+      },
+      "derivedSwitchCount": 55
+    },
+    {
+      "id": "B-020",
+      "name": "DC4 Building B",
+      "shortName": "Building B",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0039",
+          "R-0044",
+          "R-0049",
+          "R-0054",
+          "R-0059"
+        ]
+      },
+      "derivedSwitchCount": 50
+    },
+    {
+      "id": "B-021",
+      "name": "DC4 Building C",
+      "shortName": "Building C",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0064",
+          "R-0069",
+          "R-0074",
+          "R-0079",
+          "R-0084"
+        ]
+      },
+      "derivedSwitchCount": 52
+    },
+    {
+      "id": "B-022",
+      "name": "DC4 Building D",
+      "shortName": "Building D",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0089",
+          "R-0094",
+          "R-0099",
+          "R-0104",
+          "R-0109"
+        ]
+      },
+      "derivedSwitchCount": 41
+    },
+    {
+      "id": "B-023",
+      "name": "DC4 Building E",
+      "shortName": "Building E",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0114",
+          "R-0119",
+          "R-0124",
+          "R-0129",
+          "R-0134"
+        ]
+      },
+      "derivedSwitchCount": 38
+    },
+    {
+      "id": "B-024",
+      "name": "DC4 Building F",
+      "shortName": "Building F",
+      "site": "Data Center 4",
+      "siteCode": "DC4",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "Data Center 4"
+        ],
+        "uplinkRouters": [
+          "R-0139",
+          "R-0144",
+          "R-0149"
+        ]
+      },
+      "derivedSwitchCount": 28
+    },
+    {
+      "id": "B-025",
+      "name": "NOC Building A",
+      "shortName": "Building A",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0015",
+          "R-0020",
+          "R-0025",
+          "R-0030",
+          "R-0035"
+        ]
+      },
+      "derivedSwitchCount": 63
+    },
+    {
+      "id": "B-026",
+      "name": "NOC Building B",
+      "shortName": "Building B",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0040",
+          "R-0045",
+          "R-0050",
+          "R-0055",
+          "R-0060"
+        ]
+      },
+      "derivedSwitchCount": 59
+    },
+    {
+      "id": "B-027",
+      "name": "NOC Building C",
+      "shortName": "Building C",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0065",
+          "R-0070",
+          "R-0075",
+          "R-0080",
+          "R-0085"
+        ]
+      },
+      "derivedSwitchCount": 50
+    },
+    {
+      "id": "B-028",
+      "name": "NOC Building D",
+      "shortName": "Building D",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0090",
+          "R-0095",
+          "R-0100",
+          "R-0105",
+          "R-0110"
+        ]
+      },
+      "derivedSwitchCount": 34
+    },
+    {
+      "id": "B-029",
+      "name": "NOC Building E",
+      "shortName": "Building E",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0115",
+          "R-0120",
+          "R-0125",
+          "R-0130",
+          "R-0135"
+        ]
+      },
+      "derivedSwitchCount": 35
+    },
+    {
+      "id": "B-030",
+      "name": "NOC Building F",
+      "shortName": "Building F",
+      "site": "NOC Central",
+      "siteCode": "NOC",
+      "floorCount": 4,
+      "match": {
+        "locations": [
+          "NOC Central"
+        ],
+        "uplinkRouters": [
+          "R-0140",
+          "R-0145",
+          "R-0150"
+        ]
+      },
+      "derivedSwitchCount": 21
+    }
+  ]
+}
