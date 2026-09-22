@@ -171,6 +171,10 @@ export function useTopologyData(url = '/network-topology-dataset.json') {
       updater(rawRef.current);
       // Re-parse with the mutated raw data
       const data = parseRawTopologyData(rawRef.current);
+      
+      // Persist changes across refreshes
+      localStorage.setItem('network-topology-data', JSON.stringify(rawRef.current));
+      
       setState({ loading: false, error: null, data });
     } catch (err) {
       console.error('Failed to update topology:', err);
@@ -179,6 +183,20 @@ export function useTopologyData(url = '/network-topology-dataset.json') {
 
   const loadDemo = () => {
     setState({ loading: true, error: null, data: null });
+    
+    // Check if we have a persisted session from previous edits/alarm resolutions
+    const saved = localStorage.getItem('network-topology-data');
+    if (saved) {
+      try {
+        const raw = JSON.parse(saved);
+        loadFromRaw(raw);
+        return;
+      } catch (err) {
+        console.warn('Failed to parse saved topology, falling back to original demo', err);
+        localStorage.removeItem('network-topology-data');
+      }
+    }
+
     fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load dataset: ${res.status}`);
@@ -191,6 +209,11 @@ export function useTopologyData(url = '/network-topology-dataset.json') {
         setState({ loading: false, error: err.message, data: null });
       });
   };
+  
+  const resetDemo = () => {
+    localStorage.removeItem('network-topology-data');
+    loadDemo();
+  };
 
-  return { ...state, loadFromRaw, loadDemo, updateTopology };
+  return { ...state, loadFromRaw, loadDemo, updateTopology, resetDemo };
 }

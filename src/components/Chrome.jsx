@@ -23,7 +23,7 @@ export function ZoomControls({ onZoomIn, onZoomOut, onFit }) {
   );
 }
 
-export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, children }) {
+export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, onReset, children }) {
   return (
     <header>
       <h1>
@@ -66,6 +66,11 @@ export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAdd
         <button onClick={onSimulateAlarm} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
           Simulate Alarm
         </button>
+        {onReset && (
+          <button onClick={onReset} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>
+            Reset App
+          </button>
+        )}
       </div>
 
       {view === 'global' && (

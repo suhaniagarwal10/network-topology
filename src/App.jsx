@@ -14,6 +14,7 @@ import FilterPanel from './components/FilterPanel';
 import AlarmPanel from './components/AlarmPanel';
 import LinkModal from './components/LinkModal';
 import MonitorModal from './components/MonitorModal';
+import InterfaceModal from './components/InterfaceModal';
 import LinkEditModal from './components/LinkEditModal';
 import './index.css';
 
@@ -23,7 +24,7 @@ import './index.css';
 const DATASET_NOW = new Date('2026-09-15T09:00:00');
 
 export default function App() {
-  const { loading, error, data, loadFromRaw, loadDemo, updateTopology } = useTopologyData();
+  const { loading, error, data, loadFromRaw, loadDemo, updateTopology, resetDemo } = useTopologyData();
   const mappingIndex = useBuildingMapping(data);
 
   const [isNodeModalOpen, setIsNodeModalOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function App() {
   const [isAlarmPanelOpen, setIsAlarmPanelOpen] = useState(false);
   
   const [viewingLinksNode, setViewingLinksNode] = useState(null);
+  const [viewingInterfacesNode, setViewingInterfacesNode] = useState(null);
   const [monitoringNode, setMonitoringNode] = useState(null);
   const [editingLinkNode, setEditingLinkNode] = useState(null);
   const [editingLinkBundle, setEditingLinkBundle] = useState(null);
@@ -85,21 +87,29 @@ export default function App() {
     }
   }, [data, mappingIndex, view]);
 
+
+
   /* ---------------- derived graphs ---------------- */
 
-  const globalGraph = useMemo(
-    () => (data && mappingIndex ? buildGlobalGraph(data, mappingIndex) : null),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, mappingIndex, tick]
-  );
+  const [globalGraph, setGlobalGraph] = useState(null);
+  const [buildingGraph, setBuildingGraph] = useState(null);
 
   const activeBuilding = activeBuildingId ? mappingIndex?.buildingsById.get(activeBuildingId) : null;
 
-  const buildingGraph = useMemo(
-    () => (data && mappingIndex && activeBuilding ? buildBuildingGraph(activeBuilding, data, mappingIndex) : null),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, mappingIndex, activeBuilding, tick]
-  );
+  // Full rebuilds on structural changes only (initial load, add/delete nodes, simulate alarm)
+  useEffect(() => {
+    if (data && mappingIndex) {
+      setGlobalGraph(buildGlobalGraph(data, mappingIndex));
+    }
+  }, [data?.nodes, data?.links, mappingIndex, tick]);
+
+  useEffect(() => {
+    if (data && mappingIndex && activeBuilding) {
+      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex));
+    } else {
+      setBuildingGraph(null);
+    }
+  }, [data?.nodes, data?.links, mappingIndex, activeBuildingId, tick]);
 
   const graph = view === 'building' ? buildingGraph : globalGraph;
 
@@ -391,23 +401,25 @@ export default function App() {
   }, [updateTopology, showToast]);
 
   const handleUpdateAlarm = useCallback((alarmId, status) => {
+    let affectedNodeId = null;
+    let newSeverity = null;
+    let newStatus = null;
+
     updateTopology((raw) => {
       const a = raw.alarms.find(a => (a.alarmId || a.id) === alarmId);
       if (a) {
         a.status = status;
         showToast(`Alarm ${status}`);
         
-        // Auto-update the parent node's severity based on remaining active alarms
-        const nodeId = a.nodeId || a.entity_id;
-        const activeAlarms = raw.alarms.filter(al => (al.nodeId || al.entity_id) === nodeId && al.status === 'active');
-        const node = raw.nodes.find(n => n.id === nodeId);
+        affectedNodeId = a.nodeId || a.entity_id;
+        const activeAlarms = raw.alarms.filter(al => (al.nodeId || al.entity_id) === affectedNodeId && al.status === 'active');
+        const node = raw.nodes.find(n => n.id === affectedNodeId);
         
         if (node) {
           if (activeAlarms.length === 0) {
             node.severity = 'normal';
             node.status = 'connected';
           } else {
-            // Find worst severity
             const order = { critical: 4, major: 3, minor: 2, warning: 1 };
             let worst = 'warning';
             for (const al of activeAlarms) {
@@ -416,9 +428,37 @@ export default function App() {
             }
             node.severity = worst;
           }
+          newSeverity = node.severity;
+          newStatus = node.status;
         }
       }
     });
+
+    // INCREMENTAL UPDATE OPTIMIZATION: Surgically patch the Reagraph nodes array in memory
+    // so we don't have to rebuild the entire 1500-node graph.
+    if (affectedNodeId && newSeverity) {
+      const patchNodes = (prevGraph) => {
+        if (!prevGraph) return prevGraph;
+        const newNodes = prevGraph.nodes.map(n => {
+          if (n.id === affectedNodeId) {
+            return {
+              ...n,
+              fill: newSeverity === 'normal' ? (n.data.kind === 'router' ? '#22c55e' : '#10b981') : (
+                newSeverity === 'critical' ? '#ef4444' :
+                newSeverity === 'major' ? '#f97316' :
+                newSeverity === 'warning' ? '#eab308' : '#5b6472'
+              ),
+              data: { ...n.data, severity: newSeverity, status: newStatus }
+            };
+          }
+          return n;
+        });
+        return { ...prevGraph, nodes: newNodes };
+      };
+      
+      setGlobalGraph(patchNodes);
+      setBuildingGraph(patchNodes);
+    }
   }, [updateTopology, showToast]);
 
   const monitorNode = useCallback(
@@ -500,7 +540,16 @@ export default function App() {
 
   return (
     <div id="app">
-      <Header stats={stats} view={view} mode={mode} onModeChange={setMode} onSimulateAlarm={simulateAlarm} onAddNode={handleAddNode} onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}>
+      <Header 
+        stats={stats} 
+        view={view} 
+        mode={mode} 
+        onModeChange={setMode} 
+        onSimulateAlarm={simulateAlarm} 
+        onAddNode={handleAddNode} 
+        onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}
+        onReset={resetDemo}
+      >
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
       </Header>
 
@@ -603,6 +652,7 @@ export default function App() {
           onHighlightNeighbors={highlightNeighbors}
           onOpenBuilding={(id) => openBuilding(id)}
           onViewLinks={(id) => setViewingLinksNode(id)}
+          onViewInterfaces={(id) => setViewingInterfacesNode(id)}
           onAddLink={(node) => setEditingLinkNode(node)}
           onEditLinkBundle={(bundle) => setEditingLinkBundle(bundle)}
           onEditNode={(n) => {
@@ -631,6 +681,16 @@ export default function App() {
           nodeName={data?.nodesById.get(viewingLinksNode)?.name || viewingLinksNode}
           links={data?.linksByNode.get(viewingLinksNode) || []}
           onClose={() => setViewingLinksNode(null)}
+        />
+      )}
+      
+      {viewingInterfacesNode && (
+        <InterfaceModal
+          nodeName={data?.nodesById.get(viewingInterfacesNode)?.name || viewingInterfacesNode}
+          interfaces={data?.interfacesByNode.get(viewingInterfacesNode) || []}
+          nodeSeverity={data?.nodesById.get(viewingInterfacesNode)?.severity}
+          nodeStatus={data?.nodesById.get(viewingInterfacesNode)?.status}
+          onClose={() => setViewingInterfacesNode(null)}
         />
       )}
       

@@ -23,6 +23,7 @@ export default function DetailsPanel({
   onEditNode,
   onDeleteNode,
   onViewLinks,
+  onViewInterfaces,
   onAddLink,
   onEditLinkBundle,
   now,
@@ -66,7 +67,7 @@ export default function DetailsPanel({
       <aside className="details">
         <h2>Details</h2>
         <div className="empty-hint">
-          Click any node to view its status, alarms and connections. Double-click a building to
+          Click any node to view its status, active alarms, physical links, and interfaces. Double-click a building to
           open it and see its individual switches. Right-click for quick actions. Drag to pan,
           scroll to zoom, or use the search above.
         </div>
@@ -101,7 +102,23 @@ export default function DetailsPanel({
           />
         )}
         {floor && <Row k="Floor" v={<span className="plain">{floor.name}</span>} />}
-        <Row k="Interfaces" v={interfaceCount ?? 0} />
+        <Row
+          k="Interfaces"
+          v={
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span>{interfaceCount ?? 0}</span>
+              {onViewInterfaces && interfaceCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onViewInterfaces(node.id)}
+                  style={{ background: '#334155', color: '#fff', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
+                >
+                  View
+                </button>
+              )}
+            </div>
+          }
+        />
         <Row
           k="Links"
           v={

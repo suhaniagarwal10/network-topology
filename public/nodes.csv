@@ -1,0 +1,1501 @@
+id,name,type,status,severity,ipAddress,location
+R-0001,Router-0001,router,connected,normal,10.0.2.202,Data Center 6
+R-0002,Router-0002,router,connected,normal,10.0.3.26,Data Center 4
+R-0003,Router-0003,router,connected,warning,10.0.2.106,Data Center 4
+R-0004,Router-0004,router,connected,normal,10.0.3.223,Data Center 7
+R-0005,Router-0005,router,connected,normal,10.0.3.200,Data Center 7
+R-0006,Router-0006,router,connected,normal,10.0.3.234,Data Center 6
+R-0007,Router-0007,router,connected,warning,10.0.3.7,Data Center 8
+R-0008,Router-0008,router,connected,warning,10.0.1.154,Data Center 3
+R-0009,Router-0009,router,connected,normal,10.0.1.227,Data Center 5
+R-0010,Router-0010,router,connected,normal,10.0.2.193,Data Center 3
+R-0011,Router-0011,router,down,major,10.0.2.99,Data Center 3
+R-0012,Router-0012,router,connected,warning,10.0.1.92,Data Center 6
+R-0013,Router-0013,router,connected,major,10.0.1.195,NOC Central
+R-0014,Router-0014,router,connected,normal,10.0.0.115,Data Center 2
+R-0015,Router-0015,router,connected,normal,10.0.0.198,NOC Central
+R-0016,Router-0016,router,connected,normal,10.0.1.187,DR Site
+R-0017,Router-0017,router,connected,major,10.0.0.63,NOC Central
+R-0018,Router-0018,router,connected,normal,10.0.0.157,Data Center 6
+R-0019,Router-0019,router,connected,normal,10.0.1.159,Data Center 7
+R-0020,Router-0020,router,connected,normal,10.0.2.141,NOC Central
+R-0021,Router-0021,router,connected,normal,10.0.0.211,Data Center 4
+R-0022,Router-0022,router,connected,warning,10.0.0.42,NOC Central
+R-0023,Router-0023,router,connected,normal,10.0.2.215,Data Center 8
+R-0024,Router-0024,router,connected,warning,10.0.1.183,NOC Central
+R-0025,Router-0025,router,connected,normal,10.0.3.250,Data Center 2
+R-0026,Router-0026,router,connected,normal,10.0.3.172,NOC Central
+R-0027,Router-0027,router,connected,normal,10.0.3.134,Data Center 2
+R-0028,Router-0028,router,connected,major,10.0.0.68,Data Center 7
+R-0029,Router-0029,router,connected,normal,10.0.3.225,Data Center 8
+R-0030,Router-0030,router,connected,normal,10.0.3.232,DR Site
+R-0031,Router-0031,router,connected,normal,10.0.1.252,Data Center 3
+R-0032,Router-0032,router,connected,normal,10.0.2.25,DR Site
+R-0033,Router-0033,router,connected,normal,10.0.2.250,Data Center 5
+R-0034,Router-0034,router,connected,normal,10.0.2.255,Data Center 7
+R-0035,Router-0035,router,connected,normal,10.0.3.222,Data Center 8
+R-0036,Router-0036,router,connected,major,10.0.2.165,Data Center 4
+R-0037,Router-0037,router,connected,normal,10.0.1.155,DR Site
+R-0038,Router-0038,router,connected,normal,10.0.1.135,Data Center 3
+R-0039,Router-0039,router,connected,normal,10.0.3.156,Data Center 3
+R-0040,Router-0040,router,connecting,critical,10.0.3.155,NOC Central
+R-0041,Router-0041,router,connecting,minor,10.0.3.187,Data Center 6
+R-0042,Router-0042,router,connected,normal,10.0.2.227,Data Center 3
+R-0043,Router-0043,router,connected,normal,10.0.3.117,Data Center 7
+R-0044,Router-0044,router,connected,normal,10.0.3.153,NOC Central
+R-0045,Router-0045,router,connected,normal,10.0.1.85,DR Site
+R-0046,Router-0046,router,connected,minor,10.0.0.233,Data Center 8
+R-0047,Router-0047,router,connected,normal,10.0.2.114,Data Center 4
+R-0048,Router-0048,router,connected,normal,10.0.0.100,Data Center 1
+R-0049,Router-0049,router,connecting,minor,10.0.1.91,Data Center 3
+R-0050,Router-0050,router,down,critical,10.0.3.227,Data Center 3
+R-0051,Router-0051,router,connected,normal,10.0.0.247,Data Center 2
+R-0052,Router-0052,router,connected,normal,10.0.2.1,Data Center 6
+R-0053,Router-0053,router,connected,normal,10.0.3.29,Data Center 2
+R-0054,Router-0054,router,connected,warning,10.0.1.134,Data Center 4
+R-0055,Router-0055,router,connected,normal,10.0.0.32,DR Site
+R-0056,Router-0056,router,connected,minor,10.0.1.75,Data Center 3
+R-0057,Router-0057,router,connected,warning,10.0.2.93,Data Center 1
+R-0058,Router-0058,router,connected,warning,10.0.0.18,Data Center 1
+R-0059,Router-0059,router,connected,normal,10.0.3.47,Data Center 2
+R-0060,Router-0060,router,connected,warning,10.0.2.158,Data Center 5
+R-0061,Router-0061,router,connected,normal,10.0.2.29,Data Center 7
+R-0062,Router-0062,router,connected,normal,10.0.0.102,Data Center 6
+R-0063,Router-0063,router,connected,normal,10.0.0.140,Data Center 5
+R-0064,Router-0064,router,connected,normal,10.0.1.202,NOC Central
+R-0065,Router-0065,router,connected,normal,10.0.0.219,Data Center 5
+R-0066,Router-0066,router,connected,normal,10.0.2.162,Data Center 7
+R-0067,Router-0067,router,down,normal,10.0.1.40,Data Center 8
+R-0068,Router-0068,router,connected,normal,10.0.0.19,Data Center 6
+R-0069,Router-0069,router,connected,normal,10.0.1.233,Data Center 6
+R-0070,Router-0070,router,connected,normal,10.0.0.226,Data Center 4
+R-0071,Router-0071,router,connected,normal,10.0.2.180,Data Center 4
+R-0072,Router-0072,router,connected,minor,10.0.0.121,Data Center 3
+R-0073,Router-0073,router,connected,normal,10.0.3.161,Data Center 4
+R-0074,Router-0074,router,connected,normal,10.0.3.224,Data Center 1
+R-0075,Router-0075,router,connected,normal,10.0.2.17,Data Center 6
+R-0076,Router-0076,router,connected,normal,10.0.2.163,Data Center 4
+R-0077,Router-0077,router,connected,normal,10.0.1.228,Data Center 6
+R-0078,Router-0078,router,connected,minor,10.0.1.150,DR Site
+R-0079,Router-0079,router,connected,normal,10.0.2.54,Data Center 6
+R-0080,Router-0080,router,connected,normal,10.0.2.136,Data Center 2
+R-0081,Router-0081,router,connected,normal,10.0.1.199,Data Center 5
+R-0082,Router-0082,router,connected,normal,10.0.2.159,Data Center 5
+R-0083,Router-0083,router,connected,major,10.0.1.129,NOC Central
+R-0084,Router-0084,router,connected,minor,10.0.1.118,Data Center 3
+R-0085,Router-0085,router,connected,normal,10.0.1.139,Data Center 5
+R-0086,Router-0086,router,connected,normal,10.0.1.34,Data Center 8
+R-0087,Router-0087,router,connected,normal,10.0.3.152,Data Center 6
+R-0088,Router-0088,router,connected,normal,10.0.1.185,Data Center 8
+R-0089,Router-0089,router,connected,normal,10.0.2.245,Data Center 5
+R-0090,Router-0090,router,down,normal,10.0.2.133,Data Center 5
+R-0091,Router-0091,router,connected,normal,10.0.2.110,Data Center 5
+R-0092,Router-0092,router,connected,normal,10.0.1.99,Data Center 8
+R-0093,Router-0093,router,connected,normal,10.0.1.209,DR Site
+R-0094,Router-0094,router,connected,normal,10.0.0.107,Data Center 6
+R-0095,Router-0095,router,connected,warning,10.0.2.76,Data Center 6
+R-0096,Router-0096,router,connecting,minor,10.0.3.137,Data Center 2
+R-0097,Router-0097,router,connected,normal,10.0.0.143,Data Center 7
+R-0098,Router-0098,router,connected,normal,10.0.1.157,DR Site
+R-0099,Router-0099,router,connecting,warning,10.0.1.73,Data Center 2
+R-0100,Router-0100,router,connected,normal,10.0.0.141,Data Center 3
+R-0101,Router-0101,router,connected,normal,10.0.0.29,Data Center 7
+R-0102,Router-0102,router,connected,normal,10.0.1.53,Data Center 7
+R-0103,Router-0103,router,connected,normal,10.0.1.204,Data Center 8
+R-0104,Router-0104,router,connected,normal,10.0.3.150,Data Center 4
+R-0105,Router-0105,router,connected,normal,10.0.0.251,Data Center 7
+R-0106,Router-0106,router,connected,normal,10.0.0.85,NOC Central
+R-0107,Router-0107,router,connected,major,10.0.1.125,NOC Central
+R-0108,Router-0108,router,connected,normal,10.0.3.241,Data Center 8
+R-0109,Router-0109,router,connecting,critical,10.0.0.117,DR Site
+R-0110,Router-0110,router,connected,normal,10.0.3.49,Data Center 8
+R-0111,Router-0111,router,connected,normal,10.0.2.30,Data Center 7
+R-0112,Router-0112,router,connected,normal,10.0.2.214,Data Center 3
+R-0113,Router-0113,router,connected,normal,10.0.0.4,Data Center 6
+R-0114,Router-0114,router,connected,normal,10.0.1.79,Data Center 1
+R-0115,Router-0115,router,connected,normal,10.0.3.85,Data Center 7
+R-0116,Router-0116,router,connected,normal,10.0.0.148,Data Center 8
+R-0117,Router-0117,router,connected,critical,10.0.2.235,Data Center 6
+R-0118,Router-0118,router,connected,normal,10.0.3.14,Data Center 8
+R-0119,Router-0119,router,connected,normal,10.0.0.90,Data Center 3
+R-0120,Router-0120,router,connected,normal,10.0.1.163,DR Site
+R-0121,Router-0121,router,connecting,major,10.0.2.73,Data Center 3
+R-0122,Router-0122,router,connected,minor,10.0.2.251,Data Center 6
+R-0123,Router-0123,router,connected,normal,10.0.2.96,Data Center 4
+R-0124,Router-0124,router,connected,normal,10.0.0.13,Data Center 8
+R-0125,Router-0125,router,connecting,warning,10.0.1.197,Data Center 4
+R-0126,Router-0126,router,connected,normal,10.0.3.116,Data Center 4
+R-0127,Router-0127,router,connected,minor,10.0.1.164,Data Center 6
+R-0128,Router-0128,router,connected,minor,10.0.0.11,Data Center 2
+R-0129,Router-0129,router,connected,normal,10.0.3.173,Data Center 6
+R-0130,Router-0130,router,connected,normal,10.0.1.45,Data Center 1
+R-0131,Router-0131,router,connected,normal,10.0.3.194,DR Site
+R-0132,Router-0132,router,down,critical,10.0.0.105,Data Center 8
+R-0133,Router-0133,router,connected,normal,10.0.0.236,Data Center 7
+R-0134,Router-0134,router,connected,minor,10.0.2.199,Data Center 6
+R-0135,Router-0135,router,connected,normal,10.0.3.220,Data Center 3
+R-0136,Router-0136,router,connected,normal,10.0.1.1,Data Center 8
+R-0137,Router-0137,router,connected,normal,10.0.0.57,NOC Central
+R-0138,Router-0138,router,connected,normal,10.0.3.91,Data Center 1
+R-0139,Router-0139,router,connected,normal,10.0.2.143,Data Center 6
+R-0140,Router-0140,router,connected,warning,10.0.3.34,DR Site
+R-0141,Router-0141,router,connected,normal,10.0.0.223,Data Center 4
+R-0142,Router-0142,router,down,critical,10.0.2.247,Data Center 8
+R-0143,Router-0143,router,connected,normal,10.0.3.190,Data Center 5
+R-0144,Router-0144,router,connected,normal,10.0.2.51,Data Center 6
+R-0145,Router-0145,router,connected,warning,10.0.0.48,Data Center 1
+R-0146,Router-0146,router,connected,normal,10.0.2.36,DR Site
+R-0147,Router-0147,router,connected,normal,10.0.0.118,DR Site
+R-0148,Router-0148,router,connected,normal,10.0.2.249,Data Center 2
+R-0149,Router-0149,router,connected,normal,10.0.1.251,Data Center 2
+R-0150,Router-0150,router,connected,normal,10.0.1.56,DR Site
+S-0001,Switch-0001,switch,connected,normal,10.1.11.6,Data Center 4
+S-0002,Switch-0002,switch,connected,normal,10.1.3.16,Data Center 1
+S-0003,Switch-0003,switch,connected,normal,10.1.9.142,Data Center 8
+S-0004,Switch-0004,switch,connected,normal,10.1.5.19,Data Center 7
+S-0005,Switch-0005,switch,connected,normal,10.1.10.146,Data Center 7
+S-0006,Switch-0006,switch,connected,normal,10.1.2.162,Data Center 4
+S-0007,Switch-0007,switch,connected,normal,10.1.0.71,Data Center 6
+S-0008,Switch-0008,switch,connected,normal,10.1.0.39,Data Center 8
+S-0009,Switch-0009,switch,connecting,warning,10.1.8.218,Data Center 1
+S-0010,Switch-0010,switch,connected,minor,10.1.10.57,Data Center 6
+S-0011,Switch-0011,switch,connecting,warning,10.1.8.144,Data Center 8
+S-0012,Switch-0012,switch,down,warning,10.1.3.120,Data Center 5
+S-0013,Switch-0013,switch,connected,normal,10.1.7.29,Data Center 8
+S-0014,Switch-0014,switch,connected,normal,10.1.9.166,NOC Central
+S-0015,Switch-0015,switch,connected,warning,10.1.9.80,Data Center 3
+S-0016,Switch-0016,switch,connected,normal,10.1.5.153,Data Center 4
+S-0017,Switch-0017,switch,connected,normal,10.1.13.6,Data Center 7
+S-0018,Switch-0018,switch,down,major,10.1.13.140,Data Center 5
+S-0019,Switch-0019,switch,connected,normal,10.1.4.174,Data Center 6
+S-0020,Switch-0020,switch,connected,normal,10.1.0.6,NOC Central
+S-0021,Switch-0021,switch,connected,normal,10.1.8.226,Data Center 8
+S-0022,Switch-0022,switch,connected,normal,10.1.2.217,Data Center 8
+S-0023,Switch-0023,switch,connected,normal,10.1.3.101,Data Center 7
+S-0024,Switch-0024,switch,connected,warning,10.1.11.61,NOC Central
+S-0025,Switch-0025,switch,connecting,normal,10.1.8.147,Data Center 5
+S-0026,Switch-0026,switch,connected,normal,10.1.4.153,Data Center 7
+S-0027,Switch-0027,switch,connecting,warning,10.1.15.68,Data Center 6
+S-0028,Switch-0028,switch,connected,normal,10.1.9.45,Data Center 2
+S-0029,Switch-0029,switch,connecting,minor,10.1.4.202,Data Center 6
+S-0030,Switch-0030,switch,connected,normal,10.1.4.38,Data Center 6
+S-0031,Switch-0031,switch,connected,normal,10.1.11.37,Data Center 3
+S-0032,Switch-0032,switch,connected,minor,10.1.10.54,Data Center 7
+S-0033,Switch-0033,switch,connecting,major,10.1.4.57,Data Center 5
+S-0034,Switch-0034,switch,connected,normal,10.1.12.224,NOC Central
+S-0035,Switch-0035,switch,connected,normal,10.1.2.215,Data Center 3
+S-0036,Switch-0036,switch,connected,normal,10.1.2.195,NOC Central
+S-0037,Switch-0037,switch,connected,normal,10.1.10.67,Data Center 1
+S-0038,Switch-0038,switch,connected,normal,10.1.3.144,DR Site
+S-0039,Switch-0039,switch,connected,normal,10.1.4.179,Data Center 5
+S-0040,Switch-0040,switch,connected,normal,10.1.0.222,Data Center 8
+S-0041,Switch-0041,switch,connected,minor,10.1.5.106,Data Center 4
+S-0042,Switch-0042,switch,connected,normal,10.1.14.160,Data Center 6
+S-0043,Switch-0043,switch,connected,normal,10.1.14.165,Data Center 3
+S-0044,Switch-0044,switch,connected,normal,10.1.6.169,DR Site
+S-0045,Switch-0045,switch,connected,normal,10.1.7.243,Data Center 3
+S-0046,Switch-0046,switch,connected,warning,10.1.14.84,Data Center 2
+S-0047,Switch-0047,switch,connected,minor,10.1.13.134,Data Center 6
+S-0048,Switch-0048,switch,connected,normal,10.1.7.242,Data Center 5
+S-0049,Switch-0049,switch,connected,normal,10.1.0.58,NOC Central
+S-0050,Switch-0050,switch,connected,normal,10.1.0.35,Data Center 3
+S-0051,Switch-0051,switch,connecting,normal,10.1.12.79,Data Center 2
+S-0052,Switch-0052,switch,connected,normal,10.1.4.178,Data Center 6
+S-0053,Switch-0053,switch,down,major,10.1.11.237,Data Center 1
+S-0054,Switch-0054,switch,connected,normal,10.1.14.98,Data Center 1
+S-0055,Switch-0055,switch,down,major,10.1.11.179,Data Center 1
+S-0056,Switch-0056,switch,connected,normal,10.1.2.41,Data Center 3
+S-0057,Switch-0057,switch,connected,normal,10.1.2.96,Data Center 3
+S-0058,Switch-0058,switch,connected,major,10.1.14.239,Data Center 6
+S-0059,Switch-0059,switch,connected,warning,10.1.15.28,Data Center 4
+S-0060,Switch-0060,switch,connected,normal,10.1.6.105,Data Center 7
+S-0061,Switch-0061,switch,connected,normal,10.1.5.175,Data Center 1
+S-0062,Switch-0062,switch,connected,normal,10.1.9.234,Data Center 3
+S-0063,Switch-0063,switch,connected,normal,10.1.9.52,Data Center 7
+S-0064,Switch-0064,switch,connected,normal,10.1.2.240,Data Center 3
+S-0065,Switch-0065,switch,connected,warning,10.1.14.75,DR Site
+S-0066,Switch-0066,switch,connected,normal,10.1.9.19,Data Center 7
+S-0067,Switch-0067,switch,connected,normal,10.1.10.229,Data Center 6
+S-0068,Switch-0068,switch,connected,normal,10.1.4.30,Data Center 4
+S-0069,Switch-0069,switch,connected,normal,10.1.1.48,Data Center 2
+S-0070,Switch-0070,switch,connected,warning,10.1.9.151,Data Center 2
+S-0071,Switch-0071,switch,connected,normal,10.1.13.101,Data Center 3
+S-0072,Switch-0072,switch,connected,major,10.1.15.233,Data Center 7
+S-0073,Switch-0073,switch,connected,normal,10.1.0.191,NOC Central
+S-0074,Switch-0074,switch,connected,normal,10.1.15.82,DR Site
+S-0075,Switch-0075,switch,connecting,minor,10.1.14.8,DR Site
+S-0076,Switch-0076,switch,connected,warning,10.1.5.30,Data Center 8
+S-0077,Switch-0077,switch,connected,normal,10.1.12.152,Data Center 3
+S-0078,Switch-0078,switch,connected,normal,10.1.0.182,Data Center 1
+S-0079,Switch-0079,switch,connecting,normal,10.1.5.192,Data Center 4
+S-0080,Switch-0080,switch,connected,normal,10.1.11.132,Data Center 8
+S-0081,Switch-0081,switch,connected,normal,10.1.6.219,Data Center 2
+S-0082,Switch-0082,switch,connected,normal,10.1.1.81,Data Center 4
+S-0083,Switch-0083,switch,down,warning,10.1.1.240,Data Center 4
+S-0084,Switch-0084,switch,connected,minor,10.1.12.118,Data Center 5
+S-0085,Switch-0085,switch,connecting,minor,10.1.1.193,Data Center 1
+S-0086,Switch-0086,switch,connected,normal,10.1.7.129,NOC Central
+S-0087,Switch-0087,switch,connected,normal,10.1.11.234,Data Center 3
+S-0088,Switch-0088,switch,connected,normal,10.1.15.135,Data Center 7
+S-0089,Switch-0089,switch,connecting,warning,10.1.13.177,Data Center 5
+S-0090,Switch-0090,switch,down,critical,10.1.3.185,Data Center 1
+S-0091,Switch-0091,switch,down,critical,10.1.11.208,NOC Central
+S-0092,Switch-0092,switch,connected,major,10.1.7.141,Data Center 1
+S-0093,Switch-0093,switch,connected,minor,10.1.3.96,DR Site
+S-0094,Switch-0094,switch,connected,normal,10.1.8.13,Data Center 1
+S-0095,Switch-0095,switch,connected,normal,10.1.3.88,DR Site
+S-0096,Switch-0096,switch,connected,normal,10.1.11.58,NOC Central
+S-0097,Switch-0097,switch,connected,warning,10.1.12.65,NOC Central
+S-0098,Switch-0098,switch,connected,warning,10.1.13.138,Data Center 7
+S-0099,Switch-0099,switch,connected,normal,10.1.8.18,Data Center 1
+S-0100,Switch-0100,switch,connected,normal,10.1.14.52,Data Center 2
+S-0101,Switch-0101,switch,connected,normal,10.1.4.135,Data Center 8
+S-0102,Switch-0102,switch,connected,normal,10.1.13.20,NOC Central
+S-0103,Switch-0103,switch,connected,minor,10.1.7.161,Data Center 1
+S-0104,Switch-0104,switch,connected,normal,10.1.11.224,Data Center 6
+S-0105,Switch-0105,switch,connected,normal,10.1.1.15,NOC Central
+S-0106,Switch-0106,switch,connected,normal,10.1.4.184,Data Center 5
+S-0107,Switch-0107,switch,connecting,warning,10.1.9.84,Data Center 6
+S-0108,Switch-0108,switch,connected,normal,10.1.6.61,Data Center 5
+S-0109,Switch-0109,switch,connected,normal,10.1.6.249,Data Center 4
+S-0110,Switch-0110,switch,connected,normal,10.1.2.17,Data Center 1
+S-0111,Switch-0111,switch,connected,normal,10.1.10.181,Data Center 4
+S-0112,Switch-0112,switch,connected,normal,10.1.12.141,Data Center 2
+S-0113,Switch-0113,switch,connected,warning,10.1.6.212,Data Center 7
+S-0114,Switch-0114,switch,connected,normal,10.1.7.131,Data Center 8
+S-0115,Switch-0115,switch,connected,normal,10.1.5.235,Data Center 4
+S-0116,Switch-0116,switch,connected,normal,10.1.14.143,Data Center 7
+S-0117,Switch-0117,switch,connected,normal,10.1.14.76,Data Center 5
+S-0118,Switch-0118,switch,connected,normal,10.1.9.185,DR Site
+S-0119,Switch-0119,switch,down,major,10.1.10.70,NOC Central
+S-0120,Switch-0120,switch,connected,normal,10.1.7.90,NOC Central
+S-0121,Switch-0121,switch,connected,normal,10.1.9.226,Data Center 8
+S-0122,Switch-0122,switch,connected,warning,10.1.1.204,DR Site
+S-0123,Switch-0123,switch,connected,normal,10.1.10.202,Data Center 7
+S-0124,Switch-0124,switch,connected,normal,10.1.15.222,DR Site
+S-0125,Switch-0125,switch,connected,normal,10.1.10.252,Data Center 6
+S-0126,Switch-0126,switch,connected,normal,10.1.5.78,Data Center 6
+S-0127,Switch-0127,switch,connected,normal,10.1.7.55,Data Center 2
+S-0128,Switch-0128,switch,connected,warning,10.1.15.207,NOC Central
+S-0129,Switch-0129,switch,connected,major,10.1.5.18,NOC Central
+S-0130,Switch-0130,switch,connected,normal,10.1.2.144,Data Center 2
+S-0131,Switch-0131,switch,connected,normal,10.1.12.123,Data Center 7
+S-0132,Switch-0132,switch,connected,normal,10.1.14.203,Data Center 3
+S-0133,Switch-0133,switch,connected,normal,10.1.14.53,Data Center 1
+S-0134,Switch-0134,switch,connected,normal,10.1.0.40,Data Center 1
+S-0135,Switch-0135,switch,connected,normal,10.1.14.18,Data Center 5
+S-0136,Switch-0136,switch,connected,normal,10.1.1.163,Data Center 5
+S-0137,Switch-0137,switch,connecting,minor,10.1.15.13,DR Site
+S-0138,Switch-0138,switch,connected,normal,10.1.7.135,Data Center 5
+S-0139,Switch-0139,switch,connected,critical,10.1.12.16,Data Center 1
+S-0140,Switch-0140,switch,connecting,normal,10.1.1.68,Data Center 4
+S-0141,Switch-0141,switch,connected,normal,10.1.15.133,Data Center 3
+S-0142,Switch-0142,switch,connected,minor,10.1.6.59,Data Center 3
+S-0143,Switch-0143,switch,connected,normal,10.1.12.244,DR Site
+S-0144,Switch-0144,switch,connected,normal,10.1.3.221,DR Site
+S-0145,Switch-0145,switch,connected,normal,10.1.13.207,DR Site
+S-0146,Switch-0146,switch,connected,normal,10.1.15.177,Data Center 4
+S-0147,Switch-0147,switch,connecting,warning,10.1.8.194,Data Center 8
+S-0148,Switch-0148,switch,connected,normal,10.1.15.52,Data Center 7
+S-0149,Switch-0149,switch,connected,normal,10.1.9.223,Data Center 5
+S-0150,Switch-0150,switch,connected,normal,10.1.13.118,DR Site
+S-0151,Switch-0151,switch,connected,normal,10.1.11.230,NOC Central
+S-0152,Switch-0152,switch,connected,minor,10.1.8.7,Data Center 2
+S-0153,Switch-0153,switch,connected,normal,10.1.0.3,Data Center 4
+S-0154,Switch-0154,switch,connected,normal,10.1.3.45,Data Center 8
+S-0155,Switch-0155,switch,connected,normal,10.1.7.95,Data Center 3
+S-0156,Switch-0156,switch,connected,minor,10.1.10.9,Data Center 5
+S-0157,Switch-0157,switch,connected,normal,10.1.11.156,Data Center 1
+S-0158,Switch-0158,switch,connecting,minor,10.1.3.192,Data Center 1
+S-0159,Switch-0159,switch,connected,normal,10.1.11.116,Data Center 2
+S-0160,Switch-0160,switch,connected,normal,10.1.0.253,Data Center 1
+S-0161,Switch-0161,switch,connected,normal,10.1.7.89,Data Center 4
+S-0162,Switch-0162,switch,connected,normal,10.1.12.144,Data Center 2
+S-0163,Switch-0163,switch,connected,normal,10.1.11.112,Data Center 5
+S-0164,Switch-0164,switch,connected,normal,10.1.14.133,Data Center 8
+S-0165,Switch-0165,switch,connected,normal,10.1.5.211,Data Center 4
+S-0166,Switch-0166,switch,connected,normal,10.1.12.19,Data Center 8
+S-0167,Switch-0167,switch,connected,normal,10.1.8.85,Data Center 5
+S-0168,Switch-0168,switch,connected,normal,10.1.3.210,Data Center 7
+S-0169,Switch-0169,switch,connected,normal,10.1.1.254,Data Center 5
+S-0170,Switch-0170,switch,connected,normal,10.1.11.72,DR Site
+S-0171,Switch-0171,switch,connecting,warning,10.1.9.229,NOC Central
+S-0172,Switch-0172,switch,connected,minor,10.1.7.20,NOC Central
+S-0173,Switch-0173,switch,down,critical,10.1.3.193,Data Center 1
+S-0174,Switch-0174,switch,connected,warning,10.1.2.124,Data Center 8
+S-0175,Switch-0175,switch,connected,normal,10.1.10.69,DR Site
+S-0176,Switch-0176,switch,connected,normal,10.1.11.170,Data Center 5
+S-0177,Switch-0177,switch,connected,normal,10.1.15.144,DR Site
+S-0178,Switch-0178,switch,connected,normal,10.1.6.157,Data Center 2
+S-0179,Switch-0179,switch,connected,warning,10.1.7.34,DR Site
+S-0180,Switch-0180,switch,connected,normal,10.1.0.165,NOC Central
+S-0181,Switch-0181,switch,connected,normal,10.1.5.220,Data Center 1
+S-0182,Switch-0182,switch,connected,normal,10.1.14.187,NOC Central
+S-0183,Switch-0183,switch,connected,minor,10.1.2.26,NOC Central
+S-0184,Switch-0184,switch,connected,normal,10.1.0.31,Data Center 1
+S-0185,Switch-0185,switch,connected,normal,10.1.3.231,Data Center 7
+S-0186,Switch-0186,switch,connected,normal,10.1.13.227,Data Center 8
+S-0187,Switch-0187,switch,connected,warning,10.1.4.145,Data Center 1
+S-0188,Switch-0188,switch,connected,minor,10.1.13.142,Data Center 2
+S-0189,Switch-0189,switch,connected,normal,10.1.4.86,Data Center 5
+S-0190,Switch-0190,switch,connected,normal,10.1.3.3,Data Center 4
+S-0191,Switch-0191,switch,connected,warning,10.1.5.48,Data Center 6
+S-0192,Switch-0192,switch,connected,normal,10.1.10.72,Data Center 7
+S-0193,Switch-0193,switch,connecting,normal,10.1.2.150,Data Center 3
+S-0194,Switch-0194,switch,connected,warning,10.1.0.127,Data Center 5
+S-0195,Switch-0195,switch,connected,warning,10.1.14.135,DR Site
+S-0196,Switch-0196,switch,connected,normal,10.1.5.234,Data Center 5
+S-0197,Switch-0197,switch,connected,normal,10.1.11.84,Data Center 2
+S-0198,Switch-0198,switch,connected,normal,10.1.3.166,Data Center 6
+S-0199,Switch-0199,switch,connected,warning,10.1.0.36,Data Center 2
+S-0200,Switch-0200,switch,connected,normal,10.1.11.85,DR Site
+S-0201,Switch-0201,switch,connected,warning,10.1.14.179,NOC Central
+S-0202,Switch-0202,switch,connected,normal,10.1.5.216,Data Center 2
+S-0203,Switch-0203,switch,connected,minor,10.1.13.107,Data Center 2
+S-0204,Switch-0204,switch,down,critical,10.1.1.232,Data Center 6
+S-0205,Switch-0205,switch,connected,normal,10.1.3.142,DR Site
+S-0206,Switch-0206,switch,connected,normal,10.1.12.64,Data Center 2
+S-0207,Switch-0207,switch,connected,normal,10.1.1.11,Data Center 5
+S-0208,Switch-0208,switch,connected,warning,10.1.15.186,Data Center 5
+S-0209,Switch-0209,switch,connected,normal,10.1.11.244,Data Center 5
+S-0210,Switch-0210,switch,connected,normal,10.1.6.23,Data Center 2
+S-0211,Switch-0211,switch,connected,normal,10.1.10.193,NOC Central
+S-0212,Switch-0212,switch,connected,normal,10.1.5.199,DR Site
+S-0213,Switch-0213,switch,down,normal,10.1.8.44,Data Center 6
+S-0214,Switch-0214,switch,connected,normal,10.1.15.162,Data Center 7
+S-0215,Switch-0215,switch,connected,warning,10.1.15.110,Data Center 6
+S-0216,Switch-0216,switch,connecting,normal,10.1.3.103,Data Center 6
+S-0217,Switch-0217,switch,connected,normal,10.1.15.128,Data Center 7
+S-0218,Switch-0218,switch,connected,warning,10.1.1.149,Data Center 4
+S-0219,Switch-0219,switch,connected,normal,10.1.14.91,Data Center 4
+S-0220,Switch-0220,switch,connected,normal,10.1.14.72,Data Center 1
+S-0221,Switch-0221,switch,connected,normal,10.1.6.56,Data Center 8
+S-0222,Switch-0222,switch,connected,normal,10.1.7.120,Data Center 4
+S-0223,Switch-0223,switch,connected,normal,10.1.4.101,Data Center 7
+S-0224,Switch-0224,switch,connected,normal,10.1.2.62,Data Center 5
+S-0225,Switch-0225,switch,connected,normal,10.1.2.115,Data Center 1
+S-0226,Switch-0226,switch,connected,normal,10.1.6.83,Data Center 2
+S-0227,Switch-0227,switch,connected,normal,10.1.8.236,Data Center 4
+S-0228,Switch-0228,switch,connected,normal,10.1.12.185,Data Center 2
+S-0229,Switch-0229,switch,connected,normal,10.1.10.12,Data Center 6
+S-0230,Switch-0230,switch,connected,normal,10.1.12.138,Data Center 1
+S-0231,Switch-0231,switch,connected,normal,10.1.9.65,Data Center 1
+S-0232,Switch-0232,switch,connected,normal,10.1.14.217,Data Center 2
+S-0233,Switch-0233,switch,connected,normal,10.1.6.17,NOC Central
+S-0234,Switch-0234,switch,connected,normal,10.1.11.41,NOC Central
+S-0235,Switch-0235,switch,connected,normal,10.1.1.213,Data Center 4
+S-0236,Switch-0236,switch,connected,normal,10.1.2.211,Data Center 5
+S-0237,Switch-0237,switch,connected,normal,10.1.10.14,Data Center 6
+S-0238,Switch-0238,switch,connected,normal,10.1.6.131,Data Center 5
+S-0239,Switch-0239,switch,connected,normal,10.1.13.133,DR Site
+S-0240,Switch-0240,switch,connected,normal,10.1.6.208,DR Site
+S-0241,Switch-0241,switch,connected,normal,10.1.0.112,Data Center 3
+S-0242,Switch-0242,switch,connected,normal,10.1.10.121,Data Center 6
+S-0243,Switch-0243,switch,connecting,minor,10.1.6.32,Data Center 3
+S-0244,Switch-0244,switch,connected,normal,10.1.0.80,Data Center 5
+S-0245,Switch-0245,switch,connected,warning,10.1.11.161,DR Site
+S-0246,Switch-0246,switch,down,critical,10.1.9.36,DR Site
+S-0247,Switch-0247,switch,connected,normal,10.1.9.188,Data Center 6
+S-0248,Switch-0248,switch,connected,normal,10.1.11.3,Data Center 6
+S-0249,Switch-0249,switch,connected,normal,10.1.6.165,Data Center 4
+S-0250,Switch-0250,switch,connected,warning,10.1.8.234,Data Center 8
+S-0251,Switch-0251,switch,down,major,10.1.13.88,Data Center 1
+S-0252,Switch-0252,switch,connected,normal,10.1.4.134,Data Center 1
+S-0253,Switch-0253,switch,connected,normal,10.1.0.138,Data Center 2
+S-0254,Switch-0254,switch,connected,minor,10.1.7.22,Data Center 7
+S-0255,Switch-0255,switch,connected,normal,10.1.3.194,Data Center 4
+S-0256,Switch-0256,switch,connected,normal,10.1.13.155,DR Site
+S-0257,Switch-0257,switch,connected,normal,10.1.5.187,Data Center 3
+S-0258,Switch-0258,switch,connected,normal,10.1.10.204,Data Center 6
+S-0259,Switch-0259,switch,connecting,normal,10.1.4.100,Data Center 2
+S-0260,Switch-0260,switch,connected,normal,10.1.14.15,Data Center 2
+S-0261,Switch-0261,switch,connected,warning,10.1.12.254,Data Center 1
+S-0262,Switch-0262,switch,connecting,warning,10.1.0.168,DR Site
+S-0263,Switch-0263,switch,connected,normal,10.1.1.53,Data Center 5
+S-0264,Switch-0264,switch,connected,major,10.1.15.254,Data Center 6
+S-0265,Switch-0265,switch,connected,normal,10.1.11.189,Data Center 1
+S-0266,Switch-0266,switch,connected,normal,10.1.11.187,Data Center 2
+S-0267,Switch-0267,switch,connected,normal,10.1.3.31,Data Center 3
+S-0268,Switch-0268,switch,connected,normal,10.1.2.4,Data Center 4
+S-0269,Switch-0269,switch,connected,normal,10.1.7.253,Data Center 2
+S-0270,Switch-0270,switch,connected,warning,10.1.1.197,DR Site
+S-0271,Switch-0271,switch,connected,normal,10.1.10.114,Data Center 6
+S-0272,Switch-0272,switch,connected,normal,10.1.2.79,Data Center 5
+S-0273,Switch-0273,switch,connecting,major,10.1.6.8,NOC Central
+S-0274,Switch-0274,switch,connected,normal,10.1.2.119,Data Center 5
+S-0275,Switch-0275,switch,connected,normal,10.1.7.134,Data Center 2
+S-0276,Switch-0276,switch,connected,normal,10.1.9.13,DR Site
+S-0277,Switch-0277,switch,connecting,major,10.1.0.147,Data Center 4
+S-0278,Switch-0278,switch,connected,normal,10.1.5.55,Data Center 8
+S-0279,Switch-0279,switch,connected,normal,10.1.7.143,Data Center 2
+S-0280,Switch-0280,switch,connected,normal,10.1.9.73,Data Center 2
+S-0281,Switch-0281,switch,connected,normal,10.1.8.187,Data Center 2
+S-0282,Switch-0282,switch,connected,normal,10.1.1.2,Data Center 6
+S-0283,Switch-0283,switch,connected,warning,10.1.13.48,Data Center 7
+S-0284,Switch-0284,switch,connected,normal,10.1.11.142,Data Center 5
+S-0285,Switch-0285,switch,connected,normal,10.1.5.128,Data Center 5
+S-0286,Switch-0286,switch,connected,normal,10.1.0.26,Data Center 1
+S-0287,Switch-0287,switch,connecting,major,10.1.9.143,Data Center 3
+S-0288,Switch-0288,switch,connected,normal,10.1.15.212,Data Center 3
+S-0289,Switch-0289,switch,connected,normal,10.1.14.131,Data Center 7
+S-0290,Switch-0290,switch,connected,minor,10.1.13.187,DR Site
+S-0291,Switch-0291,switch,connected,normal,10.1.1.101,Data Center 2
+S-0292,Switch-0292,switch,connected,warning,10.1.5.183,Data Center 1
+S-0293,Switch-0293,switch,connected,normal,10.1.11.171,Data Center 3
+S-0294,Switch-0294,switch,connected,normal,10.1.8.2,Data Center 2
+S-0295,Switch-0295,switch,connected,major,10.1.15.198,Data Center 3
+S-0296,Switch-0296,switch,connected,warning,10.1.10.27,Data Center 1
+S-0297,Switch-0297,switch,connected,major,10.1.12.32,Data Center 6
+S-0298,Switch-0298,switch,connected,normal,10.1.9.10,Data Center 1
+S-0299,Switch-0299,switch,connected,warning,10.1.5.171,Data Center 5
+S-0300,Switch-0300,switch,connected,normal,10.1.4.143,Data Center 8
+S-0301,Switch-0301,switch,connected,normal,10.1.12.120,DR Site
+S-0302,Switch-0302,switch,connected,normal,10.1.8.30,Data Center 4
+S-0303,Switch-0303,switch,connected,normal,10.1.3.32,Data Center 3
+S-0304,Switch-0304,switch,connecting,critical,10.1.2.172,Data Center 7
+S-0305,Switch-0305,switch,connected,normal,10.1.13.152,Data Center 1
+S-0306,Switch-0306,switch,connected,warning,10.1.2.247,Data Center 4
+S-0307,Switch-0307,switch,connected,warning,10.1.2.40,Data Center 7
+S-0308,Switch-0308,switch,connected,minor,10.1.7.36,Data Center 7
+S-0309,Switch-0309,switch,connecting,normal,10.1.8.60,NOC Central
+S-0310,Switch-0310,switch,connected,normal,10.1.10.115,Data Center 2
+S-0311,Switch-0311,switch,connecting,normal,10.1.9.97,Data Center 2
+S-0312,Switch-0312,switch,connected,normal,10.1.3.137,Data Center 3
+S-0313,Switch-0313,switch,connected,normal,10.1.6.184,Data Center 3
+S-0314,Switch-0314,switch,connected,normal,10.1.9.81,Data Center 7
+S-0315,Switch-0315,switch,connected,normal,10.1.10.189,Data Center 6
+S-0316,Switch-0316,switch,connected,normal,10.1.12.198,NOC Central
+S-0317,Switch-0317,switch,connected,normal,10.1.6.155,NOC Central
+S-0318,Switch-0318,switch,connected,warning,10.1.10.221,Data Center 1
+S-0319,Switch-0319,switch,connected,normal,10.1.10.22,Data Center 6
+S-0320,Switch-0320,switch,connected,normal,10.1.11.15,Data Center 5
+S-0321,Switch-0321,switch,connected,normal,10.1.8.61,Data Center 5
+S-0322,Switch-0322,switch,connected,normal,10.1.6.121,Data Center 1
+S-0323,Switch-0323,switch,connected,normal,10.1.1.86,Data Center 7
+S-0324,Switch-0324,switch,connected,normal,10.1.15.194,Data Center 3
+S-0325,Switch-0325,switch,connected,minor,10.1.8.55,Data Center 3
+S-0326,Switch-0326,switch,connecting,warning,10.1.7.2,Data Center 7
+S-0327,Switch-0327,switch,connected,normal,10.1.11.101,Data Center 2
+S-0328,Switch-0328,switch,connected,normal,10.1.7.245,Data Center 8
+S-0329,Switch-0329,switch,connected,normal,10.1.5.129,NOC Central
+S-0330,Switch-0330,switch,connected,normal,10.1.8.5,NOC Central
+S-0331,Switch-0331,switch,connected,major,10.1.13.33,Data Center 8
+S-0332,Switch-0332,switch,connected,normal,10.1.8.146,Data Center 3
+S-0333,Switch-0333,switch,connecting,warning,10.1.5.26,Data Center 6
+S-0334,Switch-0334,switch,connected,normal,10.1.7.162,DR Site
+S-0335,Switch-0335,switch,down,critical,10.1.13.209,Data Center 1
+S-0336,Switch-0336,switch,connected,normal,10.1.3.69,Data Center 4
+S-0337,Switch-0337,switch,connecting,warning,10.1.8.220,Data Center 1
+S-0338,Switch-0338,switch,connected,normal,10.1.6.104,Data Center 7
+S-0339,Switch-0339,switch,connecting,minor,10.1.2.139,Data Center 2
+S-0340,Switch-0340,switch,connected,warning,10.1.8.116,DR Site
+S-0341,Switch-0341,switch,connected,normal,10.1.7.68,Data Center 4
+S-0342,Switch-0342,switch,connected,warning,10.1.5.67,Data Center 6
+S-0343,Switch-0343,switch,connected,minor,10.1.11.46,Data Center 8
+S-0344,Switch-0344,switch,connected,normal,10.1.3.68,NOC Central
+S-0345,Switch-0345,switch,connected,normal,10.1.5.163,NOC Central
+S-0346,Switch-0346,switch,connected,warning,10.1.15.53,Data Center 6
+S-0347,Switch-0347,switch,connected,minor,10.1.2.42,Data Center 5
+S-0348,Switch-0348,switch,connected,normal,10.1.7.241,Data Center 2
+S-0349,Switch-0349,switch,connected,normal,10.1.3.186,Data Center 1
+S-0350,Switch-0350,switch,connected,minor,10.1.4.90,Data Center 7
+S-0351,Switch-0351,switch,connected,normal,10.1.5.93,Data Center 6
+S-0352,Switch-0352,switch,connected,normal,10.1.4.163,Data Center 6
+S-0353,Switch-0353,switch,connected,warning,10.1.3.53,Data Center 5
+S-0354,Switch-0354,switch,connected,normal,10.1.11.47,NOC Central
+S-0355,Switch-0355,switch,connected,normal,10.1.7.59,DR Site
+S-0356,Switch-0356,switch,connected,normal,10.1.13.146,Data Center 7
+S-0357,Switch-0357,switch,connecting,critical,10.1.11.38,Data Center 6
+S-0358,Switch-0358,switch,connected,normal,10.1.2.117,Data Center 7
+S-0359,Switch-0359,switch,connected,normal,10.1.14.228,DR Site
+S-0360,Switch-0360,switch,connected,normal,10.1.1.156,Data Center 3
+S-0361,Switch-0361,switch,connected,normal,10.1.8.172,Data Center 4
+S-0362,Switch-0362,switch,connected,minor,10.1.9.209,NOC Central
+S-0363,Switch-0363,switch,connected,warning,10.1.9.6,Data Center 7
+S-0364,Switch-0364,switch,connected,normal,10.1.13.97,Data Center 6
+S-0365,Switch-0365,switch,connected,normal,10.1.11.254,NOC Central
+S-0366,Switch-0366,switch,connected,normal,10.1.1.122,Data Center 8
+S-0367,Switch-0367,switch,connected,normal,10.1.0.130,Data Center 3
+S-0368,Switch-0368,switch,connecting,normal,10.1.9.109,Data Center 1
+S-0369,Switch-0369,switch,connected,warning,10.1.11.93,Data Center 8
+S-0370,Switch-0370,switch,connected,normal,10.1.1.100,DR Site
+S-0371,Switch-0371,switch,connected,normal,10.1.11.172,Data Center 2
+S-0372,Switch-0372,switch,connected,minor,10.1.11.86,Data Center 3
+S-0373,Switch-0373,switch,connected,normal,10.1.10.82,Data Center 6
+S-0374,Switch-0374,switch,connected,normal,10.1.3.82,DR Site
+S-0375,Switch-0375,switch,connected,minor,10.1.9.147,Data Center 5
+S-0376,Switch-0376,switch,connected,normal,10.1.4.209,Data Center 5
+S-0377,Switch-0377,switch,connected,major,10.1.2.136,NOC Central
+S-0378,Switch-0378,switch,connected,normal,10.1.15.247,Data Center 7
+S-0379,Switch-0379,switch,connected,minor,10.1.2.72,Data Center 1
+S-0380,Switch-0380,switch,connected,warning,10.1.15.182,Data Center 5
+S-0381,Switch-0381,switch,down,critical,10.1.3.72,Data Center 1
+S-0382,Switch-0382,switch,connecting,normal,10.1.2.214,Data Center 5
+S-0383,Switch-0383,switch,connected,minor,10.1.14.167,Data Center 3
+S-0384,Switch-0384,switch,connected,normal,10.1.0.76,Data Center 6
+S-0385,Switch-0385,switch,connected,minor,10.1.3.184,Data Center 4
+S-0386,Switch-0386,switch,connecting,warning,10.1.1.137,Data Center 2
+S-0387,Switch-0387,switch,connected,normal,10.1.4.55,Data Center 2
+S-0388,Switch-0388,switch,connected,normal,10.1.9.216,Data Center 1
+S-0389,Switch-0389,switch,connecting,normal,10.1.4.238,Data Center 5
+S-0390,Switch-0390,switch,connected,normal,10.1.13.47,Data Center 1
+S-0391,Switch-0391,switch,connected,normal,10.1.10.135,Data Center 4
+S-0392,Switch-0392,switch,connected,minor,10.1.4.250,Data Center 5
+S-0393,Switch-0393,switch,connected,minor,10.1.9.197,Data Center 4
+S-0394,Switch-0394,switch,connected,warning,10.1.15.239,Data Center 6
+S-0395,Switch-0395,switch,connected,normal,10.1.12.216,Data Center 1
+S-0396,Switch-0396,switch,connected,normal,10.1.8.253,Data Center 8
+S-0397,Switch-0397,switch,connected,normal,10.1.2.199,Data Center 5
+S-0398,Switch-0398,switch,connected,normal,10.1.3.190,Data Center 6
+S-0399,Switch-0399,switch,connected,normal,10.1.14.51,Data Center 1
+S-0400,Switch-0400,switch,connected,major,10.1.15.122,Data Center 2
+S-0401,Switch-0401,switch,connected,minor,10.1.0.34,Data Center 6
+S-0402,Switch-0402,switch,connected,normal,10.1.3.182,Data Center 6
+S-0403,Switch-0403,switch,connected,minor,10.1.3.25,Data Center 2
+S-0404,Switch-0404,switch,connected,normal,10.1.13.84,Data Center 6
+S-0405,Switch-0405,switch,connecting,normal,10.1.15.132,DR Site
+S-0406,Switch-0406,switch,connected,warning,10.1.2.174,NOC Central
+S-0407,Switch-0407,switch,connected,normal,10.1.14.144,Data Center 3
+S-0408,Switch-0408,switch,connected,normal,10.1.3.116,Data Center 6
+S-0409,Switch-0409,switch,connected,warning,10.1.10.160,Data Center 5
+S-0410,Switch-0410,switch,connected,normal,10.1.7.67,NOC Central
+S-0411,Switch-0411,switch,connected,normal,10.1.3.181,DR Site
+S-0412,Switch-0412,switch,connected,warning,10.1.10.144,Data Center 3
+S-0413,Switch-0413,switch,connecting,minor,10.1.3.242,Data Center 8
+S-0414,Switch-0414,switch,connecting,major,10.1.5.184,Data Center 4
+S-0415,Switch-0415,switch,connected,normal,10.1.8.168,Data Center 8
+S-0416,Switch-0416,switch,connected,minor,10.1.6.55,Data Center 7
+S-0417,Switch-0417,switch,connected,warning,10.1.7.57,Data Center 7
+S-0418,Switch-0418,switch,connecting,normal,10.1.13.90,Data Center 7
+S-0419,Switch-0419,switch,connected,normal,10.1.14.216,Data Center 4
+S-0420,Switch-0420,switch,connected,normal,10.1.11.21,Data Center 5
+S-0421,Switch-0421,switch,connected,normal,10.1.15.31,NOC Central
+S-0422,Switch-0422,switch,connected,normal,10.1.11.140,Data Center 6
+S-0423,Switch-0423,switch,connected,normal,10.1.3.171,Data Center 3
+S-0424,Switch-0424,switch,connected,warning,10.1.13.228,Data Center 7
+S-0425,Switch-0425,switch,connected,normal,10.1.0.216,Data Center 6
+S-0426,Switch-0426,switch,connected,normal,10.1.11.5,Data Center 3
+S-0427,Switch-0427,switch,connected,normal,10.1.11.23,Data Center 4
+S-0428,Switch-0428,switch,connected,minor,10.1.5.132,Data Center 1
+S-0429,Switch-0429,switch,connected,normal,10.1.3.196,Data Center 3
+S-0430,Switch-0430,switch,connecting,critical,10.1.9.56,Data Center 7
+S-0431,Switch-0431,switch,connected,warning,10.1.10.220,Data Center 7
+S-0432,Switch-0432,switch,connected,normal,10.1.0.249,Data Center 5
+S-0433,Switch-0433,switch,connected,warning,10.1.5.121,DR Site
+S-0434,Switch-0434,switch,connected,major,10.1.4.27,Data Center 1
+S-0435,Switch-0435,switch,connected,normal,10.1.10.242,Data Center 8
+S-0436,Switch-0436,switch,connected,normal,10.1.12.18,Data Center 2
+S-0437,Switch-0437,switch,connected,minor,10.1.8.52,Data Center 1
+S-0438,Switch-0438,switch,connected,normal,10.1.1.133,Data Center 8
+S-0439,Switch-0439,switch,connected,normal,10.1.8.250,Data Center 3
+S-0440,Switch-0440,switch,connected,normal,10.1.14.185,Data Center 8
+S-0441,Switch-0441,switch,connected,normal,10.1.4.210,Data Center 8
+S-0442,Switch-0442,switch,connected,minor,10.1.13.154,Data Center 1
+S-0443,Switch-0443,switch,connected,major,10.1.7.195,NOC Central
+S-0444,Switch-0444,switch,connected,normal,10.1.14.249,Data Center 1
+S-0445,Switch-0445,switch,connected,normal,10.1.15.151,Data Center 5
+S-0446,Switch-0446,switch,connected,normal,10.1.1.40,Data Center 1
+S-0447,Switch-0447,switch,connected,normal,10.1.15.42,Data Center 6
+S-0448,Switch-0448,switch,connected,normal,10.1.12.220,Data Center 5
+S-0449,Switch-0449,switch,connected,warning,10.1.3.161,Data Center 3
+S-0450,Switch-0450,switch,connected,normal,10.1.7.45,Data Center 3
+S-0451,Switch-0451,switch,connected,normal,10.1.14.175,Data Center 4
+S-0452,Switch-0452,switch,connected,normal,10.1.14.97,Data Center 6
+S-0453,Switch-0453,switch,connected,normal,10.1.15.91,Data Center 6
+S-0454,Switch-0454,switch,connected,normal,10.1.4.144,Data Center 3
+S-0455,Switch-0455,switch,connected,normal,10.1.10.184,Data Center 6
+S-0456,Switch-0456,switch,connected,normal,10.1.11.194,Data Center 3
+S-0457,Switch-0457,switch,connected,normal,10.1.10.99,Data Center 5
+S-0458,Switch-0458,switch,connecting,minor,10.1.15.5,Data Center 8
+S-0459,Switch-0459,switch,connected,normal,10.1.13.150,Data Center 4
+S-0460,Switch-0460,switch,connected,warning,10.1.14.22,Data Center 2
+S-0461,Switch-0461,switch,connected,warning,10.1.4.0,Data Center 7
+S-0462,Switch-0462,switch,connected,normal,10.1.12.61,Data Center 7
+S-0463,Switch-0463,switch,connected,minor,10.1.11.158,Data Center 1
+S-0464,Switch-0464,switch,down,normal,10.1.5.56,Data Center 8
+S-0465,Switch-0465,switch,connected,normal,10.1.10.62,Data Center 1
+S-0466,Switch-0466,switch,connected,normal,10.1.7.231,Data Center 8
+S-0467,Switch-0467,switch,connected,normal,10.1.12.52,DR Site
+S-0468,Switch-0468,switch,connecting,normal,10.1.6.216,DR Site
+S-0469,Switch-0469,switch,connected,normal,10.1.7.165,Data Center 6
+S-0470,Switch-0470,switch,connected,normal,10.1.11.22,Data Center 1
+S-0471,Switch-0471,switch,connected,normal,10.1.1.115,Data Center 6
+S-0472,Switch-0472,switch,connected,normal,10.1.5.223,Data Center 2
+S-0473,Switch-0473,switch,connected,normal,10.1.2.241,NOC Central
+S-0474,Switch-0474,switch,connected,normal,10.1.6.193,Data Center 2
+S-0475,Switch-0475,switch,connected,major,10.1.1.150,DR Site
+S-0476,Switch-0476,switch,connected,normal,10.1.6.136,Data Center 4
+S-0477,Switch-0477,switch,connected,normal,10.1.14.2,Data Center 7
+S-0478,Switch-0478,switch,connected,critical,10.1.0.19,Data Center 3
+S-0479,Switch-0479,switch,connected,normal,10.1.4.32,Data Center 4
+S-0480,Switch-0480,switch,connecting,warning,10.1.10.178,Data Center 1
+S-0481,Switch-0481,switch,connected,normal,10.1.9.37,Data Center 6
+S-0482,Switch-0482,switch,connected,normal,10.1.1.66,Data Center 4
+S-0483,Switch-0483,switch,connected,normal,10.1.4.213,Data Center 6
+S-0484,Switch-0484,switch,connected,normal,10.1.4.127,NOC Central
+S-0485,Switch-0485,switch,connecting,major,10.1.6.98,DR Site
+S-0486,Switch-0486,switch,connected,normal,10.1.5.119,Data Center 5
+S-0487,Switch-0487,switch,connected,normal,10.1.5.47,Data Center 2
+S-0488,Switch-0488,switch,down,major,10.1.8.188,Data Center 8
+S-0489,Switch-0489,switch,connected,warning,10.1.12.166,Data Center 5
+S-0490,Switch-0490,switch,connected,normal,10.1.1.59,NOC Central
+S-0491,Switch-0491,switch,connected,minor,10.1.9.144,Data Center 8
+S-0492,Switch-0492,switch,connected,minor,10.1.2.18,Data Center 5
+S-0493,Switch-0493,switch,down,critical,10.1.11.154,Data Center 2
+S-0494,Switch-0494,switch,connecting,normal,10.1.7.1,Data Center 1
+S-0495,Switch-0495,switch,connecting,normal,10.1.13.53,Data Center 6
+S-0496,Switch-0496,switch,connected,normal,10.1.8.3,Data Center 6
+S-0497,Switch-0497,switch,connected,normal,10.1.9.98,Data Center 5
+S-0498,Switch-0498,switch,connected,normal,10.1.11.77,Data Center 4
+S-0499,Switch-0499,switch,connected,minor,10.1.11.56,NOC Central
+S-0500,Switch-0500,switch,connected,normal,10.1.13.208,Data Center 7
+S-0501,Switch-0501,switch,connected,normal,10.1.6.75,Data Center 6
+S-0502,Switch-0502,switch,connecting,minor,10.1.12.162,Data Center 1
+S-0503,Switch-0503,switch,connected,normal,10.1.11.182,Data Center 5
+S-0504,Switch-0504,switch,connected,normal,10.1.15.121,Data Center 7
+S-0505,Switch-0505,switch,connected,normal,10.1.13.189,Data Center 4
+S-0506,Switch-0506,switch,connected,normal,10.1.9.61,DR Site
+S-0507,Switch-0507,switch,connected,normal,10.1.9.139,Data Center 1
+S-0508,Switch-0508,switch,connected,normal,10.1.15.37,Data Center 4
+S-0509,Switch-0509,switch,down,major,10.1.10.174,Data Center 6
+S-0510,Switch-0510,switch,down,major,10.1.3.94,Data Center 8
+S-0511,Switch-0511,switch,connected,normal,10.1.2.203,DR Site
+S-0512,Switch-0512,switch,connecting,warning,10.1.9.9,Data Center 8
+S-0513,Switch-0513,switch,connecting,major,10.1.15.43,Data Center 6
+S-0514,Switch-0514,switch,connected,warning,10.1.4.65,Data Center 6
+S-0515,Switch-0515,switch,connected,normal,10.1.14.225,Data Center 7
+S-0516,Switch-0516,switch,connected,normal,10.1.13.185,Data Center 4
+S-0517,Switch-0517,switch,down,major,10.1.13.203,Data Center 8
+S-0518,Switch-0518,switch,connecting,minor,10.1.0.57,NOC Central
+S-0519,Switch-0519,switch,connected,normal,10.1.7.105,Data Center 4
+S-0520,Switch-0520,switch,connected,normal,10.1.6.244,NOC Central
+S-0521,Switch-0521,switch,connecting,major,10.1.10.133,DR Site
+S-0522,Switch-0522,switch,connected,normal,10.1.7.133,Data Center 8
+S-0523,Switch-0523,switch,connecting,minor,10.1.9.25,Data Center 2
+S-0524,Switch-0524,switch,connected,normal,10.1.5.149,Data Center 5
+S-0525,Switch-0525,switch,connected,warning,10.1.15.86,Data Center 8
+S-0526,Switch-0526,switch,connected,normal,10.1.1.117,Data Center 4
+S-0527,Switch-0527,switch,connected,normal,10.1.15.76,Data Center 4
+S-0528,Switch-0528,switch,connected,normal,10.1.8.9,Data Center 4
+S-0529,Switch-0529,switch,connected,normal,10.1.9.3,Data Center 5
+S-0530,Switch-0530,switch,connected,normal,10.1.2.61,Data Center 3
+S-0531,Switch-0531,switch,connecting,minor,10.1.5.63,Data Center 4
+S-0532,Switch-0532,switch,connected,normal,10.1.15.216,Data Center 4
+S-0533,Switch-0533,switch,connected,minor,10.1.11.45,Data Center 3
+S-0534,Switch-0534,switch,connected,normal,10.1.8.240,Data Center 1
+S-0535,Switch-0535,switch,connecting,normal,10.1.6.209,Data Center 7
+S-0536,Switch-0536,switch,connected,normal,10.1.13.254,DR Site
+S-0537,Switch-0537,switch,connected,normal,10.1.12.157,Data Center 7
+S-0538,Switch-0538,switch,connected,normal,10.1.10.52,Data Center 8
+S-0539,Switch-0539,switch,connected,normal,10.1.2.31,Data Center 2
+S-0540,Switch-0540,switch,connected,normal,10.1.6.224,Data Center 4
+S-0541,Switch-0541,switch,connected,normal,10.1.6.161,Data Center 4
+S-0542,Switch-0542,switch,connected,normal,10.1.10.232,Data Center 6
+S-0543,Switch-0543,switch,connected,normal,10.1.14.43,Data Center 3
+S-0544,Switch-0544,switch,down,major,10.1.8.164,Data Center 5
+S-0545,Switch-0545,switch,connected,normal,10.1.0.118,Data Center 4
+S-0546,Switch-0546,switch,down,critical,10.1.13.95,DR Site
+S-0547,Switch-0547,switch,connected,normal,10.1.8.219,Data Center 7
+S-0548,Switch-0548,switch,down,warning,10.1.8.249,Data Center 1
+S-0549,Switch-0549,switch,connected,normal,10.1.4.91,Data Center 8
+S-0550,Switch-0550,switch,connected,normal,10.1.14.157,Data Center 1
+S-0551,Switch-0551,switch,down,major,10.1.12.97,NOC Central
+S-0552,Switch-0552,switch,connected,normal,10.1.12.105,DR Site
+S-0553,Switch-0553,switch,connected,normal,10.1.8.111,Data Center 8
+S-0554,Switch-0554,switch,connected,warning,10.1.12.131,Data Center 6
+S-0555,Switch-0555,switch,connected,normal,10.1.12.46,NOC Central
+S-0556,Switch-0556,switch,connected,normal,10.1.2.0,NOC Central
+S-0557,Switch-0557,switch,connecting,normal,10.1.1.98,Data Center 2
+S-0558,Switch-0558,switch,connected,normal,10.1.14.62,Data Center 8
+S-0559,Switch-0559,switch,connected,normal,10.1.8.210,Data Center 3
+S-0560,Switch-0560,switch,connected,normal,10.1.12.225,DR Site
+S-0561,Switch-0561,switch,connected,normal,10.1.3.154,Data Center 1
+S-0562,Switch-0562,switch,connected,normal,10.1.13.30,Data Center 5
+S-0563,Switch-0563,switch,connected,normal,10.1.15.93,Data Center 2
+S-0564,Switch-0564,switch,connected,minor,10.1.3.13,Data Center 4
+S-0565,Switch-0565,switch,connected,normal,10.1.10.175,NOC Central
+S-0566,Switch-0566,switch,connected,normal,10.1.10.78,NOC Central
+S-0567,Switch-0567,switch,connected,normal,10.1.15.236,Data Center 5
+S-0568,Switch-0568,switch,connected,normal,10.1.7.102,Data Center 8
+S-0569,Switch-0569,switch,connected,normal,10.1.15.136,Data Center 4
+S-0570,Switch-0570,switch,connected,minor,10.1.4.7,Data Center 8
+S-0571,Switch-0571,switch,connected,warning,10.1.1.94,Data Center 5
+S-0572,Switch-0572,switch,connected,normal,10.1.11.35,DR Site
+S-0573,Switch-0573,switch,down,major,10.1.0.88,Data Center 2
+S-0574,Switch-0574,switch,connected,minor,10.1.12.183,DR Site
+S-0575,Switch-0575,switch,down,major,10.1.5.82,Data Center 3
+S-0576,Switch-0576,switch,connected,warning,10.1.7.39,Data Center 7
+S-0577,Switch-0577,switch,connected,normal,10.1.15.134,Data Center 3
+S-0578,Switch-0578,switch,connected,normal,10.1.15.179,DR Site
+S-0579,Switch-0579,switch,connected,normal,10.1.5.251,Data Center 2
+S-0580,Switch-0580,switch,connected,warning,10.1.8.175,Data Center 8
+S-0581,Switch-0581,switch,connected,normal,10.1.3.169,Data Center 7
+S-0582,Switch-0582,switch,connected,minor,10.1.11.232,Data Center 1
+S-0583,Switch-0583,switch,connected,normal,10.1.1.180,Data Center 5
+S-0584,Switch-0584,switch,connected,normal,10.1.6.44,Data Center 1
+S-0585,Switch-0585,switch,connected,normal,10.1.12.251,Data Center 8
+S-0586,Switch-0586,switch,connected,normal,10.1.3.206,Data Center 6
+S-0587,Switch-0587,switch,connected,warning,10.1.6.22,NOC Central
+S-0588,Switch-0588,switch,connected,normal,10.1.13.50,Data Center 6
+S-0589,Switch-0589,switch,connected,normal,10.1.5.13,Data Center 2
+S-0590,Switch-0590,switch,connected,normal,10.1.15.123,Data Center 5
+S-0591,Switch-0591,switch,connected,normal,10.1.1.154,Data Center 7
+S-0592,Switch-0592,switch,connected,normal,10.1.6.211,Data Center 2
+S-0593,Switch-0593,switch,connected,minor,10.1.3.248,Data Center 3
+S-0594,Switch-0594,switch,connected,normal,10.1.1.10,DR Site
+S-0595,Switch-0595,switch,connecting,warning,10.1.8.181,Data Center 1
+S-0596,Switch-0596,switch,connected,normal,10.1.9.149,Data Center 8
+S-0597,Switch-0597,switch,connected,normal,10.1.9.53,Data Center 4
+S-0598,Switch-0598,switch,connected,normal,10.1.2.78,NOC Central
+S-0599,Switch-0599,switch,connected,normal,10.1.1.219,Data Center 7
+S-0600,Switch-0600,switch,connected,normal,10.1.5.152,NOC Central
+S-0601,Switch-0601,switch,connected,critical,10.1.3.215,NOC Central
+S-0602,Switch-0602,switch,connecting,minor,10.1.12.221,DR Site
+S-0603,Switch-0603,switch,connected,normal,10.1.3.198,Data Center 8
+S-0604,Switch-0604,switch,connected,normal,10.1.8.49,Data Center 5
+S-0605,Switch-0605,switch,connected,normal,10.1.10.100,Data Center 4
+S-0606,Switch-0606,switch,connected,normal,10.1.5.137,Data Center 3
+S-0607,Switch-0607,switch,connected,normal,10.1.3.91,Data Center 3
+S-0608,Switch-0608,switch,connected,normal,10.1.10.46,Data Center 7
+S-0609,Switch-0609,switch,connected,normal,10.1.12.98,Data Center 7
+S-0610,Switch-0610,switch,connecting,warning,10.1.6.135,Data Center 8
+S-0611,Switch-0611,switch,connected,warning,10.1.3.20,Data Center 6
+S-0612,Switch-0612,switch,connected,minor,10.1.4.87,Data Center 5
+S-0613,Switch-0613,switch,connecting,warning,10.1.6.207,Data Center 5
+S-0614,Switch-0614,switch,connected,normal,10.1.0.171,Data Center 2
+S-0615,Switch-0615,switch,connected,normal,10.1.7.206,NOC Central
+S-0616,Switch-0616,switch,connected,normal,10.1.0.9,Data Center 2
+S-0617,Switch-0617,switch,connecting,minor,10.1.10.155,Data Center 8
+S-0618,Switch-0618,switch,connected,normal,10.1.4.1,Data Center 8
+S-0619,Switch-0619,switch,connected,normal,10.1.4.29,Data Center 2
+S-0620,Switch-0620,switch,connected,normal,10.1.5.96,Data Center 5
+S-0621,Switch-0621,switch,connected,normal,10.1.13.19,Data Center 6
+S-0622,Switch-0622,switch,connected,normal,10.1.15.141,Data Center 1
+S-0623,Switch-0623,switch,connected,normal,10.1.8.41,Data Center 3
+S-0624,Switch-0624,switch,connected,minor,10.1.4.231,Data Center 3
+S-0625,Switch-0625,switch,connected,normal,10.1.9.62,Data Center 7
+S-0626,Switch-0626,switch,connected,normal,10.1.1.225,Data Center 7
+S-0627,Switch-0627,switch,connected,major,10.1.8.139,Data Center 2
+S-0628,Switch-0628,switch,connected,normal,10.1.10.51,Data Center 5
+S-0629,Switch-0629,switch,connected,normal,10.1.7.201,Data Center 1
+S-0630,Switch-0630,switch,connecting,critical,10.1.11.102,Data Center 5
+S-0631,Switch-0631,switch,connected,normal,10.1.1.51,Data Center 5
+S-0632,Switch-0632,switch,connected,normal,10.1.8.245,Data Center 7
+S-0633,Switch-0633,switch,connected,normal,10.1.9.107,Data Center 3
+S-0634,Switch-0634,switch,connected,major,10.1.11.147,Data Center 2
+S-0635,Switch-0635,switch,connected,normal,10.1.10.131,Data Center 5
+S-0636,Switch-0636,switch,connected,normal,10.1.14.93,Data Center 1
+S-0637,Switch-0637,switch,connected,warning,10.1.8.235,Data Center 4
+S-0638,Switch-0638,switch,connected,minor,10.1.10.66,Data Center 3
+S-0639,Switch-0639,switch,connected,major,10.1.13.159,NOC Central
+S-0640,Switch-0640,switch,connected,minor,10.1.15.7,Data Center 7
+S-0641,Switch-0641,switch,connected,normal,10.1.14.113,Data Center 2
+S-0642,Switch-0642,switch,connected,normal,10.1.1.28,Data Center 7
+S-0643,Switch-0643,switch,down,normal,10.1.2.23,NOC Central
+S-0644,Switch-0644,switch,connected,normal,10.1.13.132,Data Center 2
+S-0645,Switch-0645,switch,connected,normal,10.1.11.59,NOC Central
+S-0646,Switch-0646,switch,connected,normal,10.1.9.154,Data Center 6
+S-0647,Switch-0647,switch,connected,normal,10.1.1.209,Data Center 7
+S-0648,Switch-0648,switch,connected,normal,10.1.13.250,Data Center 2
+S-0649,Switch-0649,switch,connected,normal,10.1.12.139,Data Center 5
+S-0650,Switch-0650,switch,connected,normal,10.1.10.30,Data Center 7
+S-0651,Switch-0651,switch,connected,warning,10.1.2.87,Data Center 2
+S-0652,Switch-0652,switch,connected,normal,10.1.0.81,Data Center 6
+S-0653,Switch-0653,switch,connected,normal,10.1.5.167,Data Center 7
+S-0654,Switch-0654,switch,connected,major,10.1.0.20,Data Center 4
+S-0655,Switch-0655,switch,connected,normal,10.1.1.140,Data Center 5
+S-0656,Switch-0656,switch,connected,warning,10.1.12.109,Data Center 6
+S-0657,Switch-0657,switch,connected,normal,10.1.7.81,Data Center 4
+S-0658,Switch-0658,switch,connected,warning,10.1.1.47,Data Center 4
+S-0659,Switch-0659,switch,connected,normal,10.1.4.53,Data Center 2
+S-0660,Switch-0660,switch,connected,normal,10.1.3.73,DR Site
+S-0661,Switch-0661,switch,connected,normal,10.1.10.186,Data Center 4
+S-0662,Switch-0662,switch,connected,minor,10.1.14.237,Data Center 6
+S-0663,Switch-0663,switch,connected,minor,10.1.14.161,DR Site
+S-0664,Switch-0664,switch,connected,normal,10.1.0.13,Data Center 5
+S-0665,Switch-0665,switch,connected,minor,10.1.11.50,Data Center 4
+S-0666,Switch-0666,switch,connected,minor,10.1.14.30,Data Center 4
+S-0667,Switch-0667,switch,connected,normal,10.1.11.210,Data Center 3
+S-0668,Switch-0668,switch,connected,normal,10.1.1.36,Data Center 3
+S-0669,Switch-0669,switch,connected,normal,10.1.11.18,NOC Central
+S-0670,Switch-0670,switch,connected,warning,10.1.11.98,NOC Central
+S-0671,Switch-0671,switch,connected,normal,10.1.4.80,Data Center 6
+S-0672,Switch-0672,switch,connected,normal,10.1.11.177,NOC Central
+S-0673,Switch-0673,switch,connected,normal,10.1.4.193,Data Center 6
+S-0674,Switch-0674,switch,connected,normal,10.1.2.104,Data Center 8
+S-0675,Switch-0675,switch,connected,normal,10.1.9.39,Data Center 7
+S-0676,Switch-0676,switch,connected,normal,10.1.1.12,Data Center 7
+S-0677,Switch-0677,switch,connected,normal,10.1.9.100,Data Center 8
+S-0678,Switch-0678,switch,connected,normal,10.1.8.237,DR Site
+S-0679,Switch-0679,switch,connected,normal,10.1.6.126,Data Center 6
+S-0680,Switch-0680,switch,connected,normal,10.1.13.12,Data Center 5
+S-0681,Switch-0681,switch,connected,normal,10.1.3.204,DR Site
+S-0682,Switch-0682,switch,connected,normal,10.1.4.215,Data Center 7
+S-0683,Switch-0683,switch,connected,normal,10.1.5.85,NOC Central
+S-0684,Switch-0684,switch,connected,normal,10.1.14.108,NOC Central
+S-0685,Switch-0685,switch,connected,normal,10.1.1.80,Data Center 2
+S-0686,Switch-0686,switch,connected,warning,10.1.0.14,Data Center 5
+S-0687,Switch-0687,switch,connected,normal,10.1.9.195,Data Center 8
+S-0688,Switch-0688,switch,connected,normal,10.1.6.94,Data Center 8
+S-0689,Switch-0689,switch,connected,normal,10.1.8.14,Data Center 6
+S-0690,Switch-0690,switch,connected,normal,10.1.1.234,Data Center 5
+S-0691,Switch-0691,switch,connected,normal,10.1.4.218,DR Site
+S-0692,Switch-0692,switch,connected,normal,10.1.10.122,Data Center 4
+S-0693,Switch-0693,switch,connected,normal,10.1.8.83,Data Center 3
+S-0694,Switch-0694,switch,connected,normal,10.1.11.88,Data Center 5
+S-0695,Switch-0695,switch,connected,normal,10.1.3.167,Data Center 1
+S-0696,Switch-0696,switch,connected,normal,10.1.15.191,Data Center 2
+S-0697,Switch-0697,switch,connected,minor,10.1.3.61,Data Center 5
+S-0698,Switch-0698,switch,connected,normal,10.1.7.238,Data Center 2
+S-0699,Switch-0699,switch,connected,normal,10.1.6.137,Data Center 5
+S-0700,Switch-0700,switch,connected,normal,10.1.8.211,Data Center 5
+S-0701,Switch-0701,switch,connected,normal,10.1.12.239,Data Center 6
+S-0702,Switch-0702,switch,connected,normal,10.1.0.125,Data Center 1
+S-0703,Switch-0703,switch,connected,warning,10.1.6.9,Data Center 8
+S-0704,Switch-0704,switch,connected,normal,10.1.9.117,Data Center 6
+S-0705,Switch-0705,switch,connected,normal,10.1.10.195,Data Center 7
+S-0706,Switch-0706,switch,connecting,warning,10.1.15.15,Data Center 7
+S-0707,Switch-0707,switch,connected,normal,10.1.9.214,Data Center 3
+S-0708,Switch-0708,switch,connected,normal,10.1.14.254,DR Site
+S-0709,Switch-0709,switch,down,major,10.1.1.185,Data Center 4
+S-0710,Switch-0710,switch,connected,normal,10.1.14.107,Data Center 7
+S-0711,Switch-0711,switch,connected,normal,10.1.1.105,Data Center 2
+S-0712,Switch-0712,switch,connected,normal,10.1.2.147,Data Center 6
+S-0713,Switch-0713,switch,connected,normal,10.1.8.31,DR Site
+S-0714,Switch-0714,switch,connected,minor,10.1.5.133,DR Site
+S-0715,Switch-0715,switch,connected,normal,10.1.4.114,Data Center 4
+S-0716,Switch-0716,switch,connecting,warning,10.1.3.132,Data Center 7
+S-0717,Switch-0717,switch,connected,normal,10.1.13.82,Data Center 5
+S-0718,Switch-0718,switch,connected,normal,10.1.11.201,Data Center 1
+S-0719,Switch-0719,switch,connecting,major,10.1.0.50,NOC Central
+S-0720,Switch-0720,switch,connected,normal,10.1.9.194,Data Center 7
+S-0721,Switch-0721,switch,connected,normal,10.1.15.3,Data Center 3
+S-0722,Switch-0722,switch,connected,normal,10.1.10.55,NOC Central
+S-0723,Switch-0723,switch,connected,normal,10.1.12.28,Data Center 7
+S-0724,Switch-0724,switch,connected,warning,10.1.4.246,NOC Central
+S-0725,Switch-0725,switch,connected,normal,10.1.3.76,Data Center 3
+S-0726,Switch-0726,switch,connecting,warning,10.1.8.34,Data Center 8
+S-0727,Switch-0727,switch,connected,normal,10.1.0.255,Data Center 3
+S-0728,Switch-0728,switch,connected,normal,10.1.2.65,Data Center 3
+S-0729,Switch-0729,switch,connected,major,10.1.1.61,DR Site
+S-0730,Switch-0730,switch,connecting,critical,10.1.11.152,Data Center 8
+S-0731,Switch-0731,switch,connected,normal,10.1.8.84,NOC Central
+S-0732,Switch-0732,switch,connected,normal,10.1.12.156,Data Center 2
+S-0733,Switch-0733,switch,connected,normal,10.1.6.36,Data Center 2
+S-0734,Switch-0734,switch,connected,minor,10.1.1.212,DR Site
+S-0735,Switch-0735,switch,connected,normal,10.1.3.34,DR Site
+S-0736,Switch-0736,switch,connected,normal,10.1.6.199,Data Center 8
+S-0737,Switch-0737,switch,connected,normal,10.1.5.218,Data Center 1
+S-0738,Switch-0738,switch,connected,normal,10.1.3.239,Data Center 1
+S-0739,Switch-0739,switch,connected,normal,10.1.13.232,Data Center 5
+S-0740,Switch-0740,switch,connecting,minor,10.1.7.80,Data Center 1
+S-0741,Switch-0741,switch,connected,normal,10.1.7.98,DR Site
+S-0742,Switch-0742,switch,connected,warning,10.1.10.234,Data Center 7
+S-0743,Switch-0743,switch,connecting,major,10.1.4.132,Data Center 7
+S-0744,Switch-0744,switch,connected,normal,10.1.12.205,Data Center 3
+S-0745,Switch-0745,switch,connected,warning,10.1.4.125,Data Center 3
+S-0746,Switch-0746,switch,connected,normal,10.1.9.156,Data Center 7
+S-0747,Switch-0747,switch,connected,normal,10.1.4.37,Data Center 4
+S-0748,Switch-0748,switch,connected,normal,10.1.15.25,Data Center 3
+S-0749,Switch-0749,switch,connected,normal,10.1.14.233,Data Center 3
+S-0750,Switch-0750,switch,connected,major,10.1.2.59,Data Center 5
+S-0751,Switch-0751,switch,connected,normal,10.1.14.126,Data Center 8
+S-0752,Switch-0752,switch,connected,warning,10.1.6.39,DR Site
+S-0753,Switch-0753,switch,connecting,warning,10.1.0.136,Data Center 6
+S-0754,Switch-0754,switch,connected,normal,10.1.0.148,Data Center 1
+S-0755,Switch-0755,switch,down,normal,10.1.11.206,Data Center 5
+S-0756,Switch-0756,switch,connected,normal,10.1.5.66,Data Center 6
+S-0757,Switch-0757,switch,connected,normal,10.1.13.40,Data Center 4
+S-0758,Switch-0758,switch,connected,normal,10.1.14.177,Data Center 5
+S-0759,Switch-0759,switch,connected,normal,10.1.12.99,Data Center 1
+S-0760,Switch-0760,switch,connected,normal,10.1.2.94,DR Site
+S-0761,Switch-0761,switch,connected,normal,10.1.12.209,Data Center 6
+S-0762,Switch-0762,switch,connected,normal,10.1.14.145,Data Center 6
+S-0763,Switch-0763,switch,connected,warning,10.1.1.77,DR Site
+S-0764,Switch-0764,switch,connecting,major,10.1.14.118,Data Center 2
+S-0765,Switch-0765,switch,connected,normal,10.1.14.34,Data Center 3
+S-0766,Switch-0766,switch,connected,normal,10.1.6.115,Data Center 7
+S-0767,Switch-0767,switch,connected,normal,10.1.13.55,Data Center 2
+S-0768,Switch-0768,switch,connected,normal,10.1.14.226,DR Site
+S-0769,Switch-0769,switch,connected,normal,10.1.8.196,Data Center 8
+S-0770,Switch-0770,switch,connected,normal,10.1.9.176,Data Center 7
+S-0771,Switch-0771,switch,connecting,normal,10.1.8.53,Data Center 6
+S-0772,Switch-0772,switch,connected,normal,10.1.2.73,NOC Central
+S-0773,Switch-0773,switch,connected,normal,10.1.13.78,Data Center 2
+S-0774,Switch-0774,switch,connected,normal,10.1.7.50,Data Center 3
+S-0775,Switch-0775,switch,connected,warning,10.1.3.78,Data Center 3
+S-0776,Switch-0776,switch,connected,normal,10.1.14.5,Data Center 3
+S-0777,Switch-0777,switch,connected,normal,10.1.5.31,NOC Central
+S-0778,Switch-0778,switch,connected,normal,10.1.2.83,Data Center 5
+S-0779,Switch-0779,switch,connected,normal,10.1.2.238,Data Center 2
+S-0780,Switch-0780,switch,connected,normal,10.1.14.244,Data Center 1
+S-0781,Switch-0781,switch,connected,normal,10.1.9.126,Data Center 4
+S-0782,Switch-0782,switch,connected,warning,10.1.2.204,NOC Central
+S-0783,Switch-0783,switch,connected,normal,10.1.14.211,Data Center 1
+S-0784,Switch-0784,switch,connected,normal,10.1.12.253,NOC Central
+S-0785,Switch-0785,switch,connected,normal,10.1.1.32,Data Center 6
+S-0786,Switch-0786,switch,connected,normal,10.1.0.240,Data Center 8
+S-0787,Switch-0787,switch,connected,normal,10.1.0.101,Data Center 3
+S-0788,Switch-0788,switch,connected,normal,10.1.11.150,Data Center 3
+S-0789,Switch-0789,switch,connected,normal,10.1.9.130,Data Center 6
+S-0790,Switch-0790,switch,connected,normal,10.1.15.106,Data Center 2
+S-0791,Switch-0791,switch,connected,normal,10.1.8.115,NOC Central
+S-0792,Switch-0792,switch,connected,normal,10.1.7.148,Data Center 3
+S-0793,Switch-0793,switch,down,normal,10.1.0.166,Data Center 2
+S-0794,Switch-0794,switch,connected,normal,10.1.3.180,Data Center 4
+S-0795,Switch-0795,switch,connected,minor,10.1.4.113,Data Center 5
+S-0796,Switch-0796,switch,connected,warning,10.1.6.7,Data Center 1
+S-0797,Switch-0797,switch,connected,normal,10.1.15.185,Data Center 3
+S-0798,Switch-0798,switch,connected,normal,10.1.12.165,Data Center 7
+S-0799,Switch-0799,switch,connected,normal,10.1.15.218,Data Center 4
+S-0800,Switch-0800,switch,connected,normal,10.1.7.246,DR Site
+S-0801,Switch-0801,switch,connected,normal,10.1.3.50,Data Center 6
+S-0802,Switch-0802,switch,connected,normal,10.1.0.12,NOC Central
+S-0803,Switch-0803,switch,connecting,warning,10.1.12.86,Data Center 4
+S-0804,Switch-0804,switch,connected,normal,10.1.15.169,Data Center 3
+S-0805,Switch-0805,switch,connecting,major,10.1.4.175,Data Center 1
+S-0806,Switch-0806,switch,connected,warning,10.1.9.173,Data Center 5
+S-0807,Switch-0807,switch,connected,normal,10.1.13.36,Data Center 3
+S-0808,Switch-0808,switch,connected,normal,10.1.7.32,Data Center 8
+S-0809,Switch-0809,switch,connected,minor,10.1.5.80,Data Center 4
+S-0810,Switch-0810,switch,connecting,warning,10.1.14.86,Data Center 5
+S-0811,Switch-0811,switch,connected,normal,10.1.6.34,Data Center 6
+S-0812,Switch-0812,switch,connecting,major,10.1.0.220,Data Center 1
+S-0813,Switch-0813,switch,connected,major,10.1.8.251,DR Site
+S-0814,Switch-0814,switch,connected,normal,10.1.11.173,Data Center 3
+S-0815,Switch-0815,switch,connected,normal,10.1.4.50,Data Center 7
+S-0816,Switch-0816,switch,connecting,major,10.1.0.144,DR Site
+S-0817,Switch-0817,switch,connected,normal,10.1.0.185,Data Center 3
+S-0818,Switch-0818,switch,connected,minor,10.1.14.246,Data Center 8
+S-0819,Switch-0819,switch,down,normal,10.1.6.128,Data Center 4
+S-0820,Switch-0820,switch,connected,normal,10.1.14.159,Data Center 1
+S-0821,Switch-0821,switch,connecting,normal,10.1.5.221,Data Center 2
+S-0822,Switch-0822,switch,connected,normal,10.1.2.86,DR Site
+S-0823,Switch-0823,switch,connected,normal,10.1.12.146,DR Site
+S-0824,Switch-0824,switch,connected,major,10.1.15.219,Data Center 1
+S-0825,Switch-0825,switch,connected,warning,10.1.6.14,Data Center 7
+S-0826,Switch-0826,switch,connected,normal,10.1.15.8,DR Site
+S-0827,Switch-0827,switch,connected,normal,10.1.10.118,Data Center 2
+S-0828,Switch-0828,switch,connected,normal,10.1.3.23,DR Site
+S-0829,Switch-0829,switch,connected,normal,10.1.0.141,Data Center 8
+S-0830,Switch-0830,switch,connected,warning,10.1.5.189,Data Center 4
+S-0831,Switch-0831,switch,connected,minor,10.1.5.181,Data Center 5
+S-0832,Switch-0832,switch,connected,normal,10.1.5.60,Data Center 3
+S-0833,Switch-0833,switch,connected,normal,10.1.12.249,Data Center 2
+S-0834,Switch-0834,switch,down,normal,10.1.3.22,Data Center 3
+S-0835,Switch-0835,switch,connected,normal,10.1.12.193,Data Center 6
+S-0836,Switch-0836,switch,connecting,normal,10.1.12.63,Data Center 8
+S-0837,Switch-0837,switch,connected,normal,10.1.14.36,Data Center 5
+S-0838,Switch-0838,switch,connected,normal,10.1.13.246,Data Center 2
+S-0839,Switch-0839,switch,connecting,normal,10.1.7.199,Data Center 4
+S-0840,Switch-0840,switch,connected,normal,10.1.12.56,Data Center 6
+S-0841,Switch-0841,switch,connecting,minor,10.1.15.10,Data Center 5
+S-0842,Switch-0842,switch,connected,normal,10.1.1.19,Data Center 3
+S-0843,Switch-0843,switch,connecting,warning,10.1.8.192,Data Center 8
+S-0844,Switch-0844,switch,connected,normal,10.1.2.48,Data Center 4
+S-0845,Switch-0845,switch,connecting,normal,10.1.9.23,Data Center 7
+S-0846,Switch-0846,switch,connected,minor,10.1.13.135,Data Center 5
+S-0847,Switch-0847,switch,connected,normal,10.1.11.36,Data Center 7
+S-0848,Switch-0848,switch,connected,normal,10.1.12.103,Data Center 4
+S-0849,Switch-0849,switch,connected,normal,10.1.5.38,Data Center 8
+S-0850,Switch-0850,switch,connecting,warning,10.1.4.93,Data Center 7
+S-0851,Switch-0851,switch,connected,normal,10.1.0.79,NOC Central
+S-0852,Switch-0852,switch,connected,normal,10.1.14.202,Data Center 7
+S-0853,Switch-0853,switch,connected,normal,10.1.3.143,DR Site
+S-0854,Switch-0854,switch,connected,normal,10.1.7.184,Data Center 3
+S-0855,Switch-0855,switch,connected,normal,10.1.10.191,Data Center 4
+S-0856,Switch-0856,switch,connected,normal,10.1.10.248,Data Center 1
+S-0857,Switch-0857,switch,connected,warning,10.1.12.75,Data Center 6
+S-0858,Switch-0858,switch,connecting,normal,10.1.4.186,Data Center 3
+S-0859,Switch-0859,switch,connected,normal,10.1.15.199,Data Center 8
+S-0860,Switch-0860,switch,connected,normal,10.1.14.230,Data Center 7
+S-0861,Switch-0861,switch,connected,normal,10.1.9.20,Data Center 8
+S-0862,Switch-0862,switch,connected,normal,10.1.8.154,Data Center 5
+S-0863,Switch-0863,switch,connected,normal,10.1.12.110,Data Center 3
+S-0864,Switch-0864,switch,connected,normal,10.1.8.132,Data Center 7
+S-0865,Switch-0865,switch,connected,normal,10.1.6.231,NOC Central
+S-0866,Switch-0866,switch,connecting,normal,10.1.15.143,Data Center 6
+S-0867,Switch-0867,switch,connected,normal,10.1.12.246,Data Center 7
+S-0868,Switch-0868,switch,connecting,warning,10.1.9.69,Data Center 1
+S-0869,Switch-0869,switch,connected,normal,10.1.0.38,Data Center 3
+S-0870,Switch-0870,switch,connected,normal,10.1.9.240,Data Center 2
+S-0871,Switch-0871,switch,connected,normal,10.1.5.123,Data Center 4
+S-0872,Switch-0872,switch,connected,normal,10.1.13.11,Data Center 2
+S-0873,Switch-0873,switch,connected,normal,10.1.5.10,Data Center 3
+S-0874,Switch-0874,switch,connected,normal,10.1.12.241,Data Center 7
+S-0875,Switch-0875,switch,connecting,warning,10.1.7.38,Data Center 2
+S-0876,Switch-0876,switch,connected,normal,10.1.7.33,Data Center 6
+S-0877,Switch-0877,switch,connected,normal,10.1.5.111,Data Center 2
+S-0878,Switch-0878,switch,connected,normal,10.1.11.231,Data Center 3
+S-0879,Switch-0879,switch,connected,normal,10.1.1.145,Data Center 7
+S-0880,Switch-0880,switch,connected,normal,10.1.15.223,Data Center 7
+S-0881,Switch-0881,switch,connected,normal,10.1.6.21,Data Center 2
+S-0882,Switch-0882,switch,connected,normal,10.1.8.199,Data Center 5
+S-0883,Switch-0883,switch,connected,normal,10.1.3.178,DR Site
+S-0884,Switch-0884,switch,connected,normal,10.1.10.95,NOC Central
+S-0885,Switch-0885,switch,connected,minor,10.1.4.172,Data Center 4
+S-0886,Switch-0886,switch,connected,normal,10.1.0.137,Data Center 4
+S-0887,Switch-0887,switch,connected,normal,10.1.15.96,Data Center 2
+S-0888,Switch-0888,switch,connected,normal,10.1.7.130,Data Center 1
+S-0889,Switch-0889,switch,connected,normal,10.1.9.101,Data Center 6
+S-0890,Switch-0890,switch,connected,major,10.1.8.40,Data Center 6
+S-0891,Switch-0891,switch,connected,normal,10.1.11.34,NOC Central
+S-0892,Switch-0892,switch,connected,normal,10.1.14.116,NOC Central
+S-0893,Switch-0893,switch,connecting,normal,10.1.1.83,NOC Central
+S-0894,Switch-0894,switch,connected,minor,10.1.2.21,NOC Central
+S-0895,Switch-0895,switch,connected,normal,10.1.12.31,Data Center 5
+S-0896,Switch-0896,switch,connected,major,10.1.13.162,Data Center 1
+S-0897,Switch-0897,switch,connecting,major,10.1.9.123,NOC Central
+S-0898,Switch-0898,switch,down,major,10.1.5.249,Data Center 5
+S-0899,Switch-0899,switch,connecting,normal,10.1.12.94,DR Site
+S-0900,Switch-0900,switch,connected,normal,10.1.8.169,Data Center 1
+S-0901,Switch-0901,switch,connected,warning,10.1.5.33,Data Center 7
+S-0902,Switch-0902,switch,connected,normal,10.1.2.20,NOC Central
+S-0903,Switch-0903,switch,connected,warning,10.1.0.199,Data Center 2
+S-0904,Switch-0904,switch,down,normal,10.1.7.178,Data Center 1
+S-0905,Switch-0905,switch,down,normal,10.1.15.35,Data Center 8
+S-0906,Switch-0906,switch,connected,normal,10.1.4.177,Data Center 8
+S-0907,Switch-0907,switch,connected,warning,10.1.2.103,Data Center 3
+S-0908,Switch-0908,switch,connected,normal,10.1.14.158,Data Center 8
+S-0909,Switch-0909,switch,connected,minor,10.1.4.235,Data Center 3
+S-0910,Switch-0910,switch,connected,minor,10.1.13.128,Data Center 8
+S-0911,Switch-0911,switch,connected,normal,10.1.9.177,Data Center 8
+S-0912,Switch-0912,switch,connected,normal,10.1.14.194,Data Center 5
+S-0913,Switch-0913,switch,connected,warning,10.1.0.246,Data Center 8
+S-0914,Switch-0914,switch,connected,normal,10.1.13.219,Data Center 6
+S-0915,Switch-0915,switch,connecting,normal,10.1.10.137,Data Center 4
+S-0916,Switch-0916,switch,connected,normal,10.1.15.209,Data Center 3
+S-0917,Switch-0917,switch,connected,normal,10.1.12.17,Data Center 8
+S-0918,Switch-0918,switch,connected,normal,10.1.12.126,NOC Central
+S-0919,Switch-0919,switch,connected,normal,10.1.12.252,DR Site
+S-0920,Switch-0920,switch,connected,normal,10.1.11.135,NOC Central
+S-0921,Switch-0921,switch,connected,warning,10.1.14.83,Data Center 4
+S-0922,Switch-0922,switch,connected,normal,10.1.8.128,Data Center 1
+S-0923,Switch-0923,switch,down,major,10.1.4.61,Data Center 1
+S-0924,Switch-0924,switch,connected,major,10.1.6.3,DR Site
+S-0925,Switch-0925,switch,connected,normal,10.1.4.219,Data Center 6
+S-0926,Switch-0926,switch,connected,normal,10.1.5.185,Data Center 2
+S-0927,Switch-0927,switch,connected,normal,10.1.12.108,DR Site
+S-0928,Switch-0928,switch,connected,normal,10.1.1.216,NOC Central
+S-0929,Switch-0929,switch,connected,normal,10.1.14.174,Data Center 2
+S-0930,Switch-0930,switch,connected,warning,10.1.9.196,Data Center 6
+S-0931,Switch-0931,switch,connected,normal,10.1.5.95,Data Center 2
+S-0932,Switch-0932,switch,connected,normal,10.1.6.78,DR Site
+S-0933,Switch-0933,switch,connected,normal,10.1.14.200,Data Center 8
+S-0934,Switch-0934,switch,connected,minor,10.1.3.43,Data Center 3
+S-0935,Switch-0935,switch,connected,normal,10.1.14.60,DR Site
+S-0936,Switch-0936,switch,connected,normal,10.1.4.190,Data Center 4
+S-0937,Switch-0937,switch,connected,normal,10.1.1.127,Data Center 6
+S-0938,Switch-0938,switch,connected,normal,10.1.11.162,DR Site
+S-0939,Switch-0939,switch,connected,normal,10.1.0.214,Data Center 6
+S-0940,Switch-0940,switch,connecting,major,10.1.9.134,Data Center 8
+S-0941,Switch-0941,switch,connected,normal,10.1.0.131,Data Center 8
+S-0942,Switch-0942,switch,connected,normal,10.1.10.94,Data Center 1
+S-0943,Switch-0943,switch,connected,normal,10.1.9.28,Data Center 2
+S-0944,Switch-0944,switch,connected,critical,10.1.14.19,Data Center 3
+S-0945,Switch-0945,switch,connected,normal,10.1.7.239,Data Center 8
+S-0946,Switch-0946,switch,connected,minor,10.1.12.50,Data Center 7
+S-0947,Switch-0947,switch,connected,normal,10.1.2.2,Data Center 1
+S-0948,Switch-0948,switch,connected,warning,10.1.12.45,NOC Central
+S-0949,Switch-0949,switch,connected,normal,10.1.6.235,Data Center 6
+S-0950,Switch-0950,switch,down,normal,10.1.9.5,DR Site
+S-0951,Switch-0951,switch,connected,normal,10.1.3.80,NOC Central
+S-0952,Switch-0952,switch,connected,minor,10.1.8.22,NOC Central
+S-0953,Switch-0953,switch,connected,normal,10.1.7.43,Data Center 8
+S-0954,Switch-0954,switch,connected,normal,10.1.6.95,Data Center 6
+S-0955,Switch-0955,switch,connected,normal,10.1.8.62,Data Center 2
+S-0956,Switch-0956,switch,connected,normal,10.1.8.95,Data Center 7
+S-0957,Switch-0957,switch,connected,warning,10.1.13.251,Data Center 7
+S-0958,Switch-0958,switch,connected,normal,10.1.6.167,Data Center 6
+S-0959,Switch-0959,switch,connected,normal,10.1.11.133,Data Center 8
+S-0960,Switch-0960,switch,connected,normal,10.1.4.206,Data Center 2
+S-0961,Switch-0961,switch,connected,normal,10.1.9.34,Data Center 4
+S-0962,Switch-0962,switch,connected,normal,10.1.12.158,Data Center 5
+S-0963,Switch-0963,switch,connected,normal,10.1.3.105,NOC Central
+S-0964,Switch-0964,switch,connected,normal,10.1.14.17,DR Site
+S-0965,Switch-0965,switch,connected,normal,10.1.12.143,Data Center 3
+S-0966,Switch-0966,switch,connected,normal,10.1.5.197,Data Center 1
+S-0967,Switch-0967,switch,connected,normal,10.1.15.195,Data Center 3
+S-0968,Switch-0968,switch,connected,minor,10.1.3.113,Data Center 5
+S-0969,Switch-0969,switch,connected,normal,10.1.3.227,Data Center 7
+S-0970,Switch-0970,switch,connected,warning,10.1.2.226,Data Center 4
+S-0971,Switch-0971,switch,connected,minor,10.1.15.114,Data Center 2
+S-0972,Switch-0972,switch,connected,warning,10.1.13.65,Data Center 6
+S-0973,Switch-0973,switch,connected,normal,10.1.2.152,NOC Central
+S-0974,Switch-0974,switch,connected,warning,10.1.2.56,Data Center 4
+S-0975,Switch-0975,switch,connected,normal,10.1.3.135,Data Center 7
+S-0976,Switch-0976,switch,connected,normal,10.1.13.249,Data Center 5
+S-0977,Switch-0977,switch,connected,minor,10.1.0.157,Data Center 2
+S-0978,Switch-0978,switch,connected,major,10.1.12.231,Data Center 5
+S-0979,Switch-0979,switch,connected,normal,10.1.5.22,Data Center 5
+S-0980,Switch-0980,switch,connecting,warning,10.1.1.88,Data Center 8
+S-0981,Switch-0981,switch,connected,normal,10.1.13.17,Data Center 8
+S-0982,Switch-0982,switch,connected,normal,10.1.3.219,Data Center 8
+S-0983,Switch-0983,switch,connecting,normal,10.1.8.214,Data Center 6
+S-0984,Switch-0984,switch,connected,normal,10.1.7.138,Data Center 2
+S-0985,Switch-0985,switch,connected,minor,10.1.8.72,Data Center 3
+S-0986,Switch-0986,switch,connected,normal,10.1.13.230,Data Center 2
+S-0987,Switch-0987,switch,connected,normal,10.1.7.194,Data Center 6
+S-0988,Switch-0988,switch,connected,normal,10.1.15.47,Data Center 4
+S-0989,Switch-0989,switch,connecting,normal,10.1.10.102,Data Center 6
+S-0990,Switch-0990,switch,connected,normal,10.1.12.213,Data Center 1
+S-0991,Switch-0991,switch,connected,warning,10.1.3.240,DR Site
+S-0992,Switch-0992,switch,connected,normal,10.1.13.37,Data Center 5
+S-0993,Switch-0993,switch,connected,normal,10.1.5.229,DR Site
+S-0994,Switch-0994,switch,connected,major,10.1.2.80,Data Center 3
+S-0995,Switch-0995,switch,connected,normal,10.1.10.3,Data Center 4
+S-0996,Switch-0996,switch,connected,normal,10.1.0.106,Data Center 3
+S-0997,Switch-0997,switch,connected,minor,10.1.8.161,Data Center 7
+S-0998,Switch-0998,switch,connected,major,10.1.0.221,Data Center 4
+S-0999,Switch-0999,switch,connected,normal,10.1.2.242,Data Center 6
+S-1000,Switch-1000,switch,connected,normal,10.1.11.211,Data Center 2
+S-1001,Switch-1001,switch,connecting,warning,10.1.10.240,DR Site
+S-1002,Switch-1002,switch,connected,normal,10.1.15.83,Data Center 3
+S-1003,Switch-1003,switch,connected,minor,10.1.0.18,Data Center 3
+S-1004,Switch-1004,switch,connected,normal,10.1.9.96,Data Center 7
+S-1005,Switch-1005,switch,connected,normal,10.1.13.225,Data Center 4
+S-1006,Switch-1006,switch,down,normal,10.1.1.22,Data Center 8
+S-1007,Switch-1007,switch,connected,normal,10.1.2.95,Data Center 5
+S-1008,Switch-1008,switch,connecting,critical,10.1.12.39,Data Center 1
+S-1009,Switch-1009,switch,connected,normal,10.1.5.50,Data Center 7
+S-1010,Switch-1010,switch,connected,normal,10.1.7.196,Data Center 2
+S-1011,Switch-1011,switch,connected,normal,10.1.5.12,Data Center 1
+S-1012,Switch-1012,switch,connected,normal,10.1.15.158,Data Center 3
+S-1013,Switch-1013,switch,connected,normal,10.1.8.193,Data Center 5
+S-1014,Switch-1014,switch,connected,normal,10.1.1.96,Data Center 7
+S-1015,Switch-1015,switch,connected,normal,10.1.1.202,Data Center 6
+S-1016,Switch-1016,switch,connected,warning,10.1.6.177,DR Site
+S-1017,Switch-1017,switch,connected,normal,10.1.10.218,Data Center 2
+S-1018,Switch-1018,switch,connected,normal,10.1.11.17,Data Center 5
+S-1019,Switch-1019,switch,connected,normal,10.1.0.155,DR Site
+S-1020,Switch-1020,switch,connected,normal,10.1.14.0,NOC Central
+S-1021,Switch-1021,switch,connected,normal,10.1.11.192,DR Site
+S-1022,Switch-1022,switch,connected,major,10.1.5.164,DR Site
+S-1023,Switch-1023,switch,connected,major,10.1.7.158,Data Center 8
+S-1024,Switch-1024,switch,connected,normal,10.1.13.237,Data Center 3
+S-1025,Switch-1025,switch,down,critical,10.1.14.50,Data Center 7
+S-1026,Switch-1026,switch,connected,normal,10.1.1.184,Data Center 8
+S-1027,Switch-1027,switch,connected,warning,10.1.11.62,Data Center 3
+S-1028,Switch-1028,switch,connected,warning,10.1.15.38,Data Center 2
+S-1029,Switch-1029,switch,connected,warning,10.1.15.105,Data Center 5
+S-1030,Switch-1030,switch,connected,normal,10.1.10.196,Data Center 1
+S-1031,Switch-1031,switch,connected,normal,10.1.8.232,Data Center 4
+S-1032,Switch-1032,switch,connected,normal,10.1.2.237,Data Center 1
+S-1033,Switch-1033,switch,connecting,major,10.1.4.79,Data Center 1
+S-1034,Switch-1034,switch,connecting,minor,10.1.15.73,Data Center 6
+S-1035,Switch-1035,switch,connected,normal,10.1.7.106,Data Center 5
+S-1036,Switch-1036,switch,connected,warning,10.1.6.238,DR Site
+S-1037,Switch-1037,switch,connected,normal,10.1.10.39,Data Center 8
+S-1038,Switch-1038,switch,connecting,major,10.1.4.224,Data Center 4
+S-1039,Switch-1039,switch,connected,normal,10.1.6.35,DR Site
+S-1040,Switch-1040,switch,connected,normal,10.1.0.228,Data Center 6
+S-1041,Switch-1041,switch,connected,major,10.1.4.131,DR Site
+S-1042,Switch-1042,switch,connected,normal,10.1.12.78,Data Center 5
+S-1043,Switch-1043,switch,connecting,warning,10.1.12.111,Data Center 8
+S-1044,Switch-1044,switch,connected,normal,10.1.4.168,NOC Central
+S-1045,Switch-1045,switch,connected,warning,10.1.2.51,DR Site
+S-1046,Switch-1046,switch,connected,major,10.1.6.133,Data Center 7
+S-1047,Switch-1047,switch,connected,normal,10.1.0.203,Data Center 8
+S-1048,Switch-1048,switch,connected,normal,10.1.2.225,Data Center 5
+S-1049,Switch-1049,switch,connected,normal,10.1.3.230,DR Site
+S-1050,Switch-1050,switch,connected,normal,10.1.3.86,DR Site
+S-1051,Switch-1051,switch,connecting,warning,10.1.11.190,NOC Central
+S-1052,Switch-1052,switch,connected,normal,10.1.3.10,Data Center 8
+S-1053,Switch-1053,switch,connected,normal,10.1.2.33,Data Center 5
+S-1054,Switch-1054,switch,connected,normal,10.1.10.59,Data Center 1
+S-1055,Switch-1055,switch,connected,normal,10.1.1.182,NOC Central
+S-1056,Switch-1056,switch,connected,normal,10.1.0.241,Data Center 2
+S-1057,Switch-1057,switch,connected,normal,10.1.3.37,Data Center 2
+S-1058,Switch-1058,switch,connected,normal,10.1.14.95,Data Center 7
+S-1059,Switch-1059,switch,connected,minor,10.1.5.46,NOC Central
+S-1060,Switch-1060,switch,connected,normal,10.1.10.17,Data Center 1
+S-1061,Switch-1061,switch,down,major,10.1.12.242,Data Center 8
+S-1062,Switch-1062,switch,connected,normal,10.1.13.24,Data Center 7
+S-1063,Switch-1063,switch,connected,normal,10.1.5.204,Data Center 8
+S-1064,Switch-1064,switch,connected,normal,10.1.0.238,Data Center 7
+S-1065,Switch-1065,switch,connected,normal,10.1.14.252,Data Center 1
+S-1066,Switch-1066,switch,connected,normal,10.1.6.174,Data Center 8
+S-1067,Switch-1067,switch,connected,normal,10.1.8.96,Data Center 8
+S-1068,Switch-1068,switch,connected,normal,10.1.8.117,Data Center 3
+S-1069,Switch-1069,switch,connected,normal,10.1.14.87,Data Center 8
+S-1070,Switch-1070,switch,connected,normal,10.1.0.11,DR Site
+S-1071,Switch-1071,switch,connected,normal,10.1.6.215,Data Center 6
+S-1072,Switch-1072,switch,connected,normal,10.1.1.146,Data Center 6
+S-1073,Switch-1073,switch,connected,normal,10.1.15.89,DR Site
+S-1074,Switch-1074,switch,connected,normal,10.1.12.87,Data Center 7
+S-1075,Switch-1075,switch,connected,normal,10.1.11.1,Data Center 4
+S-1076,Switch-1076,switch,connected,warning,10.1.13.139,Data Center 2
+S-1077,Switch-1077,switch,down,critical,10.1.9.104,Data Center 5
+S-1078,Switch-1078,switch,connecting,normal,10.1.2.255,Data Center 3
+S-1079,Switch-1079,switch,connected,normal,10.1.9.191,Data Center 1
+S-1080,Switch-1080,switch,connecting,critical,10.1.8.216,DR Site
+S-1081,Switch-1081,switch,connected,minor,10.1.10.34,Data Center 2
+S-1082,Switch-1082,switch,connected,major,10.1.12.248,DR Site
+S-1083,Switch-1083,switch,connected,normal,10.1.2.108,NOC Central
+S-1084,Switch-1084,switch,connected,normal,10.1.6.254,Data Center 8
+S-1085,Switch-1085,switch,connected,normal,10.1.1.90,Data Center 6
+S-1086,Switch-1086,switch,connected,normal,10.1.8.134,Data Center 3
+S-1087,Switch-1087,switch,connected,normal,10.1.0.254,Data Center 3
+S-1088,Switch-1088,switch,connected,normal,10.1.3.214,Data Center 1
+S-1089,Switch-1089,switch,connected,normal,10.1.10.49,Data Center 8
+S-1090,Switch-1090,switch,connected,normal,10.1.3.159,NOC Central
+S-1091,Switch-1091,switch,connected,normal,10.1.0.198,Data Center 7
+S-1092,Switch-1092,switch,connecting,major,10.1.5.72,Data Center 2
+S-1093,Switch-1093,switch,connected,normal,10.1.7.224,Data Center 7
+S-1094,Switch-1094,switch,connected,normal,10.1.3.251,Data Center 4
+S-1095,Switch-1095,switch,connecting,warning,10.1.7.254,DR Site
+S-1096,Switch-1096,switch,connected,normal,10.1.4.123,Data Center 2
+S-1097,Switch-1097,switch,connected,normal,10.1.8.212,Data Center 4
+S-1098,Switch-1098,switch,connected,normal,10.1.7.171,Data Center 7
+S-1099,Switch-1099,switch,connected,normal,10.1.0.25,DR Site
+S-1100,Switch-1100,switch,connected,normal,10.1.6.185,NOC Central
+S-1101,Switch-1101,switch,connected,normal,10.1.7.234,Data Center 4
+S-1102,Switch-1102,switch,connected,normal,10.1.1.206,Data Center 1
+S-1103,Switch-1103,switch,connecting,major,10.1.7.203,DR Site
+S-1104,Switch-1104,switch,connected,minor,10.1.9.121,Data Center 1
+S-1105,Switch-1105,switch,connected,normal,10.1.7.204,Data Center 3
+S-1106,Switch-1106,switch,connected,minor,10.1.12.57,Data Center 7
+S-1107,Switch-1107,switch,connected,normal,10.1.10.254,Data Center 1
+S-1108,Switch-1108,switch,connected,normal,10.1.5.62,Data Center 6
+S-1109,Switch-1109,switch,connected,normal,10.1.14.171,Data Center 2
+S-1110,Switch-1110,switch,connected,normal,10.1.11.255,Data Center 3
+S-1111,Switch-1111,switch,down,critical,10.1.13.60,Data Center 5
+S-1112,Switch-1112,switch,connected,normal,10.1.13.202,Data Center 4
+S-1113,Switch-1113,switch,connected,normal,10.1.12.121,Data Center 3
+S-1114,Switch-1114,switch,connected,normal,10.1.15.0,Data Center 5
+S-1115,Switch-1115,switch,connected,minor,10.1.6.206,DR Site
+S-1116,Switch-1116,switch,connected,normal,10.1.5.14,Data Center 6
+S-1117,Switch-1117,switch,connected,minor,10.1.9.235,Data Center 7
+S-1118,Switch-1118,switch,connecting,normal,10.1.5.83,Data Center 8
+S-1119,Switch-1119,switch,connected,normal,10.1.15.61,Data Center 5
+S-1120,Switch-1120,switch,connecting,normal,10.1.11.73,Data Center 2
+S-1121,Switch-1121,switch,connected,normal,10.1.1.4,Data Center 5
+S-1122,Switch-1122,switch,connected,normal,10.1.15.228,Data Center 5
+S-1123,Switch-1123,switch,connected,normal,10.1.6.2,NOC Central
+S-1124,Switch-1124,switch,connected,normal,10.1.2.74,Data Center 4
+S-1125,Switch-1125,switch,connected,normal,10.1.8.76,Data Center 7
+S-1126,Switch-1126,switch,connected,minor,10.1.3.175,Data Center 1
+S-1127,Switch-1127,switch,connected,normal,10.1.15.211,NOC Central
+S-1128,Switch-1128,switch,connected,minor,10.1.11.7,Data Center 4
+S-1129,Switch-1129,switch,connected,normal,10.1.15.246,Data Center 8
+S-1130,Switch-1130,switch,connected,normal,10.1.0.5,NOC Central
+S-1131,Switch-1131,switch,connected,normal,10.1.11.151,Data Center 6
+S-1132,Switch-1132,switch,connected,major,10.1.4.148,Data Center 8
+S-1133,Switch-1133,switch,connected,normal,10.1.14.139,Data Center 5
+S-1134,Switch-1134,switch,connected,normal,10.1.14.78,Data Center 3
+S-1135,Switch-1135,switch,connected,normal,10.1.7.3,Data Center 6
+S-1136,Switch-1136,switch,connected,normal,10.1.6.138,Data Center 2
+S-1137,Switch-1137,switch,connected,normal,10.1.12.95,Data Center 3
+S-1138,Switch-1138,switch,connecting,minor,10.1.15.17,NOC Central
+S-1139,Switch-1139,switch,connected,normal,10.1.12.159,DR Site
+S-1140,Switch-1140,switch,connected,normal,10.1.7.65,Data Center 4
+S-1141,Switch-1141,switch,connected,normal,10.1.9.254,Data Center 8
+S-1142,Switch-1142,switch,connected,minor,10.1.9.170,Data Center 4
+S-1143,Switch-1143,switch,connected,major,10.1.0.133,Data Center 6
+S-1144,Switch-1144,switch,connected,minor,10.1.13.190,Data Center 2
+S-1145,Switch-1145,switch,connected,normal,10.1.5.151,Data Center 1
+S-1146,Switch-1146,switch,connected,normal,10.1.1.221,Data Center 3
+S-1147,Switch-1147,switch,connected,normal,10.1.13.212,Data Center 1
+S-1148,Switch-1148,switch,connected,normal,10.1.13.156,Data Center 7
+S-1149,Switch-1149,switch,connected,minor,10.1.12.29,Data Center 1
+S-1150,Switch-1150,switch,connecting,warning,10.1.8.93,DR Site
+S-1151,Switch-1151,switch,connected,normal,10.1.4.159,Data Center 3
+S-1152,Switch-1152,switch,connected,warning,10.1.0.63,Data Center 5
+S-1153,Switch-1153,switch,connected,normal,10.1.2.88,Data Center 7
+S-1154,Switch-1154,switch,connected,normal,10.1.9.210,Data Center 4
+S-1155,Switch-1155,switch,connected,normal,10.1.6.247,NOC Central
+S-1156,Switch-1156,switch,connected,normal,10.1.15.204,Data Center 6
+S-1157,Switch-1157,switch,connected,normal,10.1.4.94,Data Center 5
+S-1158,Switch-1158,switch,connecting,warning,10.1.3.213,NOC Central
+S-1159,Switch-1159,switch,connected,normal,10.1.5.236,NOC Central
+S-1160,Switch-1160,switch,connected,normal,10.1.7.97,Data Center 7
+S-1161,Switch-1161,switch,connected,normal,10.1.0.51,NOC Central
+S-1162,Switch-1162,switch,connected,minor,10.1.8.63,Data Center 1
+S-1163,Switch-1163,switch,connected,normal,10.1.11.65,Data Center 7
+S-1164,Switch-1164,switch,connected,critical,10.1.9.153,NOC Central
+S-1165,Switch-1165,switch,connected,normal,10.1.11.163,Data Center 4
+S-1166,Switch-1166,switch,connecting,major,10.1.7.113,Data Center 5
+S-1167,Switch-1167,switch,connected,normal,10.1.13.151,NOC Central
+S-1168,Switch-1168,switch,connected,normal,10.1.2.107,Data Center 3
+S-1169,Switch-1169,switch,connected,minor,10.1.6.201,Data Center 1
+S-1170,Switch-1170,switch,connected,normal,10.1.6.96,Data Center 2
+S-1171,Switch-1171,switch,connected,normal,10.1.7.142,Data Center 2
+S-1172,Switch-1172,switch,connecting,normal,10.1.10.154,Data Center 3
+S-1173,Switch-1173,switch,connected,normal,10.1.6.111,Data Center 1
+S-1174,Switch-1174,switch,connected,normal,10.1.13.165,Data Center 8
+S-1175,Switch-1175,switch,connecting,critical,10.1.11.14,Data Center 2
+S-1176,Switch-1176,switch,connected,normal,10.1.10.8,Data Center 8
+S-1177,Switch-1177,switch,connecting,warning,10.1.2.165,Data Center 1
+S-1178,Switch-1178,switch,connected,normal,10.1.7.189,Data Center 3
+S-1179,Switch-1179,switch,connected,normal,10.1.10.7,Data Center 8
+S-1180,Switch-1180,switch,connected,normal,10.1.4.245,Data Center 7
+S-1181,Switch-1181,switch,connected,normal,10.1.5.195,Data Center 6
+S-1182,Switch-1182,switch,connected,major,10.1.2.206,Data Center 7
+S-1183,Switch-1183,switch,connected,normal,10.1.2.70,Data Center 2
+S-1184,Switch-1184,switch,connected,normal,10.1.2.32,Data Center 5
+S-1185,Switch-1185,switch,down,critical,10.1.4.104,Data Center 3
+S-1186,Switch-1186,switch,connected,normal,10.1.11.148,Data Center 8
+S-1187,Switch-1187,switch,connected,minor,10.1.13.81,Data Center 3
+S-1188,Switch-1188,switch,connected,normal,10.1.0.207,Data Center 6
+S-1189,Switch-1189,switch,connected,normal,10.1.8.74,NOC Central
+S-1190,Switch-1190,switch,connected,normal,10.1.0.150,Data Center 8
+S-1191,Switch-1191,switch,connected,normal,10.1.12.191,Data Center 8
+S-1192,Switch-1192,switch,connected,normal,10.1.9.95,Data Center 5
+S-1193,Switch-1193,switch,connected,normal,10.1.10.177,Data Center 3
+S-1194,Switch-1194,switch,connected,normal,10.1.13.214,DR Site
+S-1195,Switch-1195,switch,connected,normal,10.1.14.172,NOC Central
+S-1196,Switch-1196,switch,connected,normal,10.1.8.92,NOC Central
+S-1197,Switch-1197,switch,connected,normal,10.1.2.145,DR Site
+S-1198,Switch-1198,switch,connected,normal,10.1.15.81,Data Center 6
+S-1199,Switch-1199,switch,connecting,critical,10.1.0.72,Data Center 6
+S-1200,Switch-1200,switch,connected,normal,10.1.5.150,Data Center 5
+S-1201,Switch-1201,switch,connected,normal,10.1.7.185,Data Center 3
+S-1202,Switch-1202,switch,connected,normal,10.1.10.228,Data Center 8
+S-1203,Switch-1203,switch,connected,normal,10.1.1.31,NOC Central
+S-1204,Switch-1204,switch,connected,normal,10.1.15.36,Data Center 4
+S-1205,Switch-1205,switch,connected,normal,10.1.11.44,Data Center 8
+S-1206,Switch-1206,switch,connected,normal,10.1.8.24,Data Center 1
+S-1207,Switch-1207,switch,connected,normal,10.1.9.58,Data Center 8
+S-1208,Switch-1208,switch,connecting,critical,10.1.11.159,Data Center 5
+S-1209,Switch-1209,switch,down,major,10.1.15.206,Data Center 8
+S-1210,Switch-1210,switch,connected,normal,10.1.8.127,Data Center 5
+S-1211,Switch-1211,switch,connected,normal,10.1.7.70,Data Center 7
+S-1212,Switch-1212,switch,connected,normal,10.1.9.238,Data Center 5
+S-1213,Switch-1213,switch,connected,normal,10.1.14.125,NOC Central
+S-1214,Switch-1214,switch,connected,normal,10.1.0.109,NOC Central
+S-1215,Switch-1215,switch,connected,minor,10.1.14.235,DR Site
+S-1216,Switch-1216,switch,connected,normal,10.1.2.153,Data Center 7
+S-1217,Switch-1217,switch,connected,normal,10.1.10.156,Data Center 3
+S-1218,Switch-1218,switch,connected,normal,10.1.12.117,Data Center 3
+S-1219,Switch-1219,switch,connected,normal,10.1.8.32,Data Center 7
+S-1220,Switch-1220,switch,connected,normal,10.1.4.155,DR Site
+S-1221,Switch-1221,switch,connected,normal,10.1.4.130,Data Center 7
+S-1222,Switch-1222,switch,connected,normal,10.1.14.151,DR Site
+S-1223,Switch-1223,switch,connected,normal,10.1.2.169,DR Site
+S-1224,Switch-1224,switch,connected,minor,10.1.1.244,Data Center 5
+S-1225,Switch-1225,switch,connected,minor,10.1.4.102,Data Center 5
+S-1226,Switch-1226,switch,connected,normal,10.1.6.110,DR Site
+S-1227,Switch-1227,switch,connecting,minor,10.1.0.213,Data Center 6
+S-1228,Switch-1228,switch,connected,major,10.1.1.58,Data Center 5
+S-1229,Switch-1229,switch,down,warning,10.1.3.199,Data Center 5
+S-1230,Switch-1230,switch,connected,normal,10.1.7.220,Data Center 7
+S-1231,Switch-1231,switch,connected,normal,10.1.2.138,Data Center 5
+S-1232,Switch-1232,switch,connected,normal,10.1.11.229,NOC Central
+S-1233,Switch-1233,switch,connected,normal,10.1.8.182,NOC Central
+S-1234,Switch-1234,switch,connected,normal,10.1.1.250,NOC Central
+S-1235,Switch-1235,switch,connecting,critical,10.1.8.109,Data Center 3
+S-1236,Switch-1236,switch,connected,normal,10.1.0.251,DR Site
+S-1237,Switch-1237,switch,connected,normal,10.1.10.149,NOC Central
+S-1238,Switch-1238,switch,connected,normal,10.1.9.111,NOC Central
+S-1239,Switch-1239,switch,connected,normal,10.1.11.251,Data Center 6
+S-1240,Switch-1240,switch,connected,normal,10.1.12.230,Data Center 3
+S-1241,Switch-1241,switch,connected,normal,10.1.2.91,Data Center 2
+S-1242,Switch-1242,switch,connected,major,10.1.5.205,Data Center 3
+S-1243,Switch-1243,switch,connected,normal,10.1.7.176,Data Center 3
+S-1244,Switch-1244,switch,connected,normal,10.1.6.182,Data Center 7
+S-1245,Switch-1245,switch,connected,normal,10.1.9.236,Data Center 4
+S-1246,Switch-1246,switch,connected,normal,10.1.13.64,Data Center 7
+S-1247,Switch-1247,switch,connected,normal,10.1.7.182,DR Site
+S-1248,Switch-1248,switch,connecting,warning,10.1.13.73,Data Center 6
+S-1249,Switch-1249,switch,connected,warning,10.1.11.193,Data Center 8
+S-1250,Switch-1250,switch,connected,normal,10.1.4.162,Data Center 3
+S-1251,Switch-1251,switch,connected,normal,10.1.9.51,Data Center 2
+S-1252,Switch-1252,switch,connected,normal,10.1.1.130,Data Center 7
+S-1253,Switch-1253,switch,connected,normal,10.1.12.187,Data Center 4
+S-1254,Switch-1254,switch,connected,normal,10.1.0.201,Data Center 4
+S-1255,Switch-1255,switch,connected,normal,10.1.3.205,NOC Central
+S-1256,Switch-1256,switch,connecting,warning,10.1.14.195,Data Center 3
+S-1257,Switch-1257,switch,connecting,normal,10.1.8.23,DR Site
+S-1258,Switch-1258,switch,connecting,warning,10.1.4.82,Data Center 8
+S-1259,Switch-1259,switch,connected,minor,10.1.13.188,Data Center 4
+S-1260,Switch-1260,switch,connected,warning,10.1.14.63,Data Center 2
+S-1261,Switch-1261,switch,connected,normal,10.1.13.104,Data Center 8
+S-1262,Switch-1262,switch,connected,normal,10.1.1.169,Data Center 3
+S-1263,Switch-1263,switch,connected,normal,10.1.9.92,Data Center 7
+S-1264,Switch-1264,switch,connected,normal,10.1.11.124,Data Center 1
+S-1265,Switch-1265,switch,connected,minor,10.1.3.17,Data Center 1
+S-1266,Switch-1266,switch,connected,normal,10.1.5.126,Data Center 2
+S-1267,Switch-1267,switch,connected,normal,10.1.15.183,Data Center 8
+S-1268,Switch-1268,switch,connected,warning,10.1.5.70,Data Center 3
+S-1269,Switch-1269,switch,connected,normal,10.1.4.108,Data Center 6
+S-1270,Switch-1270,switch,connecting,normal,10.1.10.0,Data Center 8
+S-1271,Switch-1271,switch,connected,normal,10.1.5.23,DR Site
+S-1272,Switch-1272,switch,connected,normal,10.1.8.230,NOC Central
+S-1273,Switch-1273,switch,connected,normal,10.1.14.120,Data Center 6
+S-1274,Switch-1274,switch,connected,normal,10.1.5.68,Data Center 6
+S-1275,Switch-1275,switch,connected,warning,10.1.2.216,Data Center 3
+S-1276,Switch-1276,switch,connected,warning,10.1.3.104,Data Center 4
+S-1277,Switch-1277,switch,connected,normal,10.1.9.77,NOC Central
+S-1278,Switch-1278,switch,connected,normal,10.1.0.132,DR Site
+S-1279,Switch-1279,switch,down,critical,10.1.3.87,Data Center 5
+S-1280,Switch-1280,switch,connected,normal,10.1.5.231,Data Center 8
+S-1281,Switch-1281,switch,connecting,normal,10.1.2.234,Data Center 1
+S-1282,Switch-1282,switch,connected,normal,10.1.10.97,Data Center 1
+S-1283,Switch-1283,switch,connected,normal,10.1.2.3,Data Center 4
+S-1284,Switch-1284,switch,connected,normal,10.1.12.92,Data Center 2
+S-1285,Switch-1285,switch,connected,normal,10.1.15.125,Data Center 8
+S-1286,Switch-1286,switch,connected,normal,10.1.9.83,DR Site
+S-1287,Switch-1287,switch,connected,normal,10.1.6.76,Data Center 2
+S-1288,Switch-1288,switch,connected,warning,10.1.14.94,Data Center 3
+S-1289,Switch-1289,switch,connected,normal,10.1.5.147,Data Center 4
+S-1290,Switch-1290,switch,connected,normal,10.1.5.146,DR Site
+S-1291,Switch-1291,switch,connected,major,10.1.15.175,Data Center 6
+S-1292,Switch-1292,switch,connected,minor,10.1.9.82,Data Center 2
+S-1293,Switch-1293,switch,connected,normal,10.1.7.107,NOC Central
+S-1294,Switch-1294,switch,connected,normal,10.1.15.90,Data Center 1
+S-1295,Switch-1295,switch,connected,normal,10.1.14.119,Data Center 7
+S-1296,Switch-1296,switch,connected,normal,10.1.11.143,Data Center 8
+S-1297,Switch-1297,switch,connected,normal,10.1.1.46,Data Center 8
+S-1298,Switch-1298,switch,connected,normal,10.1.5.39,Data Center 7
+S-1299,Switch-1299,switch,connected,normal,10.1.3.109,Data Center 3
+S-1300,Switch-1300,switch,down,critical,10.1.13.1,Data Center 1
+S-1301,Switch-1301,switch,connected,normal,10.1.14.48,Data Center 7
+S-1302,Switch-1302,switch,connected,normal,10.1.11.24,Data Center 2
+S-1303,Switch-1303,switch,connected,warning,10.1.10.141,Data Center 4
+S-1304,Switch-1304,switch,connected,warning,10.1.11.241,Data Center 5
+S-1305,Switch-1305,switch,connected,warning,10.1.15.226,Data Center 8
+S-1306,Switch-1306,switch,connecting,critical,10.1.1.75,NOC Central
+S-1307,Switch-1307,switch,connected,normal,10.1.14.38,Data Center 2
+S-1308,Switch-1308,switch,connecting,minor,10.1.10.151,Data Center 7
+S-1309,Switch-1309,switch,connected,normal,10.1.5.105,Data Center 4
+S-1310,Switch-1310,switch,connected,warning,10.1.3.48,Data Center 4
+S-1311,Switch-1311,switch,connected,normal,10.1.8.217,Data Center 7
+S-1312,Switch-1312,switch,connected,normal,10.1.1.131,Data Center 3
+S-1313,Switch-1313,switch,connected,normal,10.1.1.151,Data Center 8
+S-1314,Switch-1314,switch,connected,normal,10.1.7.188,NOC Central
+S-1315,Switch-1315,switch,connected,normal,10.1.2.27,Data Center 1
+S-1316,Switch-1316,switch,connected,normal,10.1.14.79,Data Center 5
+S-1317,Switch-1317,switch,connected,normal,10.1.4.110,Data Center 2
+S-1318,Switch-1318,switch,connected,normal,10.1.4.60,DR Site
+S-1319,Switch-1319,switch,connected,normal,10.1.10.43,Data Center 1
+S-1320,Switch-1320,switch,connected,normal,10.1.3.54,Data Center 6
+S-1321,Switch-1321,switch,connected,normal,10.1.9.237,Data Center 8
+S-1322,Switch-1322,switch,connected,major,10.1.11.82,Data Center 2
+S-1323,Switch-1323,switch,connected,normal,10.1.1.253,Data Center 1
+S-1324,Switch-1324,switch,connected,normal,10.1.12.137,Data Center 7
+S-1325,Switch-1325,switch,connected,normal,10.1.7.147,Data Center 2
+S-1326,Switch-1326,switch,connected,normal,10.1.15.39,Data Center 8
+S-1327,Switch-1327,switch,connected,normal,10.1.12.104,Data Center 1
+S-1328,Switch-1328,switch,connected,normal,10.1.9.86,Data Center 1
+S-1329,Switch-1329,switch,connected,normal,10.1.3.234,Data Center 4
+S-1330,Switch-1330,switch,connected,normal,10.1.4.69,Data Center 7
+S-1331,Switch-1331,switch,connecting,major,10.1.1.72,Data Center 3
+S-1332,Switch-1332,switch,down,critical,10.1.10.112,Data Center 2
+S-1333,Switch-1333,switch,down,normal,10.1.7.58,Data Center 3
+S-1334,Switch-1334,switch,down,major,10.1.7.150,Data Center 4
+S-1335,Switch-1335,switch,connected,normal,10.1.11.105,Data Center 1
+S-1336,Switch-1336,switch,connected,normal,10.1.0.167,Data Center 2
+S-1337,Switch-1337,switch,connected,normal,10.1.9.15,Data Center 1
+S-1338,Switch-1338,switch,connected,normal,10.1.8.29,Data Center 5
+S-1339,Switch-1339,switch,connected,normal,10.1.11.96,Data Center 4
+S-1340,Switch-1340,switch,connected,normal,10.1.15.253,Data Center 7
+S-1341,Switch-1341,switch,connected,minor,10.1.12.37,Data Center 4
+S-1342,Switch-1342,switch,connected,normal,10.1.0.123,Data Center 8
+S-1343,Switch-1343,switch,connected,normal,10.1.7.175,Data Center 3
+S-1344,Switch-1344,switch,connected,major,10.1.4.229,DR Site
+S-1345,Switch-1345,switch,connected,normal,10.1.0.65,NOC Central
+S-1346,Switch-1346,switch,connected,normal,10.1.13.56,Data Center 7
+S-1347,Switch-1347,switch,connected,warning,10.1.1.153,Data Center 2
+S-1348,Switch-1348,switch,connected,normal,10.1.15.188,Data Center 5
+S-1349,Switch-1349,switch,connected,major,10.1.13.114,NOC Central
+S-1350,Switch-1350,switch,connected,normal,10.1.5.206,Data Center 8

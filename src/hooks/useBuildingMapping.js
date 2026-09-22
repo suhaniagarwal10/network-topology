@@ -14,7 +14,7 @@ import { applyBuildingMapping } from '../utils/buildingMapper.js';
  */
 export function useBuildingMapping(data, config = mappingConfig) {
   return useMemo(() => {
-    if (!data) return null;
+    if (!data || !data.nodes) return null;
 
     const index = applyBuildingMapping(data.nodes, config, {
       uplinkRoutersBySwitch: data.uplinkRoutersBySwitch,
@@ -28,5 +28,5 @@ export function useBuildingMapping(data, config = mappingConfig) {
     }
 
     return index;
-  }, [data, config]);
+  }, [data?.nodes, data?.uplinkRoutersBySwitch, config]);
 }
