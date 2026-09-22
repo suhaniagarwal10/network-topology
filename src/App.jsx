@@ -9,6 +9,13 @@ import SearchBar from './components/SearchBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import Legend from './components/Legend';
 import { ZoomControls, Header, ContextMenu, Toast } from './components/Chrome';
+import ImportWorkflow from './components/ImportWorkflow';
+import NodeModal from './components/NodeModal';
+import FilterPanel from './components/FilterPanel';
+import AlarmPanel from './components/AlarmPanel';
+import LinkModal from './components/LinkModal';
+import MonitorModal from './components/MonitorModal';
+import LinkEditModal from './components/LinkEditModal';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -17,8 +24,17 @@ import './index.css';
 const DATASET_NOW = new Date('2026-09-15T09:00:00');
 
 export default function App() {
-  const { loading, error, data } = useTopologyData();
+  const { loading, error, data, loadFromRaw, loadDemo, updateTopology } = useTopologyData();
   const mappingIndex = useBuildingMapping(data);
+
+  const [isNodeModalOpen, setIsNodeModalOpen] = useState(false);
+  const [editingNode, setEditingNode] = useState(null);
+  const [isAlarmPanelOpen, setIsAlarmPanelOpen] = useState(false);
+  
+  const [viewingLinksNode, setViewingLinksNode] = useState(null);
+  const [monitoringNode, setMonitoringNode] = useState(null);
+  const [editingLinkNode, setEditingLinkNode] = useState(null);
+  const [editingLinkBundle, setEditingLinkBundle] = useState(null);
 
   // 'global'  -> core routers / distribution routers / buildings
   // 'building'-> the individual switches inside one building
@@ -88,13 +104,81 @@ export default function App() {
 
   const graph = view === 'building' ? buildingGraph : globalGraph;
 
+  /* ---------------- filters ---------------- */
+
+  const [filters, setFilters] = useState({
+    router: true,
+    switch: true,
+    up: true,
+    down: true,
+    warningStatus: true,
+    critical: true,
+    major: true,
+    minor: true,
+    warning: true,
+    normal: true,
+  });
+
+  const filteredGraph = useMemo(() => {
+    if (!graph) return null;
+    const { nodes, edges, positions, ...rest } = graph;
+
+    const filteredNodes = nodes.filter(n => {
+      let isRouter = false;
+      let isSwitch = false;
+      let status = 'up';
+      let severity = 'normal';
+
+      if (n.data.kind === 'building') {
+        isSwitch = true;
+        status = n.data.status; // 'up' or 'down' derived in buildingStats
+        severity = n.data.healthLevel || n.data.stats?.worstSeverity || 'normal';
+      } else {
+        const rawNode = data.nodesById.get(n.id);
+        if (rawNode) {
+          isRouter = rawNode.type === 'router';
+          isSwitch = rawNode.type === 'switch';
+          status = rawNode.status;
+          severity = rawNode.severity;
+        }
+      }
+
+      // Type
+      if (isRouter && !filters.router) return false;
+      if (isSwitch && !filters.switch) return false;
+
+      // Status
+      const st = status?.toLowerCase();
+      if ((st === 'up' || st === 'connected') && !filters.up) return false;
+      if (st === 'down' && !filters.down) return false;
+      if ((st === 'warning' || st === 'connecting') && !filters.warningStatus) return false;
+
+      // Severity
+      const sev = severity?.toLowerCase() || 'normal';
+      if (filters[sev] === false) return false;
+
+      return true;
+    });
+
+    const nodeIds = new Set(filteredNodes.map(n => n.id));
+    const filteredEdges = edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+
+    return { ...rest, nodes: filteredNodes, edges: filteredEdges, positions };
+  }, [graph, filters]);
+
   /* ---------------- selection ---------------- */
 
   const selectedBuilding =
     selectedId && mappingIndex?.buildingsById.has(selectedId)
       ? mappingIndex.buildingsById.get(selectedId)
       : null;
-  const selectedNode = selectedId && !selectedBuilding ? data?.nodesById.get(selectedId) || null : null;
+  const selectedNode = selectedId && !selectedBuilding && data?.nodesById.has(selectedId) 
+    ? data.nodesById.get(selectedId) 
+    : null;
+  const selectedLink = useMemo(() => {
+    if (!selectedId || selectedNode || selectedBuilding || !graph) return null;
+    return graph.edges.find(e => e.id === selectedId) || null;
+  }, [selectedId, selectedNode, selectedBuilding, graph]);
 
   const selectedBuildingStats = useMemo(
     () => (selectedBuilding && data ? computeBuildingStats(selectedBuilding, data) : null),
@@ -111,6 +195,11 @@ export default function App() {
     return [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, selectedNode, selectedBuilding, tick]);
+
+  const allAlarms = useMemo(() => {
+    if (!data) return [];
+    return Array.from(data.alarmsByNode.values()).flat();
+  }, [data, tick]);
 
   /* ---------------- header stats ---------------- */
 
@@ -242,11 +331,71 @@ export default function App() {
     [openBuilding]
   );
 
+  const handleAddNode = useCallback(() => {
+    setEditingNode(null);
+    setIsNodeModalOpen(true);
+  }, []);
+
+  const handleSaveNode = useCallback((nodeData) => {
+    updateTopology((raw) => {
+      const idx = raw.nodes.findIndex(n => n.id === nodeData.id);
+      if (idx >= 0) {
+        raw.nodes[idx] = { ...raw.nodes[idx], ...nodeData };
+        showToast(`Updated node ${nodeData.id}`);
+      } else {
+        raw.nodes.push({ ...nodeData });
+        showToast(`Added node ${nodeData.id}`);
+      }
+    });
+    setIsNodeModalOpen(false);
+  }, [updateTopology, showToast]);
+
+  const handleSaveLink = useCallback((linkPayload) => {
+    updateTopology((raw) => {
+      if (linkPayload.isEdit) {
+        let count = 0;
+        for (let i = 0; i < raw.links.length; i++) {
+          if (linkPayload.linkIds.includes(raw.links[i].link_id)) {
+            raw.links[i].bandwidth_mbps = linkPayload.bandwidth_mbps;
+            raw.links[i].status = linkPayload.status;
+            count++;
+          }
+        }
+        showToast(`Updated ${count} link(s) in bundle`);
+      } else {
+        const { isEdit, ...newLink } = linkPayload;
+        raw.links.push(newLink);
+        showToast(`Added link from ${newLink.source} to ${newLink.target}`);
+      }
+    });
+    setEditingLinkNode(null);
+    setEditingLinkBundle(null);
+  }, [updateTopology, showToast]);
+
+  const handleDeleteNode = useCallback((id) => {
+    updateTopology((raw) => {
+      raw.nodes = raw.nodes.filter(n => n.id !== id);
+      raw.links = raw.links.filter(l => l.source !== id && l.target !== id);
+      showToast(`Deleted node ${id}`);
+    });
+    setSelectedId(null);
+  }, [updateTopology, showToast]);
+
+  const handleUpdateAlarm = useCallback((alarmId, status) => {
+    updateTopology((raw) => {
+      const a = raw.alarms.find(a => (a.alarmId || a.id) === alarmId);
+      if (a) {
+        a.status = status;
+        showToast(`Alarm ${status}`);
+      }
+    });
+  }, [updateTopology, showToast]);
+
   const monitorNode = useCallback(
     (node) => {
-      showToast(`Monitoring started for ${node.name || node.label} (stub — wire to your monitoring API)`);
+      setMonitoringNode(node);
     },
-    [showToast]
+    []
   );
 
   const highlightNeighbors = useCallback(
@@ -270,28 +419,44 @@ export default function App() {
       { key: 'details', label: isBuilding ? 'View building details' : 'View node details' },
       ...(isBuilding ? [{ key: 'open', label: 'Open building →' }] : []),
       { key: 'neighbors', label: 'Highlight neighbors' },
-      ...(isBuilding ? [] : [{ key: 'monitor', label: 'Monitor node' }]),
-      { key: 'sep', label: null },
-      ...(isBuilding ? [] : [{ key: 'copyip', label: 'Copy IP address' }]),
+      ...(isBuilding ? [] : [
+        { key: 'monitor', label: 'Monitor node' },
+        { key: 'add-link', label: 'Connect Link' },
+        { key: 'edit', label: 'Edit Node' },
+        { key: 'delete', label: 'Delete Node', style: { color: '#ef4444' } },
+        { key: 'sep', label: null },
+        { key: 'copyip', label: 'Copy IP address' }
+      ])
     ];
   }, []);
 
   const handleContextAction = useCallback(
     (key, graphNode) => {
       const isBuilding = graphNode?.data?.kind === 'building';
+      const node = data?.nodesById.get(graphNode.id) || graphNode;
       if (key === 'details') setSelectedId(graphNode.id);
       if (key === 'open' && isBuilding) openBuilding(graphNode.data.buildingId);
       if (key === 'neighbors') highlightNeighbors(graphNode);
-      if (key === 'monitor') monitorNode(data?.nodesById.get(graphNode.id) || graphNode);
+      if (key === 'monitor') monitorNode(node);
+      if (key === 'add-link') setEditingLinkNode(node);
+      if (key === 'edit') {
+        setEditingNode(node);
+        setIsNodeModalOpen(true);
+      }
+      if (key === 'delete') {
+        if (window.confirm(`Are you sure you want to delete ${node.name}?`)) {
+          handleDeleteNode(node.id);
+        }
+      }
       if (key === 'copyip') {
-        const ip = data?.nodesById.get(graphNode.id)?.ipAddress;
+        const ip = node.ipAddress;
         if (ip) {
           navigator.clipboard?.writeText(ip).catch(() => {});
           showToast(`Copied ${ip}`);
         }
       }
     },
-    [data, openBuilding, highlightNeighbors, monitorNode, showToast]
+    [data, openBuilding, highlightNeighbors, monitorNode, showToast, handleDeleteNode]
   );
 
   /* ---------------- render ---------------- */
@@ -300,12 +465,16 @@ export default function App() {
     return <div className="load-error">Couldn&apos;t load the topology dataset: {error}</div>;
   }
 
+  if (!data && !loading) {
+    return <ImportWorkflow onLoadFromRaw={loadFromRaw} onLoadDemo={loadDemo} />;
+  }
+
   const ready = !loading && data && mappingIndex && graph;
   const validation = data?.validation;
 
   return (
     <div id="app">
-      <Header stats={stats} view={view} mode={mode} onModeChange={setMode} onSimulateAlarm={simulateAlarm}>
+      <Header stats={stats} view={view} mode={mode} onModeChange={setMode} onSimulateAlarm={simulateAlarm} onAddNode={handleAddNode} onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}>
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
       </Header>
 
@@ -338,9 +507,9 @@ export default function App() {
             <>
               <NetworkGraph
                 ref={graphRef}
-                nodes={graph.nodes}
-                edges={graph.edges}
-                positions={graph.positions}
+                nodes={filteredGraph.nodes}
+                edges={filteredGraph.edges}
+                positions={filteredGraph.positions}
                 selectedId={selectedId}
                 highlightIds={highlightIds}
                 onSelect={handleSelect}
@@ -355,6 +524,7 @@ export default function App() {
                   />
                 )}
               />
+              <FilterPanel filters={filters} onChange={setFilters} />
               {hovered && (
                 <div className="hoverchip">
                   <b>{hovered.data?.name || hovered.label || hovered.id}</b>
@@ -362,6 +532,10 @@ export default function App() {
                     <span>
                       {hovered.data.stats.total} switches · {hovered.data.stats.connected} connected ·{' '}
                       {hovered.data.stats.activeAlarmCount} active alarms
+                    </span>
+                  ) : hovered.data?.kind === 'link' ? (
+                    <span>
+                      {hovered.source} ↔ {hovered.target} · {hovered.data.count} bundled links
                     </span>
                   ) : (
                     <span>
@@ -392,6 +566,7 @@ export default function App() {
         <DetailsPanel
           node={selectedNode}
           building={selectedBuilding}
+          link={selectedLink}
           buildingStats={selectedBuildingStats}
           alarms={detailAlarms}
           linkCount={selectedNode ? (data.linksByNode.get(selectedNode.id) || []).length : 0}
@@ -401,9 +576,71 @@ export default function App() {
           onMonitor={monitorNode}
           onHighlightNeighbors={highlightNeighbors}
           onOpenBuilding={(id) => openBuilding(id)}
+          onViewLinks={(id) => setViewingLinksNode(id)}
+          onAddLink={(node) => setEditingLinkNode(node)}
+          onEditLinkBundle={(bundle) => setEditingLinkBundle(bundle)}
+          onEditNode={(n) => {
+            setEditingNode(n);
+            setIsNodeModalOpen(true);
+          }}
+          onDeleteNode={(n) => {
+            if (window.confirm(`Are you sure you want to delete ${n.name}?`)) {
+              handleDeleteNode(n.id);
+            }
+          }}
           now={DATASET_NOW}
         />
       </main>
+      
+      {isNodeModalOpen && (
+        <NodeModal
+          node={editingNode}
+          onSave={handleSaveNode}
+          onClose={() => setIsNodeModalOpen(false)}
+        />
+      )}
+      
+      {viewingLinksNode && (
+        <LinkModal
+          nodeName={data?.nodesById.get(viewingLinksNode)?.name || viewingLinksNode}
+          links={data?.linksByNode.get(viewingLinksNode) || []}
+          onClose={() => setViewingLinksNode(null)}
+        />
+      )}
+      
+      {isAlarmPanelOpen && (
+        <AlarmPanel
+          alarms={allAlarms}
+          onClose={() => setIsAlarmPanelOpen(false)}
+          onAcknowledge={id => handleUpdateAlarm(id, 'acknowledged')}
+          onResolve={id => handleUpdateAlarm(id, 'resolved')}
+          onFocusNode={nodeId => {
+            setSelectedId(nodeId);
+            setHighlightIds([nodeId]);
+            setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `alarm-${nodeId}-${Date.now()}` });
+          }}
+          now={DATASET_NOW}
+        />
+      )}
+      
+      {monitoringNode && (
+        <MonitorModal
+          node={monitoringNode}
+          onClose={() => setMonitoringNode(null)}
+        />
+      )}
+      
+      {(editingLinkNode || editingLinkBundle) && (
+        <LinkEditModal
+          sourceNode={editingLinkNode}
+          linkBundle={editingLinkBundle}
+          onSave={handleSaveLink}
+          onClose={() => {
+            setEditingLinkNode(null);
+            setEditingLinkBundle(null);
+          }}
+        />
+      )}
     </div>
   );
 }

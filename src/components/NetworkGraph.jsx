@@ -145,17 +145,40 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       onNodePointerOver={handlePointerOver}
       onNodePointerOut={handlePointerOut}
       onNodeContextMenu={(node) => onContextMenu?.(node)}
-      onCanvasClick={() => onSelect?.(null)}
+      onEdgePointerOver={(edge) => {
+        document.body.style.cursor = 'pointer';
+        handlePointerOver(edge);
+      }}
+      onEdgePointerOut={() => {
+        document.body.style.cursor = 'default';
+        handlePointerOut();
+      }}
+      onEdgeClick={(edge) => {
+        console.log('Clicked edge:', edge);
+        onSelect?.(edge);
+      }}
+      onCanvasClick={() => {
+        console.log('Clicked canvas');
+        onSelect?.(null);
+      }}
       contextMenu={
         renderContextMenu ? ({ data, onClose }) => renderContextMenu(data, onClose) : undefined
       }
       renderNode={({ node, ...rest }) => {
         const hasAlarm = node.data?.stats?.activeAlarmCount > 0;
         const alarmCount = node.data?.stats?.activeAlarmCount || 0;
+        const isRouter = node.data?.deviceType === 'router';
         
         return (
           <group>
-            <Sphere node={node} {...rest} />
+            {isRouter ? (
+              <mesh>
+                <boxGeometry args={[rest.size * 1.75, rest.size * 1.75, rest.size * 1.75]} />
+                <meshBasicMaterial color={rest.color} transparent={true} opacity={rest.opacity ?? 1} />
+              </mesh>
+            ) : (
+              <Sphere node={node} {...rest} />
+            )}
             {hasAlarm && (
               <Badge
                 node={node}

@@ -10,6 +10,7 @@ import { SEV_COLOR, severityColor, statusColor, tierLabel, timeAgo } from '../ut
 export default function DetailsPanel({
   node,
   building,
+  link,
   buildingStats,
   alarms,
   linkCount,
@@ -19,9 +20,14 @@ export default function DetailsPanel({
   onMonitor,
   onHighlightNeighbors,
   onOpenBuilding,
+  onEditNode,
+  onDeleteNode,
+  onViewLinks,
+  onAddLink,
+  onEditLinkBundle,
   now,
 }) {
-  if (building && !node) {
+  if (building && !node && !link) {
     return (
       <BuildingDetails
         building={building}
@@ -30,6 +36,28 @@ export default function DetailsPanel({
         onOpenBuilding={onOpenBuilding}
         now={now}
       />
+    );
+  }
+
+  if (link && !node && !building) {
+    return (
+      <aside className="details">
+        <h2>Link Bundle</h2>
+        <div className="details-sub">{link.source} ↔ {link.target}</div>
+        
+        <div className="kv">
+          <Row k="Total links" v={link.data.count} />
+          <Row k="Links down" v={<Dot color={link.data.downCount > 0 ? '#ef4444' : '#22c55e'} text={String(link.data.downCount)} />} />
+          <Row k="Bandwidth" v={link.data.bandwidthMbps ? `${link.data.bandwidthMbps} Mbps` : 'Unknown'} />
+          <Row k="Status" v={<Dot color={link.fill} text={link.data.downCount === link.data.count ? 'DOWN' : link.data.downCount > 0 ? 'DEGRADED' : 'UP'} />} />
+        </div>
+
+        {onEditLinkBundle && (
+          <div className="btnrow" style={{ marginTop: 16 }}>
+            <button onClick={() => onEditLinkBundle(link)}>Edit Link Bundle</button>
+          </div>
+        )}
+      </aside>
     );
   }
 
@@ -74,7 +102,34 @@ export default function DetailsPanel({
         )}
         {floor && <Row k="Floor" v={<span className="plain">{floor.name}</span>} />}
         <Row k="Interfaces" v={interfaceCount ?? 0} />
-        <Row k="Links" v={linkCount ?? 0} />
+        <Row
+          k="Links"
+          v={
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span>{linkCount ?? 0}</span>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {onViewLinks && linkCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onViewLinks(node.id)}
+                    style={{ background: '#334155', color: '#fff', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
+                  >
+                    View
+                  </button>
+                )}
+                {onAddLink && (
+                  <button
+                    type="button"
+                    onClick={() => onAddLink(node)}
+                    style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}
+                  >
+                    + Add
+                  </button>
+                )}
+              </div>
+            </div>
+          }
+        />
       </div>
 
       <div className="section-title">Alarms ({sortedAlarms.length})</div>
@@ -98,6 +153,8 @@ export default function DetailsPanel({
       <div className="btnrow">
         <button onClick={() => onMonitor(node)}>Monitor node</button>
         <button onClick={() => onHighlightNeighbors(node)}>Highlight neighbors</button>
+        {onEditNode && <button onClick={() => onEditNode(node)}>Edit Node</button>}
+        {onDeleteNode && <button onClick={() => onDeleteNode(node)} style={{ color: '#ef4444', borderColor: '#7f1d1d' }}>Delete Node</button>}
       </div>
       <div className="empty-hint" style={{ marginTop: 10 }}>
         {linkCount} connected link{linkCount === 1 ? '' : 's'}

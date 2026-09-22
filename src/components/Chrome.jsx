@@ -23,7 +23,7 @@ export function ZoomControls({ onZoomIn, onZoomOut, onFit }) {
   );
 }
 
-export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, children }) {
+export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, children }) {
   return (
     <header>
       <h1>
@@ -56,11 +56,14 @@ export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, child
           Down
           <b>{stats.downCount.toLocaleString()}</b>
         </div>
-        <div className="stat crit">
+        <div className="stat crit" onClick={onToggleAlarms} style={{ cursor: 'pointer' }} title="Manage Alarms">
           Active alarms
           <b>{stats.activeAlarmCount.toLocaleString()}</b>
         </div>
-        <button onClick={onSimulateAlarm} style={{ marginLeft: 16, padding: '4px 8px', borderRadius: 4, background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+        <button onClick={onAddNode} style={{ marginLeft: 16, padding: '4px 8px', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+          Add Node
+        </button>
+        <button onClick={onSimulateAlarm} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
           Simulate Alarm
         </button>
       </div>
