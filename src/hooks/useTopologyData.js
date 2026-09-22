@@ -147,8 +147,13 @@ export function parseRawTopologyData(raw) {
 }
 
 export function useTopologyData(url = '/network-topology-dataset.json') {
-  const [state, setState] = useState({ loading: false, error: null, data: null }); // Don't auto-load
+  const [state, setState] = useState({ loading: true, error: null, data: null });
   const rawRef = useRef(null);
+
+  useEffect(() => {
+    loadDemo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url]);
 
   const loadFromRaw = (raw) => {
     try {

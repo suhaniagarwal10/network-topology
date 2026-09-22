@@ -9,7 +9,6 @@ import SearchBar from './components/SearchBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import Legend from './components/Legend';
 import { ZoomControls, Header, ContextMenu, Toast } from './components/Chrome';
-import ImportWorkflow from './components/ImportWorkflow';
 import NodeModal from './components/NodeModal';
 import FilterPanel from './components/FilterPanel';
 import AlarmPanel from './components/AlarmPanel';
@@ -285,6 +284,31 @@ export default function App() {
 
   /* ---------------- search ---------------- */
 
+  const focusNode = useCallback(
+    (nodeId) => {
+      const node = data?.nodesById.get(nodeId);
+      if (!node) return;
+
+      if (node.type === 'switch') {
+        const building = mappingIndex.buildingBySwitchId.get(nodeId);
+        if (building) {
+          openBuilding(building.id, nodeId);
+          setHighlightIds([nodeId]);
+          showToast(`${node.name || nodeId} — ${building.name}`);
+          return;
+        }
+      }
+
+      setView('global');
+      setMode('graph');
+      setActiveBuildingId(null);
+      setSelectedId(nodeId);
+      setHighlightIds([nodeId]);
+      setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `focus-${nodeId}-${Date.now()}` });
+    },
+    [data, mappingIndex, openBuilding, showToast]
+  );
+
   const handleSearchPick = useCallback(
     (entry) => {
       if (entry.kind === 'building') {
@@ -296,25 +320,10 @@ export default function App() {
         setFocusRequest({ ids: [entry.buildingId], mode: 'fitThenCenter', key: `find-${entry.buildingId}-${Date.now()}` });
         return;
       }
-
-      if (entry.kind === 'switch' && entry.buildingId) {
-        // Navigate into the switch's building, then highlight the switch
-        // itself — never a duplicate node, always the real one.
-        openBuilding(entry.buildingId, entry.nodeId);
-        setHighlightIds([entry.nodeId]);
-        showToast(`${entry.title} — ${mappingIndex.buildingsById.get(entry.buildingId)?.name}`);
-        return;
-      }
-
-      // Routers live in the global hierarchy.
-      setView('global');
-      setMode('graph');
-      setActiveBuildingId(null);
-      setSelectedId(entry.nodeId);
-      setHighlightIds([entry.nodeId]);
-      setFocusRequest({ ids: [entry.nodeId], mode: 'fitThenCenter', key: `find-${entry.nodeId}-${Date.now()}` });
+      
+      focusNode(entry.nodeId);
     },
-    [openBuilding, showToast, mappingIndex]
+    [focusNode]
   );
 
   /* ---------------- node interactions ---------------- */
@@ -387,6 +396,27 @@ export default function App() {
       if (a) {
         a.status = status;
         showToast(`Alarm ${status}`);
+        
+        // Auto-update the parent node's severity based on remaining active alarms
+        const nodeId = a.nodeId || a.entity_id;
+        const activeAlarms = raw.alarms.filter(al => (al.nodeId || al.entity_id) === nodeId && al.status === 'active');
+        const node = raw.nodes.find(n => n.id === nodeId);
+        
+        if (node) {
+          if (activeAlarms.length === 0) {
+            node.severity = 'normal';
+            node.status = 'connected';
+          } else {
+            // Find worst severity
+            const order = { critical: 4, major: 3, minor: 2, warning: 1 };
+            let worst = 'warning';
+            for (const al of activeAlarms) {
+              const s = al.severity?.toLowerCase() || 'critical';
+              if ((order[s] || 0) > (order[worst] || 0)) worst = s;
+            }
+            node.severity = worst;
+          }
+        }
       }
     });
   }, [updateTopology, showToast]);
@@ -463,10 +493,6 @@ export default function App() {
 
   if (error) {
     return <div className="load-error">Couldn&apos;t load the topology dataset: {error}</div>;
-  }
-
-  if (!data && !loading) {
-    return <ImportWorkflow onLoadFromRaw={loadFromRaw} onLoadDemo={loadDemo} />;
   }
 
   const ready = !loading && data && mappingIndex && graph;
@@ -614,11 +640,7 @@ export default function App() {
           onClose={() => setIsAlarmPanelOpen(false)}
           onAcknowledge={id => handleUpdateAlarm(id, 'acknowledged')}
           onResolve={id => handleUpdateAlarm(id, 'resolved')}
-          onFocusNode={nodeId => {
-            setSelectedId(nodeId);
-            setHighlightIds([nodeId]);
-            setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `alarm-${nodeId}-${Date.now()}` });
-          }}
+          onFocusNode={focusNode}
           now={DATASET_NOW}
         />
       )}
