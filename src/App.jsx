@@ -393,8 +393,28 @@ export default function App() {
 
   const handleDeleteNode = useCallback((id) => {
     updateTopology((raw) => {
+      // 1. Delete the node
       raw.nodes = raw.nodes.filter(n => n.id !== id);
-      raw.links = raw.links.filter(l => l.source !== id && l.target !== id);
+      
+      // 2. Identify all interfaces belonging to this node
+      const ifacesToRemove = new Set(
+        raw.interfaces.filter(i => i.node_id === id).map(i => i.interface_id)
+      );
+      
+      // 3. Delete any links connected to this node or its interfaces
+      raw.links = raw.links.filter(l => {
+        const connectedToSource = l.source === id || ifacesToRemove.has(l.source_interface_id);
+        const connectedToTarget = l.target === id || ifacesToRemove.has(l.target_interface_id);
+        return !connectedToSource && !connectedToTarget;
+      });
+      
+      // 4. Delete the interfaces themselves
+      raw.interfaces = raw.interfaces.filter(i => i.node_id !== id);
+      
+      // 5. Clean up alarms
+      if (raw.alarmsByNode) raw.alarmsByNode.delete(id);
+      raw.alarms = raw.alarms.filter(a => (a.nodeId || a.entity_id) !== id);
+      
       showToast(`Deleted node ${id}`);
     });
     setSelectedId(null);
@@ -556,6 +576,12 @@ export default function App() {
       {validation && !validation.ok && (
         <div className="validation-banner">
           Device count mismatch — expected {validation.expectedDevices}, found {validation.actualDevices}.
+        </div>
+      )}
+
+      {validation && (validation.missingNodeCount > 0 || validation.unresolvedLinkCount > 0) && (
+        <div className="validation-banner" style={{ backgroundColor: '#eab308', color: '#000', marginBottom: 8, padding: '4px 12px', borderRadius: 4, display: 'inline-block', marginLeft: 16 }}>
+          <strong>Data Anomalies Safely Handled:</strong> Auto-generated {validation.missingNodeCount} missing nodes referenced by links. Ignored {validation.unresolvedLinkCount} orphan links.
         </div>
       )}
 
