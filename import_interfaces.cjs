@@ -37,7 +37,7 @@ for (let i = 1; i < csv.length; i++) {
 }
 
 console.log(`Parsed ${newInterfaces.length} interfaces from CSV.`);
-data.interfaces = newInterfaces;
+data.interfaces = [...data.interfaces, ...newInterfaces];
 
 fs.writeFileSync('./public/network-topology-dataset.json', JSON.stringify(data, null, 2));
 console.log('Successfully updated network-topology-dataset.json!');
