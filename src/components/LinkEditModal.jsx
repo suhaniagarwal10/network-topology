@@ -17,13 +17,25 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
     return data?.interfacesByNode.get(initialSource) || [];
   }, [data, initialSource]);
 
-  const targetInterfaces = useMemo(() => {
-    return data?.interfacesByNode.get(target) || [];
+  const resolvedTargetId = useMemo(() => {
+    const t = target.trim().toLowerCase();
+    if (!t) return null;
+    
+    if (data?.nodesById.has(target.trim())) return target.trim();
+    
+    const matchedNode = (data?.nodes || []).find(n => n.name.toLowerCase() === t);
+    return matchedNode ? matchedNode.id : null;
   }, [data, target]);
+
+  const targetInterfaces = useMemo(() => {
+    if (!resolvedTargetId) return [];
+    return data?.interfacesByNode.get(resolvedTargetId) || [];
+  }, [data, resolvedTargetId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!target.trim()) return;
+    const finalTargetId = resolvedTargetId || target.trim();
+    if (!finalTargetId) return;
     
     if (isEditing) {
       onSave({
@@ -35,9 +47,9 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
     } else {
       onSave({
         isEdit: false,
-        link_id: `L-${initialSource}-${target}-${Date.now()}`,
+        link_id: `L-${initialSource}-${finalTargetId}-${Date.now()}`,
         source: initialSource,
-        target: target.trim(),
+        target: finalTargetId,
         source_interface_id: sourceIface || undefined,
         target_interface_id: targetIface || undefined,
         bandwidth_mbps: Number(bandwidth),
@@ -86,7 +98,7 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
                   value={targetIface} 
                   onChange={e => setTargetIface(e.target.value)}
                   style={{ background: '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
-                  disabled={!target.trim() || targetInterfaces.length === 0}
+                  disabled={!resolvedTargetId || targetInterfaces.length === 0}
                 >
                   <option value="">
                     {targetInterfaces.length === 0 && target.trim() ? 'No interfaces found' : '-- Auto Assign --'}
