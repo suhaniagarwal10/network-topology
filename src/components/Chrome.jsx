@@ -23,7 +23,7 @@ export function ZoomControls({ onZoomIn, onZoomOut, onFit }) {
   );
 }
 
-export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, onReset, children }) {
+export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, onReset, onOpenTrash, deletedCount, children }) {
   return (
     <header>
       <h1>
@@ -63,6 +63,11 @@ export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAdd
         <button onClick={onAddNode} style={{ marginLeft: 16, padding: '4px 8px', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
           Add Node
         </button>
+        {deletedCount > 0 && (
+          <button onClick={onOpenTrash} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#f59e0b', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+            Trash ({deletedCount})
+          </button>
+        )}
         <button onClick={onSimulateAlarm} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
           Simulate Alarm
         </button>

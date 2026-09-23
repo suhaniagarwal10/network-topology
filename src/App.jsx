@@ -16,6 +16,7 @@ import LinkModal from './components/LinkModal';
 import MonitorModal from './components/MonitorModal';
 import InterfaceModal from './components/InterfaceModal';
 import LinkEditModal from './components/LinkEditModal';
+import TrashModal from './components/TrashModal';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -36,6 +37,8 @@ export default function App() {
   const [monitoringNode, setMonitoringNode] = useState(null);
   const [editingLinkNode, setEditingLinkNode] = useState(null);
   const [editingLinkBundle, setEditingLinkBundle] = useState(null);
+  const [deletedElements, setDeletedElements] = useState([]);
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
 
   // 'global'  -> core routers / distribution routers / buildings
   // 'building'-> the individual switches inside one building
@@ -393,32 +396,69 @@ export default function App() {
 
   const handleDeleteNode = useCallback((id) => {
     updateTopology((raw) => {
-      // 1. Delete the node
-      raw.nodes = raw.nodes.filter(n => n.id !== id);
+      const nodeToDel = raw.nodes.find(n => n.id === id);
+      if (!nodeToDel) return;
+
+      const ifacesToDel = raw.interfaces.filter(i => i.node_id === id);
+      const ifaceIds = new Set(ifacesToDel.map(i => i.interface_id));
       
-      // 2. Identify all interfaces belonging to this node
-      const ifacesToRemove = new Set(
-        raw.interfaces.filter(i => i.node_id === id).map(i => i.interface_id)
-      );
-      
-      // 3. Delete any links connected to this node or its interfaces
-      raw.links = raw.links.filter(l => {
-        const connectedToSource = l.source === id || ifacesToRemove.has(l.source_interface_id);
-        const connectedToTarget = l.target === id || ifacesToRemove.has(l.target_interface_id);
-        return !connectedToSource && !connectedToTarget;
+      const linksToDel = raw.links.filter(l => {
+        const connectedToSource = l.source === id || ifaceIds.has(l.source_interface_id);
+        const connectedToTarget = l.target === id || ifaceIds.has(l.target_interface_id);
+        return connectedToSource || connectedToTarget;
       });
-      
-      // 4. Delete the interfaces themselves
+
+      const alarmsToDel = raw.alarms.filter(a => (a.nodeId || a.entity_id) === id);
+
+      setDeletedElements(prev => [...prev, {
+        node: nodeToDel,
+        interfaces: ifacesToDel,
+        links: linksToDel,
+        alarms: alarmsToDel,
+        deletedAt: new Date().toLocaleTimeString()
+      }]);
+
+      raw.nodes = raw.nodes.filter(n => n.id !== id);
       raw.interfaces = raw.interfaces.filter(i => i.node_id !== id);
+      raw.links = raw.links.filter(l => !linksToDel.includes(l));
+      raw.alarms = raw.alarms.filter(a => !alarmsToDel.includes(a));
       
-      // 5. Clean up alarms
       if (raw.alarmsByNode) raw.alarmsByNode.delete(id);
-      raw.alarms = raw.alarms.filter(a => (a.nodeId || a.entity_id) !== id);
+      
+      // Update the dataset meta count so it doesn't throw a red "mismatch" banner
+      if (raw.meta) {
+        raw.meta.nodeCount = raw.nodes.length;
+      }
       
       showToast(`Deleted node ${id}`);
     });
     setSelectedId(null);
   }, [updateTopology, showToast]);
+
+  const handleRestoreNode = useCallback((idx) => {
+    const item = deletedElements[idx];
+    if (!item) return;
+
+    updateTopology((raw) => {
+      raw.nodes.push(item.node);
+      raw.interfaces.push(...item.interfaces);
+      raw.links.push(...item.links);
+      raw.alarms.push(...item.alarms);
+
+      if (item.alarms.length > 0) {
+        if (!raw.alarmsByNode) raw.alarmsByNode = new Map();
+        raw.alarmsByNode.set(item.node.id, item.alarms);
+      }
+
+      if (raw.meta) {
+        raw.meta.nodeCount = raw.nodes.length;
+      }
+
+      showToast(`Restored node ${item.node.id}`);
+    });
+
+    setDeletedElements(prev => prev.filter((_, i) => i !== idx));
+  }, [deletedElements, updateTopology, showToast]);
 
   const handleUpdateAlarm = useCallback((alarmId, status) => {
     let affectedNodeId = null;
@@ -569,28 +609,32 @@ export default function App() {
         onAddNode={handleAddNode} 
         onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}
         onReset={resetDemo}
+        onOpenTrash={() => setIsTrashOpen(true)}
+        deletedCount={deletedElements.length}
       >
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
       </Header>
 
-      {validation && !validation.ok && (
-        <div className="validation-banner">
-          Device count mismatch — expected {validation.expectedDevices}, found {validation.actualDevices}.
-        </div>
-      )}
+      <div className="top-bars" style={{ display: 'flex', flexDirection: 'column' }}>
+        {validation && !validation.ok && (
+          <div className="validation-banner" style={{ backgroundColor: '#7f1d1d', color: '#fecaca', padding: '4px 12px' }}>
+            Device count mismatch — expected {validation.expectedDevices}, found {validation.actualDevices}.
+          </div>
+        )}
 
-      {validation && (validation.missingNodeCount > 0 || validation.unresolvedLinkCount > 0) && (
-        <div className="validation-banner" style={{ backgroundColor: '#eab308', color: '#000', marginBottom: 8, padding: '4px 12px', borderRadius: 4, display: 'inline-block', marginLeft: 16 }}>
-          <strong>Data Anomalies Safely Handled:</strong> Auto-generated {validation.missingNodeCount} missing nodes referenced by links. Ignored {validation.unresolvedLinkCount} orphan links.
-        </div>
-      )}
+        {validation && (validation.missingNodeCount > 0 || validation.unresolvedLinkCount > 0) && (
+          <div className="validation-banner" style={{ backgroundColor: '#eab308', color: '#000', padding: '4px 12px' }}>
+            <strong>Data Anomalies Safely Handled:</strong> Auto-generated {validation.missingNodeCount} missing nodes referenced by links. Ignored {validation.unresolvedLinkCount} orphan links.
+          </div>
+        )}
 
-      <Breadcrumbs
-        building={activeBuilding}
-        node={view === 'building' ? selectedNode : null}
-        onGoGlobal={goGlobal}
-        onGoBuilding={(id) => openBuilding(id)}
-      />
+        <Breadcrumbs
+          building={activeBuilding}
+          node={view === 'building' ? selectedNode : null}
+          onGoGlobal={goGlobal}
+          onGoBuilding={(id) => openBuilding(id)}
+        />
+      </div>
 
       <main>
         <div className="canvas-area">
@@ -747,6 +791,14 @@ export default function App() {
             setEditingLinkNode(null);
             setEditingLinkBundle(null);
           }}
+        />
+      )}
+      {isTrashOpen && (
+        <TrashModal 
+          isOpen={isTrashOpen} 
+          onClose={() => setIsTrashOpen(false)} 
+          deletedElements={deletedElements} 
+          onRestore={handleRestoreNode} 
         />
       )}
     </div>
