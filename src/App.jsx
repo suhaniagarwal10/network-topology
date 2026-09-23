@@ -796,6 +796,7 @@ export default function App() {
         <LinkEditModal
           sourceNode={editingLinkNode}
           linkBundle={editingLinkBundle}
+          data={data}
           onSave={handleSaveLink}
           onClose={() => {
             setEditingLinkNode(null);
