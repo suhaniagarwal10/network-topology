@@ -142,7 +142,11 @@ export function parseRawTopologyData(raw) {
     linksByNode,
     alarmsByNode,
     uplinkRoutersBySwitch,
-    validation,
+    validation: {
+      ...validation,
+      missingNodeCount: missingNodeIds.size,
+      unresolvedLinkCount: unresolvedLinkCount,
+    },
   };
 }
 
@@ -212,6 +216,7 @@ export function useTopologyData(url = '/network-topology-dataset.json') {
   
   const resetDemo = () => {
     localStorage.removeItem('network-topology-data');
+    localStorage.removeItem('network_topology_trash');
     loadDemo();
   };
 

@@ -37,8 +37,15 @@ export default function App() {
   const [monitoringNode, setMonitoringNode] = useState(null);
   const [editingLinkNode, setEditingLinkNode] = useState(null);
   const [editingLinkBundle, setEditingLinkBundle] = useState(null);
-  const [deletedElements, setDeletedElements] = useState([]);
+  const [deletedElements, setDeletedElements] = useState(() => {
+    const saved = localStorage.getItem('network_topology_trash');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isTrashOpen, setIsTrashOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('network_topology_trash', JSON.stringify(deletedElements));
+  }, [deletedElements]);
 
   // 'global'  -> core routers / distribution routers / buildings
   // 'building'-> the individual switches inside one building
@@ -460,6 +467,11 @@ export default function App() {
     setDeletedElements(prev => prev.filter((_, i) => i !== idx));
   }, [deletedElements, updateTopology, showToast]);
 
+  const handleReset = useCallback(() => {
+    setDeletedElements([]);
+    resetDemo();
+  }, [resetDemo]);
+
   const handleUpdateAlarm = useCallback((alarmId, status) => {
     let affectedNodeId = null;
     let newSeverity = null;
@@ -608,7 +620,7 @@ export default function App() {
         onSimulateAlarm={simulateAlarm} 
         onAddNode={handleAddNode} 
         onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}
-        onReset={resetDemo}
+        onReset={handleReset}
         onOpenTrash={() => setIsTrashOpen(true)}
         deletedCount={deletedElements.length}
       >
