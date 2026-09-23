@@ -130,7 +130,6 @@ export default function App() {
     switch: true,
     up: true,
     down: true,
-    warningStatus: true,
     critical: true,
     major: true,
     minor: true,
@@ -170,7 +169,6 @@ export default function App() {
       const st = status?.toLowerCase();
       if ((st === 'up' || st === 'connected') && !filters.up) return false;
       if (st === 'down' && !filters.down) return false;
-      if ((st === 'warning' || st === 'connecting') && !filters.warningStatus) return false;
 
       // Severity
       const sev = severity?.toLowerCase() || 'normal';

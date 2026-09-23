@@ -30,7 +30,6 @@ export default function FilterPanel({ filters, onChange }) {
         <h4>Status</h4>
         <label><input type="checkbox" checked={filters.up} onChange={() => toggle('up')} /> UP</label>
         <label><input type="checkbox" checked={filters.down} onChange={() => toggle('down')} /> DOWN</label>
-        <label><input type="checkbox" checked={filters.warningStatus} onChange={() => toggle('warningStatus')} /> WARNING</label>
       </div>
 
       <div className="filter-group">
