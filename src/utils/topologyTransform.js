@@ -120,29 +120,18 @@ function addAggregatedEdge(map, aId, bId, link) {
   if (aId === bId) return;
   const key = aggregateKey(aId, bId);
   let entry = map.get(key);
-  
-  const sourceIsA = aId < bId;
-  const visualSource = sourceIsA ? aId : bId;
-  const visualTarget = sourceIsA ? bId : aId;
-
   if (!entry) {
     entry = {
       id: `E-${key}`,
-      source: visualSource,
-      target: visualTarget,
+      source: aId < bId ? aId : bId,
+      target: aId < bId ? bId : aId,
       linkIds: [],
       count: 0,
       downCount: 0,
       bandwidthMbps: 0,
-      flowForward: false,
-      flowReverse: false,
     };
     map.set(key, entry);
   }
-  
-  if (sourceIsA) entry.flowForward = true;
-  else entry.flowReverse = true;
-  
   entry.linkIds.push(link.link_id);
   entry.count += 1;
   if (link.status === 'down') entry.downCount += 1;
@@ -150,20 +139,24 @@ function addAggregatedEdge(map, aId, bId, link) {
 }
 
 function finishEdges(map) {
-  const result = [];
-  for (const entry of map.values()) {
+  return [...map.values()].map((entry) => {
     const allDown = entry.downCount === entry.count;
+    // A single failed link inside a 20-link bundle isn't a degraded bundle.
+    // Only flag amber once a meaningful share of the bundle is down.
     const someDown = entry.downCount / entry.count >= 0.25;
-    const baseLabel = entry.count > 1
-      ? `${entry.count} links${entry.downCount ? ` · ${entry.downCount} down` : ''}`
-      : `${bwLabel(entry.bandwidthMbps)}${allDown ? ' · down' : ''}`;
-
-    const size = entry.count > 1 ? Math.min(2, 1 + Math.log10(entry.count) * 0.5) : 0.8;
-    const fill = allDown ? '#ef4444' : someDown ? '#f59e0b' : '#3f4a5c';
-
-    const baseEdge = {
-      size,
-      fill,
+    const label =
+      entry.count > 1
+        ? `${entry.count} links${entry.downCount ? ` · ${entry.downCount} down` : ''}`
+        : `${bwLabel(entry.bandwidthMbps)}${allDown ? ' · down' : ''}`;
+    return {
+      id: entry.id,
+      source: entry.source,
+      target: entry.target,
+      label,
+      size: entry.count > 1 ? Math.min(2, 1 + Math.log10(entry.count) * 0.5) : 0.8,
+      fill: allDown ? '#ef4444' : someDown ? '#f59e0b' : '#3f4a5c',
+      // Dashing every partially-degraded bundle turned the whole map into
+      // dashes; only a fully-down link reads as broken.
       dashed: allDown,
       data: {
         kind: 'link',
@@ -173,30 +166,7 @@ function finishEdges(map) {
         bandwidthMbps: entry.bandwidthMbps,
       },
     };
-
-    if (entry.flowForward) {
-      result.push({
-        ...baseEdge,
-        id: `${entry.id}-F`,
-        source: entry.source,
-        target: entry.target,
-        label: (entry.flowReverse ? '▶ ' : '') + baseLabel,
-        arrowPlacement: 'end',
-      });
-    }
-
-    if (entry.flowReverse) {
-      result.push({
-        ...baseEdge,
-        id: `${entry.id}-R`,
-        source: entry.target,
-        target: entry.source,
-        label: (entry.flowForward ? '◀ ' : '') + baseLabel,
-        arrowPlacement: 'end',
-      });
-    }
-  }
-  return result;
+  });
 }
 
 /* ------------------------------------------------------------------ *
