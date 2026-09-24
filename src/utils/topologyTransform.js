@@ -107,66 +107,79 @@ export function computeDeviceStats(node, data) {
  * Shared edge aggregation
  * ------------------------------------------------------------------ */
 
-function aggregateKey(a, b) {
-  return a < b ? `${a}|${b}` : `${b}|${a}`;
-}
-
-/**
- * Collapse many real links into one drawn edge.
- * Keeps the underlying link ids so nothing is lost — the details panel and
- * drill-down can always get back to the individual links.
- */
 function addAggregatedEdge(map, aId, bId, link) {
   if (aId === bId) return;
-  const key = aggregateKey(aId, bId);
+  const key = `${aId}->${bId}`;
   let entry = map.get(key);
+
   if (!entry) {
     entry = {
       id: `E-${key}`,
-      source: aId < bId ? aId : bId,
-      target: aId < bId ? bId : aId,
-      linkIds: [],
+      source: aId,
+      target: bId,
+      links: [],
       count: 0,
       downCount: 0,
       bandwidthMbps: 0,
     };
     map.set(key, entry);
   }
-  entry.linkIds.push(link.link_id);
+  
+  entry.links.push(link);
   entry.count += 1;
   if (link.status === 'down') entry.downCount += 1;
   entry.bandwidthMbps += link.bandwidth_mbps || 0;
 }
 
 function finishEdges(map) {
-  return [...map.values()].map((entry) => {
+  const result = [];
+  for (const entry of map.values()) {
     const allDown = entry.downCount === entry.count;
-    // A single failed link inside a 20-link bundle isn't a degraded bundle.
-    // Only flag amber once a meaningful share of the bundle is down.
     const someDown = entry.downCount / entry.count >= 0.25;
-    const label =
-      entry.count > 1
-        ? `${entry.count} links${entry.downCount ? ` · ${entry.downCount} down` : ''}`
-        : `${bwLabel(entry.bandwidthMbps)}${allDown ? ' · down' : ''}`;
-    return {
+    
+    let baseLabel = entry.count > 1
+      ? `${entry.count} links${entry.downCount ? ` · ${entry.downCount} down` : ''}`
+      : `${bwLabel(entry.bandwidthMbps)}${allDown ? ' · down' : ''}`;
+
+    // Add interface details
+    if (entry.count === 1) {
+      const l = entry.links[0];
+      const sIf = l.source_interface_id || 'Auto';
+      const tIf = l.target_interface_id || 'Auto';
+      baseLabel += `\nsource: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
+    } else if (entry.count <= 3) {
+      // If a small bundle, list them
+      const list = entry.links.map(l => `\nsource: ${entry.source} (${l.source_interface_id || 'Auto'}) target: ${entry.target} (${l.target_interface_id || 'Auto'})`);
+      baseLabel += list.join('');
+    } else {
+      baseLabel += `\n(Multiple interfaces)`;
+    }
+
+    const reverseKey = `${entry.target}->${entry.source}`;
+    const isBidirectional = map.has(reverseKey);
+    
+    const size = entry.count > 1 ? Math.min(2, 1 + Math.log10(entry.count) * 0.5) : 0.8;
+    const fill = allDown ? '#ef4444' : someDown ? '#f59e0b' : '#3f4a5c';
+
+    result.push({
       id: entry.id,
       source: entry.source,
       target: entry.target,
-      label,
-      size: entry.count > 1 ? Math.min(2, 1 + Math.log10(entry.count) * 0.5) : 0.8,
-      fill: allDown ? '#ef4444' : someDown ? '#f59e0b' : '#3f4a5c',
-      // Dashing every partially-degraded bundle turned the whole map into
-      // dashes; only a fully-down link reads as broken.
+      size,
+      fill,
       dashed: allDown,
+      label: (isBidirectional ? '▶ ' : '') + baseLabel,
+      arrowPlacement: 'end',
       data: {
         kind: 'link',
         count: entry.count,
         downCount: entry.downCount,
-        linkIds: entry.linkIds,
+        linkIds: entry.links.map(l => l.link_id),
         bandwidthMbps: entry.bandwidthMbps,
       },
-    };
-  });
+    });
+  }
+  return result;
 }
 
 /* ------------------------------------------------------------------ *

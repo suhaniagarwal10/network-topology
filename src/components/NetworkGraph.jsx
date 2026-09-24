@@ -134,8 +134,8 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       // simply not giving the 140 distribution routers a label — see
       // buildGlobalGraph — rather than by hoping the camera is close enough.
       labelType="nodes"
-      edgeArrowPosition="none"
-      edgeInterpolation="linear"
+      edgeArrowPosition="end"
+      edgeInterpolation="curved"
       minDistance={200}
       maxDistance={45000}
       selections={selectedId ? [selectedId] : []}
