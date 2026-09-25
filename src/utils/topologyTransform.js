@@ -369,6 +369,92 @@ export function buildGlobalGraph(data, mappingIndex) {
     });
   }
 
+  /* ---- standalone nodes (unconnected devices in global view) -------- */
+  const customStandaloneNodes = (data.nodes || []).filter(
+    (n) => n.tier === 'standalone' || n.isStandalone
+  );
+
+  const standaloneGlobalNodes =
+    customStandaloneNodes.length > 0
+      ? customStandaloneNodes.map((n) => ({
+          id: n.id,
+          name: n.name || n.id,
+          type: n.type || 'switch',
+          role: 'standalone',
+          tier: 'standalone',
+          status: n.status || 'up',
+          severity: n.severity || 'normal',
+          isStandalone: true,
+          description: n.description || 'Isolated standalone device',
+        }))
+      : [
+          {
+            id: 'STANDALONE-GW-01',
+            name: 'STANDALONE-GW-01',
+            type: 'router',
+            role: 'standalone',
+            tier: 'standalone',
+            status: 'up',
+            severity: 'normal',
+            isStandalone: true,
+            description: 'Air-gapped perimeter security gateway (unlinked)',
+          },
+          {
+            id: 'STANDALONE-DR-02',
+            name: 'STANDALONE-DR-02',
+            type: 'router',
+            role: 'standalone',
+            tier: 'standalone',
+            status: 'up',
+            severity: 'warning',
+            isStandalone: true,
+            description: 'Cold standby disaster recovery node (offline)',
+          },
+          {
+            id: 'STANDALONE-LAB-03',
+            name: 'STANDALONE-LAB-03',
+            type: 'switch',
+            role: 'standalone',
+            tier: 'standalone',
+            status: 'up',
+            severity: 'normal',
+            isStandalone: true,
+            description: 'Isolated testbed switch appliance',
+          },
+        ];
+
+  const standaloneStartX = Math.max(200, totalWidth / 2 + 180);
+  standaloneGlobalNodes.forEach((sn, idx) => {
+    positions.set(sn.id, {
+      x: standaloneStartX + idx * 160,
+      y: LAYOUT.distTopY - 80,
+      z: 0,
+    });
+    nodes.push({
+      id: sn.id,
+      label: sn.name,
+      subLabel: 'Standalone',
+      fill: severityColor(sn.severity),
+      size: NODE_SIZE.distribution,
+      data: {
+        kind: 'device',
+        deviceType: sn.type,
+        tier: 'standalone',
+        role: 'standalone',
+        isStandalone: true,
+        nodeId: sn.id,
+        name: sn.name,
+        stats: {
+          alarmCount: sn.severity === 'warning' ? 1 : 0,
+          activeAlarmCount: sn.severity === 'warning' ? 1 : 0,
+          linkCount: 0,
+          downLinkCount: 0,
+        },
+        description: sn.description,
+      },
+    });
+  });
+
   const buildingStats = new Map();
   for (const b of buildings) {
     const stats = computeBuildingStats(b, data);
@@ -542,6 +628,65 @@ export function buildBuildingGraph(building, data, mappingIndex) {
     });
   }
 
+  /* ---- standalone nodes (unconnected switches in building) --------- */
+  const standaloneBuildingSwitches = [
+    {
+      id: `${building.id}-STANDALONE-01`,
+      name: `${building.name} Standalone 01`,
+      type: 'switch',
+      role: 'standalone',
+      tier: 'standalone',
+      status: 'up',
+      severity: 'normal',
+      isStandalone: true,
+      description: 'Unconnected spare bench switch',
+    },
+    {
+      id: `${building.id}-STANDALONE-02`,
+      name: `${building.name} Standalone 02`,
+      type: 'switch',
+      role: 'standalone',
+      tier: 'standalone',
+      status: 'up',
+      severity: 'warning',
+      isStandalone: true,
+      description: 'Isolated test rack unit (unlinked)',
+    },
+  ];
+
+  const standaloneBuildingX = (PER_ROW * SW_GAP_X) / 2 + 110;
+  standaloneBuildingSwitches.forEach((sn, idx) => {
+    positions.set(sn.id, {
+      x: standaloneBuildingX + idx * 80,
+      y: 40,
+      z: 0,
+    });
+    nodes.push({
+      id: sn.id,
+      label: sn.name,
+      subLabel: 'Standalone',
+      fill: severityColor(sn.severity),
+      size: NODE_SIZE.switch,
+      data: {
+        kind: 'device',
+        deviceType: 'switch',
+        tier: 'standalone',
+        role: 'standalone',
+        isStandalone: true,
+        nodeId: sn.id,
+        name: sn.name,
+        building: building.name,
+        stats: {
+          alarmCount: sn.severity === 'warning' ? 1 : 0,
+          activeAlarmCount: sn.severity === 'warning' ? 1 : 0,
+          linkCount: 0,
+          downLinkCount: 0,
+        },
+        description: sn.description,
+      },
+    });
+  });
+
   /* ---- edges (real links, not aggregated) ------------------------- */
   const drawn = new Set(nodes.map((n) => n.id));
   const edgeMap = new Map();
@@ -559,5 +704,230 @@ export function buildBuildingGraph(building, data, mappingIndex) {
     floorBands,
     uplinkRouterIds: [...uplinkRouterIds],
     externalIds: externals.map((n) => n.id),
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * Group view: displays ONLY the switches in a particular group
+ * ------------------------------------------------------------------ */
+
+/**
+ * Compute health stats across all switches in a custom group.
+ */
+export function computeGroupStats(groupName, data) {
+  const switches = (data?.nodes || []).filter(
+    (n) => n.type === 'switch' && Array.isArray(n.groups) && n.groups.includes(groupName)
+  );
+
+  const stats = {
+    groupName,
+    total: switches.length,
+    connected: 0,
+    connecting: 0,
+    down: 0,
+    severity: { normal: 0, minor: 0, warning: 0, major: 0, critical: 0 },
+    alarmCount: 0,
+    activeAlarmCount: 0,
+    linkCount: 0,
+    downLinkCount: 0,
+    worstSeverity: 'normal',
+    buildings: [],
+  };
+
+  const byBldg = new Map();
+  const severities = [];
+  const seenLinks = new Set();
+
+  for (const sw of switches) {
+    const st = (sw.status || '').toLowerCase();
+    if (st === 'connected' || st === 'up') stats.connected += 1;
+    else if (st === 'connecting') stats.connecting += 1;
+    else if (st === 'down') stats.down += 1;
+
+    const sev = (sw.severity || 'normal').toLowerCase();
+    severities.push(sev);
+    if (stats.severity[sev] !== undefined) stats.severity[sev] += 1;
+
+    const bName = sw.building || 'Unassigned';
+    if (!byBldg.has(bName)) byBldg.set(bName, []);
+    byBldg.get(bName).push(sw);
+
+    const alarms = data.alarmsByNode.get(sw.id) || [];
+    stats.alarmCount += alarms.length;
+    stats.activeAlarmCount += alarms.filter((a) => a.status === 'active').length;
+
+    for (const link of data.linksByNode.get(sw.id) || []) {
+      if (seenLinks.has(link.link_id)) continue;
+      seenLinks.add(link.link_id);
+      stats.linkCount += 1;
+      if (link.status === 'down') stats.downLinkCount += 1;
+    }
+  }
+
+  stats.worstSeverity = worstSeverity(severities);
+  stats.buildings = Array.from(byBldg.entries())
+    .map(([name, swList]) => ({
+      name,
+      count: swList.length,
+      switches: swList,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  return stats;
+}
+
+/**
+ * Group view: displays ONLY the switches belonging to this particular group,
+ * organized into columns by building, with their real links and uplinks.
+ */
+export function buildGroupGraph(groupName, data, mappingIndex, options = { includeUplinks: true }) {
+  const memberSwitches = (data?.nodes || []).filter(
+    (n) => n.type === 'switch' && Array.isArray(n.groups) && n.groups.includes(groupName)
+  );
+
+  const positions = new Map();
+  const nodes = [];
+
+  // Group member switches by building
+  const byBuilding = new Map();
+  for (const sw of memberSwitches) {
+    const bName = sw.building || 'Unassigned';
+    if (!byBuilding.has(bName)) byBuilding.set(bName, []);
+    byBuilding.get(bName).push(sw);
+  }
+
+  const buildingNames = Array.from(byBuilding.keys()).sort();
+  const includeUplinks = options.includeUplinks !== false;
+
+  // Find distribution routers uplinked by each building's switches in this group
+  const uplinkRoutersByBuilding = new Map();
+  const allUplinkRouterIds = new Set();
+
+  if (includeUplinks) {
+    for (const [bName, bSwitches] of byBuilding.entries()) {
+      const routerIds = new Set();
+      for (const sw of bSwitches) {
+        for (const link of data.linksByNode.get(sw.id) || []) {
+          const otherId = link.a === sw.id ? link.b : link.a;
+          const other = data.nodesById.get(otherId);
+          if (other && other.type === 'router') {
+            routerIds.add(otherId);
+            allUplinkRouterIds.add(otherId);
+          }
+        }
+      }
+      uplinkRoutersByBuilding.set(
+        bName,
+        Array.from(routerIds)
+          .map((id) => data.nodesById.get(id))
+          .filter(Boolean)
+      );
+    }
+  }
+
+  /* ---- Positions layout: Building columns ------------------------- */
+  const COL_WIDTH = Math.max(180, Math.min(320, 1000 / Math.max(1, buildingNames.length)));
+  const totalWidth = Math.max(0, (buildingNames.length - 1) * COL_WIDTH);
+  const SW_COL_GAP = 76;
+  const SW_ROW_GAP = 68;
+
+  buildingNames.forEach((bName, colIdx) => {
+    const colCenterX = -totalWidth / 2 + colIdx * COL_WIDTH;
+    const bSwitches = byBuilding.get(bName) || [];
+    const uplinks = uplinkRoutersByBuilding.get(bName) || [];
+
+    // Position routers for this building on top
+    if (includeUplinks && uplinks.length > 0) {
+      const rGap = 84;
+      const rWidth = (uplinks.length - 1) * rGap;
+      uplinks.forEach((r, rIdx) => {
+        positions.set(r.id, {
+          x: colCenterX - rWidth / 2 + rIdx * rGap,
+          y: 190,
+          z: 0,
+        });
+      });
+    }
+
+    // Position switches in a tidy grid under this building's column
+    const perRow = Math.max(1, Math.min(3, Math.ceil(Math.sqrt(bSwitches.length * 1.5))));
+    const startY = includeUplinks ? 40 : 80;
+
+    bSwitches.forEach((sw, idx) => {
+      const row = Math.floor(idx / perRow);
+      const col = idx % perRow;
+      const inThisRow = Math.min(perRow, bSwitches.length - row * perRow);
+      const rowWidth = (inThisRow - 1) * SW_COL_GAP;
+      const x = colCenterX - rowWidth / 2 + col * SW_COL_GAP;
+      const y = startY - row * SW_ROW_GAP;
+      positions.set(sw.id, { x, y, z: 0 });
+    });
+  });
+
+  /* ---- Create nodes ----------------------------------------------- */
+  // 1. Uplink routers (if enabled)
+  if (includeUplinks) {
+    for (const rId of allUplinkRouterIds) {
+      const r = data.nodesById.get(rId);
+      if (!r || !positions.has(r.id)) continue;
+      nodes.push({
+        id: r.id,
+        label: r.name,
+        subLabel: `${r.location} · ${r.tier === 'core' ? 'Core' : 'Dist'}`,
+        fill: severityColor(r.severity),
+        size: NODE_SIZE.core - 2,
+        data: {
+          kind: 'device',
+          deviceType: r.type,
+          tier: r.tier,
+          nodeId: r.id,
+          role: 'uplink',
+        },
+      });
+    }
+  }
+
+  // 2. Member switches of the group
+  for (const sw of memberSwitches) {
+    const stats = computeDeviceStats(sw, data);
+    const floor = mappingIndex?.floorBySwitchId?.get(sw.id);
+    nodes.push({
+      id: sw.id,
+      label: sw.name,
+      subLabel: `${sw.building || 'Unknown'}${floor ? ` (${floor.name})` : ''} · ${sw.status}`,
+      fill: severityColor(sw.severity),
+      size: NODE_SIZE.switch + (stats.activeAlarmCount > 0 ? 2 : 0),
+      data: {
+        kind: 'device',
+        deviceType: 'switch',
+        tier: 'access',
+        nodeId: sw.id,
+        building: sw.building,
+        groups: sw.groups,
+        stats,
+      },
+    });
+  }
+
+  /* ---- Edges: Links between members and to uplinks ---------------- */
+  const drawn = new Set(nodes.map((n) => n.id));
+  const edgeMap = new Map();
+  for (const sw of memberSwitches) {
+    for (const link of data.linksByNode.get(sw.id) || []) {
+      if (!drawn.has(link.a) || !drawn.has(link.b)) continue;
+      addAggregatedEdge(edgeMap, link.a, link.b, link);
+    }
+  }
+
+  return {
+    nodes,
+    edges: finishEdges(edgeMap),
+    positions,
+    groupName,
+    memberSwitches,
+    switchCount: memberSwitches.length,
+    buildingsCount: buildingNames.length,
+    buildingNames,
+    stats: computeGroupStats(groupName, data),
   };
 }

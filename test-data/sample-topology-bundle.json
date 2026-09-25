@@ -1,0 +1,843 @@
+{
+  "meta": {
+    "generatedAt": "2026-09-25T17:50:24.132Z",
+    "nodeCount": 20,
+    "interfaceCount": 54,
+    "linkCount": 27,
+    "alarmCount": 5,
+    "name": "Sample Branch & Campus Test Network"
+  },
+  "nodes": [
+    {
+      "id": "CORE-ALPHA-01",
+      "name": "Core Router Alpha-01",
+      "type": "router",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.1.1",
+      "location": "HQ Data Center",
+      "tier": "core",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "CORE-BETA-02",
+      "name": "Core Router Beta-02",
+      "type": "router",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.1.2",
+      "location": "HQ Data Center",
+      "tier": "core",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "DIST-HQ-01",
+      "name": "Dist Router HQ-01",
+      "type": "router",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.2.1",
+      "location": "HQ Campus",
+      "tier": "distribution",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "DIST-HQ-02",
+      "name": "Dist Router HQ-02",
+      "type": "router",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.2.2",
+      "location": "HQ Campus",
+      "tier": "distribution",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "DIST-BRANCH-01",
+      "name": "Dist Router Branch-01",
+      "type": "router",
+      "status": "connected",
+      "severity": "warning",
+      "ipAddress": "10.100.3.1",
+      "location": "West Region",
+      "tier": "distribution",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "DIST-BRANCH-02",
+      "name": "Dist Router Branch-02",
+      "type": "router",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.3.2",
+      "location": "West Region",
+      "tier": "distribution",
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "SW-HQ-F1-01",
+      "name": "HQ Tower Sw F1-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.10.1",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Engineering",
+        "Lab-Infra"
+      ]
+    },
+    {
+      "id": "SW-HQ-F1-02",
+      "name": "HQ Tower Sw F1-02",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.10.2",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Engineering"
+      ]
+    },
+    {
+      "id": "SW-HQ-F2-01",
+      "name": "HQ Tower Sw F2-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.10.3",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Engineering",
+        "Product"
+      ]
+    },
+    {
+      "id": "SW-HQ-F2-02",
+      "name": "HQ Tower Sw F2-02",
+      "type": "switch",
+      "status": "connected",
+      "severity": "warning",
+      "ipAddress": "10.100.10.4",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Product"
+      ]
+    },
+    {
+      "id": "SW-HQ-F3-01",
+      "name": "HQ Tower Sw F3-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.10.5",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Executive",
+        "Finance"
+      ]
+    },
+    {
+      "id": "SW-HQ-F3-02",
+      "name": "HQ Tower Sw F3-02",
+      "type": "switch",
+      "status": "down",
+      "severity": "critical",
+      "ipAddress": "10.100.10.6",
+      "location": "HQ Campus",
+      "tier": "access",
+      "building": "HQ Engineering Tower",
+      "groups": [
+        "Finance"
+      ]
+    },
+    {
+      "id": "SW-WST-F1-01",
+      "name": "West Hub Sw F1-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.20.1",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "Lab-Infra",
+        "IoT-Sensors"
+      ]
+    },
+    {
+      "id": "SW-WST-F1-02",
+      "name": "West Hub Sw F1-02",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.20.2",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "IoT-Sensors"
+      ]
+    },
+    {
+      "id": "SW-WST-F2-01",
+      "name": "West Hub Sw F2-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.20.3",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "Operations"
+      ]
+    },
+    {
+      "id": "SW-WST-F2-02",
+      "name": "West Hub Sw F2-02",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.20.4",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "Operations",
+        "Security"
+      ]
+    },
+    {
+      "id": "SW-WST-F3-01",
+      "name": "West Hub Sw F3-01",
+      "type": "switch",
+      "status": "connected",
+      "severity": "warning",
+      "ipAddress": "10.100.20.5",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "Security"
+      ]
+    },
+    {
+      "id": "SW-WST-F3-02",
+      "name": "West Hub Sw F3-02",
+      "type": "switch",
+      "status": "connected",
+      "severity": "normal",
+      "ipAddress": "10.100.20.6",
+      "location": "West Region",
+      "tier": "access",
+      "building": "West Innovation Hub",
+      "groups": [
+        "Security",
+        "Lab-Infra"
+      ]
+    },
+    {
+      "id": "STANDALONE-TEST-01",
+      "name": "Standalone Security GW",
+      "type": "router",
+      "status": "up",
+      "severity": "normal",
+      "ipAddress": "192.168.100.1",
+      "location": "Air-Gapped Lab",
+      "tier": "standalone",
+      "isStandalone": true,
+      "building": null,
+      "groups": []
+    },
+    {
+      "id": "STANDALONE-TEST-02",
+      "name": "Standalone Test Unit",
+      "type": "switch",
+      "status": "up",
+      "severity": "warning",
+      "ipAddress": "192.168.200.1",
+      "location": "Workbench 4",
+      "tier": "standalone",
+      "isStandalone": true,
+      "building": null,
+      "groups": []
+    }
+  ],
+  "interfaces": [
+    {
+      "interface_id": "IF-CORE-1-BB1",
+      "node_id": "CORE-ALPHA-01",
+      "name": "HundredGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-1-D1",
+      "node_id": "CORE-ALPHA-01",
+      "name": "TenGigE0/1/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-1-D2",
+      "node_id": "CORE-ALPHA-01",
+      "name": "TenGigE0/1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-1-D3",
+      "node_id": "CORE-ALPHA-01",
+      "name": "TenGigE0/2/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-1-D4",
+      "node_id": "CORE-ALPHA-01",
+      "name": "TenGigE0/2/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-2-BB1",
+      "node_id": "CORE-BETA-02",
+      "name": "HundredGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-2-D1",
+      "node_id": "CORE-BETA-02",
+      "name": "TenGigE0/1/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-2-D2",
+      "node_id": "CORE-BETA-02",
+      "name": "TenGigE0/1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-2-D3",
+      "node_id": "CORE-BETA-02",
+      "name": "TenGigE0/2/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-CORE-2-D4",
+      "node_id": "CORE-BETA-02",
+      "name": "TenGigE0/2/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-1-UP1",
+      "node_id": "DIST-HQ-01",
+      "name": "TenGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-1-UP2",
+      "node_id": "DIST-HQ-01",
+      "name": "TenGigE0/0/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-1-SW1",
+      "node_id": "DIST-HQ-01",
+      "name": "GigE0/1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-1-SW2",
+      "node_id": "DIST-HQ-01",
+      "name": "GigE0/1/0/2",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-1-SW3",
+      "node_id": "DIST-HQ-01",
+      "name": "GigE0/1/0/3",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-2-UP1",
+      "node_id": "DIST-HQ-02",
+      "name": "TenGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-2-UP2",
+      "node_id": "DIST-HQ-02",
+      "name": "TenGigE0/0/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-2-SW4",
+      "node_id": "DIST-HQ-02",
+      "name": "GigE0/1/0/4",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-2-SW5",
+      "node_id": "DIST-HQ-02",
+      "name": "GigE0/1/0/5",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DHQ-2-SW6",
+      "node_id": "DIST-HQ-02",
+      "name": "GigE0/1/0/6",
+      "status": "down"
+    },
+    {
+      "interface_id": "IF-DBR-1-UP1",
+      "node_id": "DIST-BRANCH-01",
+      "name": "TenGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-1-UP2",
+      "node_id": "DIST-BRANCH-01",
+      "name": "TenGigE0/0/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-1-SW1",
+      "node_id": "DIST-BRANCH-01",
+      "name": "GigE0/1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-1-SW2",
+      "node_id": "DIST-BRANCH-01",
+      "name": "GigE0/1/0/2",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-1-SW3",
+      "node_id": "DIST-BRANCH-01",
+      "name": "GigE0/1/0/3",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-2-UP1",
+      "node_id": "DIST-BRANCH-02",
+      "name": "TenGigE0/0/0/0",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-2-UP2",
+      "node_id": "DIST-BRANCH-02",
+      "name": "TenGigE0/0/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-2-SW4",
+      "node_id": "DIST-BRANCH-02",
+      "name": "GigE0/1/0/4",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-2-SW5",
+      "node_id": "DIST-BRANCH-02",
+      "name": "GigE0/1/0/5",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-DBR-2-SW6",
+      "node_id": "DIST-BRANCH-02",
+      "name": "GigE0/1/0/6",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F1-01-UP",
+      "node_id": "SW-HQ-F1-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F1-01-PEER",
+      "node_id": "SW-HQ-F1-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F1-02-UP",
+      "node_id": "SW-HQ-F1-02",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F1-02-PEER",
+      "node_id": "SW-HQ-F1-02",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F2-01-UP",
+      "node_id": "SW-HQ-F2-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F2-01-PEER",
+      "node_id": "SW-HQ-F2-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F2-02-UP",
+      "node_id": "SW-HQ-F2-02",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F2-02-PEER",
+      "node_id": "SW-HQ-F2-02",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F3-01-UP",
+      "node_id": "SW-HQ-F3-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F3-01-PEER",
+      "node_id": "SW-HQ-F3-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-HQ-F3-02-UP",
+      "node_id": "SW-HQ-F3-02",
+      "name": "Te1/0/1",
+      "status": "down"
+    },
+    {
+      "interface_id": "IF-HQ-F3-02-PEER",
+      "node_id": "SW-HQ-F3-02",
+      "name": "Gi1/0/24",
+      "status": "down"
+    },
+    {
+      "interface_id": "IF-WST-F1-01-UP",
+      "node_id": "SW-WST-F1-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F1-01-PEER",
+      "node_id": "SW-WST-F1-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F1-02-UP",
+      "node_id": "SW-WST-F1-02",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F1-02-PEER",
+      "node_id": "SW-WST-F1-02",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F2-01-UP",
+      "node_id": "SW-WST-F2-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F2-01-PEER",
+      "node_id": "SW-WST-F2-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F2-02-UP",
+      "node_id": "SW-WST-F2-02",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F2-02-PEER",
+      "node_id": "SW-WST-F2-02",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F3-01-UP",
+      "node_id": "SW-WST-F3-01",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F3-01-PEER",
+      "node_id": "SW-WST-F3-01",
+      "name": "Gi1/0/24",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F3-02-UP",
+      "node_id": "SW-WST-F3-02",
+      "name": "Te1/0/1",
+      "status": "up"
+    },
+    {
+      "interface_id": "IF-WST-F3-02-PEER",
+      "node_id": "SW-WST-F3-02",
+      "name": "Gi1/0/24",
+      "status": "up"
+    }
+  ],
+  "links": [
+    {
+      "link_id": "LNK-BB-01",
+      "source_interface_id": "IF-CORE-1-BB1",
+      "target_interface_id": "IF-CORE-2-BB1",
+      "status": "up",
+      "bandwidth_mbps": 100000
+    },
+    {
+      "link_id": "LNK-C1-DHQ1",
+      "source_interface_id": "IF-CORE-1-D1",
+      "target_interface_id": "IF-DHQ-1-UP1",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C2-DHQ1",
+      "source_interface_id": "IF-CORE-2-D1",
+      "target_interface_id": "IF-DHQ-1-UP2",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C1-DHQ2",
+      "source_interface_id": "IF-CORE-1-D2",
+      "target_interface_id": "IF-DHQ-2-UP1",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C2-DHQ2",
+      "source_interface_id": "IF-CORE-2-D2",
+      "target_interface_id": "IF-DHQ-2-UP2",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C1-DBR1",
+      "source_interface_id": "IF-CORE-1-D3",
+      "target_interface_id": "IF-DBR-1-UP1",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C2-DBR1",
+      "source_interface_id": "IF-CORE-2-D3",
+      "target_interface_id": "IF-DBR-1-UP2",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C1-DBR2",
+      "source_interface_id": "IF-CORE-1-D4",
+      "target_interface_id": "IF-DBR-2-UP1",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-C2-DBR2",
+      "source_interface_id": "IF-CORE-2-D4",
+      "target_interface_id": "IF-DBR-2-UP2",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ1-SW1",
+      "source_interface_id": "IF-DHQ-1-SW1",
+      "target_interface_id": "IF-HQ-F1-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ1-SW2",
+      "source_interface_id": "IF-DHQ-1-SW2",
+      "target_interface_id": "IF-HQ-F2-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ1-SW3",
+      "source_interface_id": "IF-DHQ-1-SW3",
+      "target_interface_id": "IF-HQ-F3-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ2-SW4",
+      "source_interface_id": "IF-DHQ-2-SW4",
+      "target_interface_id": "IF-HQ-F1-02-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ2-SW5",
+      "source_interface_id": "IF-DHQ-2-SW5",
+      "target_interface_id": "IF-HQ-F2-02-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DHQ2-SW6",
+      "source_interface_id": "IF-DHQ-2-SW6",
+      "target_interface_id": "IF-HQ-F3-02-UP",
+      "status": "down",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR1-SW1",
+      "source_interface_id": "IF-DBR-1-SW1",
+      "target_interface_id": "IF-WST-F1-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR1-SW2",
+      "source_interface_id": "IF-DBR-1-SW2",
+      "target_interface_id": "IF-WST-F2-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR1-SW3",
+      "source_interface_id": "IF-DBR-1-SW3",
+      "target_interface_id": "IF-WST-F3-01-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR2-SW4",
+      "source_interface_id": "IF-DBR-2-SW4",
+      "target_interface_id": "IF-WST-F1-02-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR2-SW5",
+      "source_interface_id": "IF-DBR-2-SW5",
+      "target_interface_id": "IF-WST-F2-02-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-DBR2-SW6",
+      "source_interface_id": "IF-DBR-2-SW6",
+      "target_interface_id": "IF-WST-F3-02-UP",
+      "status": "up",
+      "bandwidth_mbps": 10000
+    },
+    {
+      "link_id": "LNK-HQ-F1-PEER",
+      "source_interface_id": "IF-HQ-F1-01-PEER",
+      "target_interface_id": "IF-HQ-F1-02-PEER",
+      "status": "up",
+      "bandwidth_mbps": 1000
+    },
+    {
+      "link_id": "LNK-HQ-F2-PEER",
+      "source_interface_id": "IF-HQ-F2-01-PEER",
+      "target_interface_id": "IF-HQ-F2-02-PEER",
+      "status": "up",
+      "bandwidth_mbps": 1000
+    },
+    {
+      "link_id": "LNK-HQ-F3-PEER",
+      "source_interface_id": "IF-HQ-F3-01-PEER",
+      "target_interface_id": "IF-HQ-F3-02-PEER",
+      "status": "down",
+      "bandwidth_mbps": 1000
+    },
+    {
+      "link_id": "LNK-WST-F1-PEER",
+      "source_interface_id": "IF-WST-F1-01-PEER",
+      "target_interface_id": "IF-WST-F1-02-PEER",
+      "status": "up",
+      "bandwidth_mbps": 1000
+    },
+    {
+      "link_id": "LNK-WST-F2-PEER",
+      "source_interface_id": "IF-WST-F2-01-PEER",
+      "target_interface_id": "IF-WST-F2-02-PEER",
+      "status": "up",
+      "bandwidth_mbps": 1000
+    },
+    {
+      "link_id": "LNK-WST-F3-PEER",
+      "source_interface_id": "IF-WST-F3-01-PEER",
+      "target_interface_id": "IF-WST-F3-02-PEER",
+      "status": "up",
+      "bandwidth_mbps": 1000
+    }
+  ],
+  "alarms": [
+    {
+      "id": "ALM-TEST-001",
+      "nodeId": "SW-HQ-F3-02",
+      "severity": "critical",
+      "description": "Switch offline - Dual PSU failure and link loss",
+      "raisedAt": "2026-09-25T14:30:00",
+      "status": "active"
+    },
+    {
+      "id": "ALM-TEST-002",
+      "nodeId": "DIST-BRANCH-01",
+      "severity": "warning",
+      "description": "High CPU utilization (94%) detected on control plane",
+      "raisedAt": "2026-09-25T15:10:00",
+      "status": "active"
+    },
+    {
+      "id": "ALM-TEST-003",
+      "nodeId": "SW-HQ-F2-02",
+      "severity": "warning",
+      "description": "Chassis fan tray #2 RPM below threshold",
+      "raisedAt": "2026-09-25T16:00:00",
+      "status": "active"
+    },
+    {
+      "id": "ALM-TEST-004",
+      "nodeId": "SW-WST-F3-01",
+      "severity": "warning",
+      "description": "Spanning Tree topology change notification storm",
+      "raisedAt": "2026-09-25T16:45:00",
+      "status": "active"
+    },
+    {
+      "id": "ALM-TEST-005",
+      "nodeId": "STANDALONE-TEST-02",
+      "severity": "warning",
+      "description": "Standalone lab switch isolated - unlinked test port active",
+      "raisedAt": "2026-09-25T17:00:00",
+      "status": "active"
+    }
+  ]
+}

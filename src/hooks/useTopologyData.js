@@ -22,7 +22,12 @@ import { useEffect, useState, useRef } from 'react';
 export function parseRawTopologyData(raw) {
   const nodesById = new Map(raw.nodes.map((n) => [n.id || n.node_id, n]));
   // CSV might use node_id or id, let's normalize to id
-  raw.nodes.forEach(n => { n.id = n.id || n.node_id; n.type = n.type || n.node_type?.toLowerCase() || 'switch'; });
+  raw.nodes.forEach((n) => {
+    n.id = n.id || n.node_id;
+    n.type = n.type || n.node_type?.toLowerCase() || 'switch';
+    n.building = n.building !== undefined ? n.building : (n.type === 'switch' ? null : null);
+    n.groups = Array.isArray(n.groups) ? n.groups : [];
+  });
 
   const ifaceToNode = new Map(raw.interfaces.map((i) => [i.interface_id, i.node_id]));
 
@@ -56,6 +61,8 @@ export function parseRawTopologyData(raw) {
         severity: 'critical',
         tier: 'access',
         location: 'Unknown',
+        building: 'Unknown',
+        groups: [],
         isMissing: true
       };
       nodesById.set(id, missingNode);
@@ -132,10 +139,23 @@ export function parseRawTopologyData(raw) {
     console.warn(`Generated ${missingNodeIds.size} missing placeholder node(s) referenced by links but missing from the nodes dataset:`, Array.from(missingNodeIds));
   }
 
+  const groupSet = new Set();
+  for (const n of raw.nodes) {
+    if (Array.isArray(n.groups)) {
+      for (const g of n.groups) {
+        if (typeof g === 'string' && g.trim()) {
+          groupSet.add(g.trim());
+        }
+      }
+    }
+  }
+  const allGroups = [...groupSet].sort();
+
   return {
     meta: raw.meta || { nodeCount: actualDevices, generatedAt: new Date().toISOString() },
-    nodes: raw.nodes,
+    nodes: [...raw.nodes],
     nodesById,
+    groups: allGroups,
     interfaces: raw.interfaces,
     interfacesByNode,
     resolvedLinks,

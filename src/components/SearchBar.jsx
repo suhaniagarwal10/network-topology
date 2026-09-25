@@ -29,14 +29,43 @@ function buildIndex(data, mappingIndex) {
     });
   }
 
+  // Index custom groups
+  const groupMap = new Map();
   for (const n of data.nodes) {
-    const building = n.type === 'switch' ? mappingIndex.buildingBySwitchId.get(n.id) : null;
+    if (Array.isArray(n.groups)) {
+      for (const g of n.groups) {
+        if (!g) continue;
+        if (!groupMap.has(g)) groupMap.set(g, []);
+        groupMap.get(g).push(n);
+      }
+    }
+  }
+
+  for (const [gName, members] of groupMap.entries()) {
+    const buildingsCount = new Set(members.map((m) => m.building).filter(Boolean)).size;
+    entries.push({
+      kind: 'group',
+      id: `group-${gName}`,
+      groupName: gName,
+      switchIds: members.map((m) => m.id),
+      title: `Group: ${gName}`,
+      subtitle: `${members.length} switch${members.length === 1 ? '' : 'es'} across ${buildingsCount} building${buildingsCount === 1 ? '' : 's'}`,
+      haystack: `group ${gName} ${members.map((m) => m.name).join(' ')} ${members.map((m) => m.id).join(' ')}`.toLowerCase(),
+      color: '#a855f7',
+    });
+  }
+
+  for (const n of data.nodes) {
+    const building = n.type === 'switch' ? (mappingIndex.buildingBySwitchId.get(n.id) || (n.building ? { name: n.building } : null)) : null;
     const floor = n.type === 'switch' ? mappingIndex.floorBySwitchId.get(n.id) : null;
     const subtitleParts = [];
     if (building) subtitleParts.push(building.name);
     if (floor) subtitleParts.push(floor.name);
     if (!building) subtitleParts.push(tierLabel(n));
     subtitleParts.push(n.ipAddress);
+    if (n.groups && n.groups.length > 0) {
+      subtitleParts.push(`Groups: ${n.groups.join(', ')}`);
+    }
 
     entries.push({
       kind: n.type === 'switch' ? 'switch' : 'router',
@@ -46,10 +75,31 @@ function buildIndex(data, mappingIndex) {
       title: `${n.name} (${n.id})`,
       subtitle: subtitleParts.join(' · '),
       status: n.status,
-      haystack: `${n.id} ${n.name} ${n.ipAddress} ${n.location} ${tierLabel(n)} ${
+      haystack: `${n.id} ${n.name} ${n.ipAddress} ${n.location} ${n.building || ''} ${(n.groups || []).join(' ')} ${tierLabel(n)} ${
         building?.name || ''
       } ${floor?.name || ''}`.toLowerCase(),
       color: severityColor(n.severity),
+    });
+  }
+
+  // Standalone unlinked devices
+  const standaloneNodes = [
+    { id: 'STANDALONE-GW-01', name: 'STANDALONE-GW-01', type: 'router', status: 'up', severity: 'normal', location: 'Site A', desc: 'Perimeter Security Gateway' },
+    { id: 'STANDALONE-DR-02', name: 'STANDALONE-DR-02', type: 'router', status: 'up', severity: 'warning', location: 'Site B', desc: 'Disaster Recovery Node' },
+    { id: 'STANDALONE-LAB-03', name: 'STANDALONE-LAB-03', type: 'switch', status: 'up', severity: 'normal', location: 'Site C', desc: 'Testbed Appliance' },
+  ];
+
+  for (const sn of standaloneNodes) {
+    entries.push({
+      kind: sn.type === 'switch' ? 'switch' : 'router',
+      id: sn.id,
+      nodeId: sn.id,
+      buildingId: null,
+      title: `${sn.name} (${sn.id})`,
+      subtitle: `Standalone · ${sn.desc} · ${sn.location}`,
+      status: sn.status,
+      haystack: `${sn.id} ${sn.name} ${sn.desc} standalone isolated unlinked air-gapped ${sn.location}`.toLowerCase(),
+      color: severityColor(sn.severity),
     });
   }
 

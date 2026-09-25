@@ -7,9 +7,14 @@
  */
 export { default as Legend } from './Legend';
 
-export function ZoomControls({ onZoomIn, onZoomOut, onFit }) {
+export function ZoomControls({ onZoomIn, onZoomOut, onFit, onOpenHelp }) {
   return (
     <div className="zoomctl">
+      {onOpenHelp && (
+        <button onClick={onOpenHelp} title="Help & User Guide (?)" aria-label="Help">
+          ?
+        </button>
+      )}
       <button onClick={onZoomIn} title="Zoom in">
         +
       </button>
@@ -23,12 +28,18 @@ export function ZoomControls({ onZoomIn, onZoomOut, onFit }) {
   );
 }
 
-export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAddNode, onToggleAlarms, onReset, onOpenTrash, deletedCount, children }) {
+export function Header({ stats, view, groupName, mode, onModeChange, onSimulateAlarm, onAddNode, onOpenGroups, groupsCount = 0, onToggleAlarms, onReset, onOpenTrash, deletedCount, onOpenHelp, onOpenLoadModal, isCustomDataset = false, children }) {
   return (
     <header>
       <h1>
         Network Topology
-        <span className="h1-sub">{view === 'building' ? 'Building view' : 'Enterprise overview'}</span>
+        <span className="h1-sub">
+          {view === 'group'
+            ? `Group: ${groupName || 'Isolated View'}`
+            : view === 'building'
+            ? 'Building view'
+            : 'Enterprise overview'}
+        </span>
       </h1>
 
       <div className="stats">
@@ -60,7 +71,71 @@ export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAdd
           Active alarms
           <b>{stats.activeAlarmCount.toLocaleString()}</b>
         </div>
-        <button onClick={onAddNode} style={{ marginLeft: 16, padding: '4px 8px', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+        {onOpenLoadModal && (
+          <button
+            type="button"
+            onClick={onOpenLoadModal}
+            style={{
+              marginLeft: 10,
+              padding: '4px 10px',
+              borderRadius: 4,
+              background: isCustomDataset ? '#0284c7' : '#0369a1',
+              color: '#fff',
+              border: isCustomDataset ? '1px solid #38bdf8' : 'none',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+            title="Import custom JSON files (nodes, interfaces, links, alarms) or test datasets"
+          >
+            <span>📂 Load Data</span>
+            {isCustomDataset && (
+              <span
+                style={{
+                  background: '#22c55e',
+                  color: '#ffffff',
+                  padding: '1px 5px',
+                  borderRadius: 8,
+                  fontSize: '0.72rem',
+                }}
+              >
+                Custom
+              </span>
+            )}
+          </button>
+        )}
+        {onOpenGroups && (
+          <button
+            onClick={onOpenGroups}
+            style={{
+              marginLeft: 12,
+              padding: '4px 10px',
+              borderRadius: 4,
+              background: '#8b5cf6',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+            title="Create and manage custom groups combining selective switches across buildings"
+          >
+            <span>📁 Groups</span>
+            <span style={{
+              background: 'rgba(255, 255, 255, 0.25)',
+              padding: '1px 6px',
+              borderRadius: 10,
+              fontSize: '0.75rem',
+            }}>
+              {groupsCount}
+            </span>
+          </button>
+        )}
+        <button onClick={onAddNode} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
           Add Node
         </button>
         {deletedCount > 0 && (
@@ -74,6 +149,32 @@ export function Header({ stats, view, mode, onModeChange, onSimulateAlarm, onAdd
         {onReset && (
           <button onClick={onReset} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>
             Reset App
+          </button>
+        )}
+        {onOpenHelp && (
+          <button
+            type="button"
+            onClick={onOpenHelp}
+            className="btn-help"
+            title="Help & User Guide (?)"
+            aria-label="Help"
+            style={{
+              marginLeft: 8,
+              padding: '4px 10px',
+              borderRadius: 4,
+              background: '#1e293b',
+              color: '#38bdf8',
+              border: '1px solid #0284c7',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>❓</span>
+            <span>Help</span>
           </button>
         )}
       </div>

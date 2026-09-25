@@ -23,7 +23,19 @@ npm run lint       # oxlint
 | `alarms`     | 488   | attached to a device by `nodeId`                       |
 
 The 1,500 devices break down as 10 core routers, 140 distribution routers and 1,350 access
-switches. A link references interfaces, not devices, so it is resolved like this:
+switches. Each node in `nodes` includes:
+- `id`: unique identifier (e.g. `S-0001`, `R-0001`)
+- `name`: device name
+- `type`: `switch` or `router`
+- `status`: connection status (`connected`, `down`, `connecting`)
+- `severity`: health severity (`normal`, `warning`, `minor`, `major`, `critical`)
+- `ipAddress`: IP address
+- `location`: physical campus site (e.g. `Data Center 1`)
+- `tier`: `access`, `distribution`, or `core`
+- `building`: the building to which the device belongs (e.g. `DC4 Building F` for switches, `null` for routers)
+- `groups`: dynamic array of strings (`string[]`) keeping track of custom groups the node belongs to (e.g. `["Core-Campus-Sync", "Critical-HVAC-Monitoring"]`)
+
+A link references interfaces, not devices, so it is resolved like this:
 
 ```
 IF-00031 -> R-0001
@@ -32,7 +44,17 @@ LNK-00001 (IF-00031 <-> IF-00065)   =>   R-0001 <-> S-0008
 ```
 
 `useTopologyData` does that resolution once and exposes `resolvedLinks`, `linksByNode`,
-`alarmsByNode`, `interfacesByNode` and `uplinkRoutersBySwitch`.
+`alarmsByNode`, `interfacesByNode`, `uplinkRoutersBySwitch` and `groups`.
+
+## Multi-Building Switch Groups
+
+Users can create and manage arbitrary groups combining selective switches from different buildings:
+- **Many-to-Many Membership**: A switch can belong to multiple groups simultaneously (`groups: string[]`).
+- **Group Manager**: Access via the **📁 Groups** button in the header to view, create, edit, or delete custom groups.
+- **Cross-Building Selector**: Interactively pick switches across any number of buildings with per-building collapsible accordions, selective checkmarking, and search filtering.
+- **Interactive Graph Highlighting**: Highlight all switches in a group across the entire estate with one click.
+- **Filter & Search Integration**: Filter the topology view by group in the filter panel, or search directly for group names in the search bar.
+- **Details Panel & Quick Assign**: View all groups assigned to a switch with interactive pills, quickly remove with `×`, or assign new groups via the node inspector or right-click context menu.
 
 ## Buildings are a visual layer, not devices
 
@@ -40,7 +62,7 @@ Drawing 1,500 nodes at once is unreadable, so the global view aggregates access 
 **buildings**. This is a presentation concern only:
 
 ```
-1,500 actual nodes   (public/network-topology-dataset.json — never modified)
+1,500 actual nodes   (public/network-topology-dataset.json with building & groups)
         |
 building mapping     (src/data/buildingMapping.json + src/utils/buildingMapper.js)
         |
@@ -51,7 +73,7 @@ Reagraph             (src/components/NetworkGraph.jsx)
 
 A building is never added to `nodes`, never counted as a device, and never replaces a switch.
 Open a building and all of its switches are there as individual nodes with their real links,
-status, severity, interfaces and alarms.
+status, severity, interfaces, building, groups and alarms.
 
 ### Configuring the mapping
 

@@ -126,7 +126,7 @@ export function applyBuildingMapping(nodes, mapping, ctx = {}) {
     }
   }
 
-  const buildings = rules.map((rule) => {
+  let buildings = rules.map((rule) => {
     const switchIds = membersByRule.get(rule.id) || [];
     return {
       id: rule.id,
@@ -144,29 +144,35 @@ export function applyBuildingMapping(nodes, mapping, ctx = {}) {
   // the UI, so it gets an auto-created building rather than vanishing.
   const unmatched = switches.filter((s) => !claimed.has(s.id));
   if (unmatched.length > 0 && options.autoAssignUnmatched !== false) {
-    const bySite = new Map();
+    const byGroup = new Map();
     for (const sw of unmatched) {
-      if (!bySite.has(sw.location)) bySite.set(sw.location, []);
-      bySite.get(sw.location).push(sw.id);
+      const groupKey = sw.building || sw.location || 'Default Site';
+      if (!byGroup.has(groupKey)) byGroup.set(groupKey, []);
+      byGroup.get(groupKey).push(sw);
     }
     let seq = 0;
-    for (const [site, switchIds] of bySite) {
+    for (const [groupName, swList] of byGroup) {
       seq += 1;
-      const template = options.unmatchedBuildingNameTemplate || '{site} · Unassigned';
-      const rule = { id: `B-AUTO-${String(seq).padStart(3, '0')}`, floorCount: options.defaultFloorCount };
+      const switchIds = swList.map((s) => s.id).sort();
+      const site = swList[0]?.location || 'Site 1';
+      const rule = { id: `B-AUTO-${String(seq).padStart(3, '0')}`, floorCount: options.defaultFloorCount || 3 };
       buildings.push({
         id: rule.id,
-        name: template.replace('{site}', site),
-        shortName: 'Unassigned',
+        name: groupName,
+        shortName: groupName.replace(/^Building\s*/i, ''),
         site,
         siteCode: '',
-        switchIds: switchIds.slice().sort(),
-        floors: buildFloors(rule, switchIds.slice().sort(), options.defaultFloorCount),
+        switchIds,
+        floors: buildFloors(rule, switchIds, options.defaultFloorCount || 3),
         generated: true,
       });
       switchIds.forEach((id) => claimed.set(id, rule.id));
     }
   }
+
+  // Filter out any rule-defined buildings that have 0 switches (e.g. for custom datasets)
+  // while preserving all active buildings for default dataset
+  buildings = buildings.filter((b) => b.switchIds.length > 0);
 
   const buildingsById = new Map(buildings.map((b) => [b.id, b]));
   const buildingBySwitchId = new Map();
