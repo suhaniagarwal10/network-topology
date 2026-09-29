@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTopologyData } from './hooks/useTopologyData';
 import { useBuildingMapping } from './hooks/useBuildingMapping';
-import { buildBuildingGraph, buildGlobalGraph, computeBuildingStats } from './utils/topologyTransform';
+import { buildBuildingGraph, buildGlobalGraph, buildGroupGraph, computeBuildingStats } from './utils/topologyTransform';
 import NetworkGraph from './components/NetworkGraph';
 import BuildingView from './components/BuildingView';
 import DetailsPanel from './components/DetailsPanel';
@@ -17,6 +17,10 @@ import MonitorModal from './components/MonitorModal';
 import InterfaceModal from './components/InterfaceModal';
 import LinkEditModal from './components/LinkEditModal';
 import TrashModal from './components/TrashModal';
+import GroupManagerModal from './components/GroupManagerModal';
+import QuickAssignGroupModal from './components/QuickAssignGroupModal';
+import HelpModal from './components/HelpModal';
+import LoadTopologyModal from './components/LoadTopologyModal';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -49,15 +53,70 @@ export default function App() {
 
   // 'global'  -> core routers / distribution routers / buildings
   // 'building'-> the individual switches inside one building
+  // 'group'   -> only the switches belonging to a selective multi-building group
   const [view, setView] = useState('global');
   const [mode, setMode] = useState('graph'); // global view only: graph | cards
   const [activeBuildingId, setActiveBuildingId] = useState(null);
+  const [activeGroupName, setActiveGroupName] = useState(null);
+  const [includeUplinksInGroup, setIncludeUplinksInGroup] = useState(true);
   const [selectedId, setSelectedId] = useState(null);
   const [highlightIds, setHighlightIds] = useState(null);
   const [toast, setToast] = useState(null);
   const [focusRequest, setFocusRequest] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [tick, setTick] = useState(0);
+
+  const [isGroupManagerOpen, setIsGroupManagerOpen] = useState(false);
+  const [editingGroupInitial, setEditingGroupInitial] = useState(null);
+  const [quickAssignNode, setQuickAssignNode] = useState(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
+  const [isCustomDataset, setIsCustomDataset] = useState(() => {
+    return localStorage.getItem('network-topology-is-custom') === 'true';
+  });
+  const [activeDatasetName, setActiveDatasetName] = useState(() => {
+    return localStorage.getItem('network-topology-dataset-name') || 'Default Topology (1,500 Devices)';
+  });
+
+  const showToast = useCallback((message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 2400);
+  }, []);
+
+  const handleLoadCustom = useCallback((rawPayload) => {
+    const name = rawPayload.meta?.name || 'Custom Dataset';
+    localStorage.setItem('network-topology-is-custom', 'true');
+    localStorage.setItem('network-topology-dataset-name', name);
+    localStorage.setItem('network-topology-data', JSON.stringify(rawPayload));
+    setIsCustomDataset(true);
+    setActiveDatasetName(name);
+    loadFromRaw(rawPayload);
+    setView('global');
+    setMode('graph');
+    setActiveBuildingId(null);
+    setActiveGroupName(null);
+    setSelectedId(null);
+    setHighlightIds(null);
+    setTick((t) => t + 1);
+    showToast(`Generated topology from ${rawPayload.nodes.length} nodes & ${rawPayload.links?.length || 0} links`);
+  }, [loadFromRaw, showToast]);
+
+  const handleResetToDefault = useCallback(() => {
+    localStorage.removeItem('network-topology-is-custom');
+    localStorage.removeItem('network-topology-dataset-name');
+    localStorage.removeItem('network-topology-data');
+    setIsCustomDataset(false);
+    setActiveDatasetName('Default Topology (1,500 Devices)');
+    resetDemo();
+    setView('global');
+    setMode('graph');
+    setActiveBuildingId(null);
+    setActiveGroupName(null);
+    setSelectedId(null);
+    setHighlightIds(null);
+    setTick((t) => t + 1);
+    showToast('Restored default 1,500-device enterprise topology');
+  }, [resetDemo, showToast]);
 
   const graphRef = useRef(null);
 
@@ -95,7 +154,7 @@ export default function App() {
     } else {
       showToast(`⚠️ Simulated Alarm triggered on ${target.name}!`);
     }
-  }, [data, mappingIndex, view]);
+  }, [data, mappingIndex, view, showToast]);
 
 
 
@@ -103,6 +162,7 @@ export default function App() {
 
   const [globalGraph, setGlobalGraph] = useState(null);
   const [buildingGraph, setBuildingGraph] = useState(null);
+  const [groupGraph, setGroupGraph] = useState(null);
 
   const activeBuilding = activeBuildingId ? mappingIndex?.buildingsById.get(activeBuildingId) : null;
 
@@ -121,7 +181,15 @@ export default function App() {
     }
   }, [data?.nodes, data?.links, mappingIndex, activeBuildingId, tick]);
 
-  const graph = view === 'building' ? buildingGraph : globalGraph;
+  useEffect(() => {
+    if (data && mappingIndex && activeGroupName) {
+      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }));
+    } else {
+      setGroupGraph(null);
+    }
+  }, [data?.nodes, data?.links, mappingIndex, activeGroupName, includeUplinksInGroup, tick]);
+
+  const graph = view === 'group' ? groupGraph : (view === 'building' ? buildingGraph : globalGraph);
 
   /* ---------------- filters ---------------- */
 
@@ -135,6 +203,7 @@ export default function App() {
     minor: true,
     warning: true,
     normal: true,
+    selectedGroup: 'ALL',
   });
 
   const filteredGraph = useMemo(() => {
@@ -147,17 +216,42 @@ export default function App() {
       let status = 'up';
       let severity = 'normal';
 
-      if (n.data.kind === 'building') {
+      if (n.data?.isStandalone) {
+        isRouter = n.data.deviceType === 'router';
+        isSwitch = n.data.deviceType === 'switch';
+        status = n.data.status || 'up';
+        severity = n.data.severity || (n.data.stats?.activeAlarmCount > 0 ? 'warning' : 'normal');
+      } else if (n.data.kind === 'building') {
         isSwitch = true;
         status = n.data.status; // 'up' or 'down' derived in buildingStats
         severity = n.data.healthLevel || n.data.stats?.worstSeverity || 'normal';
       } else {
-        const rawNode = data.nodesById.get(n.id);
+        const rawNode = data?.nodesById.get(n.id);
         if (rawNode) {
           isRouter = rawNode.type === 'router';
           isSwitch = rawNode.type === 'switch';
           status = rawNode.status;
           severity = rawNode.severity;
+        }
+      }
+
+      // Group filter (only filter by dropdown if not in dedicated group view, where graph is already scoped)
+      if (view !== 'group' && filters.selectedGroup && filters.selectedGroup !== 'ALL') {
+        if (n.data?.isStandalone) {
+          // Standalone nodes do not belong to mapped groups, hide if filtering by a specific group
+          return false;
+        }
+        if (n.data.kind === 'building') {
+          const bldg = mappingIndex?.buildingsById.get(n.id);
+          const hasMember = bldg?.switchIds.some(id => data?.nodesById.get(id)?.groups?.includes(filters.selectedGroup));
+          if (!hasMember) return false;
+        } else {
+          const rawNode = data?.nodesById.get(n.id);
+          if (rawNode && rawNode.type === 'switch') {
+            if (!Array.isArray(rawNode.groups) || !rawNode.groups.includes(filters.selectedGroup)) {
+              return false;
+            }
+          }
         }
       }
 
@@ -181,7 +275,7 @@ export default function App() {
     const filteredEdges = edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
 
     return { ...rest, nodes: filteredNodes, edges: filteredEdges, positions };
-  }, [graph, filters]);
+  }, [graph, filters, data?.nodesById, mappingIndex, view]);
 
   /* ---------------- selection ---------------- */
 
@@ -189,9 +283,32 @@ export default function App() {
     selectedId && mappingIndex?.buildingsById.has(selectedId)
       ? mappingIndex.buildingsById.get(selectedId)
       : null;
-  const selectedNode = selectedId && !selectedBuilding && data?.nodesById.has(selectedId) 
-    ? data.nodesById.get(selectedId) 
-    : null;
+
+  const selectedNode = useMemo(() => {
+    if (!selectedId || selectedBuilding) return null;
+    if (data?.nodesById.has(selectedId)) return data.nodesById.get(selectedId);
+    // Fallback for standalone nodes that exist in graph
+    const graphNode = graph?.nodes.find((n) => n.id === selectedId);
+    if (graphNode?.data?.isStandalone) {
+      return {
+        id: graphNode.id,
+        name: graphNode.data.name || graphNode.label || graphNode.id,
+        type: graphNode.data.deviceType || 'switch',
+        tier: 'standalone',
+        role: 'standalone',
+        status: graphNode.data.status || 'up',
+        severity: graphNode.data.severity || (graphNode.data.stats?.activeAlarmCount > 0 ? 'warning' : 'normal'),
+        groups: [],
+        building: graphNode.data.building || (view === 'building' ? activeBuilding?.name : 'Standalone'),
+        isStandalone: true,
+        description: graphNode.data.description,
+        location: view === 'building' ? activeBuilding?.site || 'Site A' : 'Isolated Rack',
+        ipAddress: 'Air-gapped (Unassigned)',
+      };
+    }
+    return null;
+  }, [selectedId, selectedBuilding, data?.nodesById, graph, view, activeBuilding]);
+
   const selectedLink = useMemo(() => {
     if (!selectedId || selectedNode || selectedBuilding || !graph) return null;
     return graph.edges.find(e => e.id === selectedId) || null;
@@ -205,7 +322,24 @@ export default function App() {
 
   const detailAlarms = useMemo(() => {
     if (!data) return [];
-    if (selectedNode) return data.alarmsByNode.get(selectedNode.id) || [];
+    if (selectedNode) {
+      if (data.alarmsByNode.has(selectedNode.id)) {
+        return data.alarmsByNode.get(selectedNode.id) || [];
+      }
+      if (selectedNode.isStandalone && selectedNode.severity === 'warning') {
+        return [
+          {
+            alarmId: `ALM-${selectedNode.id}-01`,
+            nodeId: selectedNode.id,
+            severity: 'warning',
+            status: 'active',
+            message: 'Interface unlinked / standalone unit awaiting uplink configuration',
+            raisedAt: data.meta?.generatedAt || new Date().toISOString(),
+          },
+        ];
+      }
+      return [];
+    }
     if (selectedBuilding) {
       return selectedBuilding.switchIds.flatMap((id) => data.alarmsByNode.get(id) || []);
     }
@@ -247,14 +381,10 @@ export default function App() {
 
   /* ---------------- navigation ---------------- */
 
-  const showToast = useCallback((message) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 2400);
-  }, []);
-
   const goGlobal = useCallback(() => {
     setView('global');
     setActiveBuildingId(null);
+    setActiveGroupName(null);
     setSelectedId(null);
     setHighlightIds(null);
     setFocusRequest({ ids: null, mode: 'fit', key: `global-${Date.now()}` });
@@ -266,6 +396,7 @@ export default function App() {
       setView('building');
       setMode('graph');
       setActiveBuildingId(buildingId);
+      setActiveGroupName(null);
       setSelectedId(focusNodeId);
       setHighlightIds(null);
       setFocusRequest({
@@ -275,6 +406,23 @@ export default function App() {
       });
     },
     [mappingIndex]
+  );
+
+  const openGroup = useCallback(
+    (groupName, focusNodeId = null) => {
+      setView('group');
+      setActiveGroupName(groupName);
+      setActiveBuildingId(null);
+      setSelectedId(focusNodeId);
+      setHighlightIds(focusNodeId ? [focusNodeId] : null);
+      setFocusRequest({
+        ids: focusNodeId ? [focusNodeId] : null,
+        mode: focusNodeId ? 'fitThenCenter' : 'fit',
+        key: `grpview-${groupName}-${focusNodeId || ''}-${Date.now()}`,
+      });
+      showToast(`Viewing group: ${groupName}`);
+    },
+    [showToast]
   );
 
   // Focus is deferred a tick so Reagraph has laid the new graph out before we
@@ -307,6 +455,15 @@ export default function App() {
       const node = data?.nodesById.get(nodeId);
       if (!node) return;
 
+      if (view === 'group' && activeGroupName) {
+        if (Array.isArray(node.groups) && node.groups.includes(activeGroupName)) {
+          setSelectedId(nodeId);
+          setHighlightIds([nodeId]);
+          setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `focus-${nodeId}-${Date.now()}` });
+          return;
+        }
+      }
+
       if (node.type === 'switch') {
         const building = mappingIndex.buildingBySwitchId.get(nodeId);
         if (building) {
@@ -320,19 +477,137 @@ export default function App() {
       setView('global');
       setMode('graph');
       setActiveBuildingId(null);
+      setActiveGroupName(null);
       setSelectedId(nodeId);
       setHighlightIds([nodeId]);
       setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `focus-${nodeId}-${Date.now()}` });
     },
-    [data, mappingIndex, openBuilding, showToast]
+    [data, mappingIndex, openBuilding, showToast, view, activeGroupName]
+  );
+
+  const handleHighlightGroup = useCallback(
+    (groupName, switchIds = null) => {
+      if (!data) return;
+      const memberIds =
+        switchIds ||
+        data.nodes
+          .filter((n) => Array.isArray(n.groups) && n.groups.includes(groupName))
+          .map((n) => n.id);
+
+      if (memberIds.length === 0) {
+        showToast(`Group "${groupName}" has no switches.`);
+        return;
+      }
+
+      const bldgs = new Set();
+      memberIds.forEach((id) => {
+        const b = mappingIndex?.buildingBySwitchId.get(id);
+        if (b) bldgs.add(b.id);
+      });
+
+      if (view === 'global') {
+        const targetIds = Array.from(bldgs);
+        setHighlightIds(targetIds.length > 0 ? targetIds : null);
+        setFocusRequest({
+          ids: targetIds.length > 0 ? targetIds : null,
+          mode: 'fit',
+          key: `grp-${groupName}-${Date.now()}`,
+        });
+      } else {
+        setHighlightIds(memberIds);
+        setFocusRequest({ ids: memberIds, mode: 'fit', key: `grp-${groupName}-${Date.now()}` });
+      }
+
+      showToast(`Viewing group "${groupName}" (${memberIds.length} switches across ${bldgs.size} buildings)`);
+    },
+    [data, mappingIndex, view, showToast]
+  );
+
+  const handleSaveGroup = useCallback(
+    (groupName, selectedSwitchIds, originalName = null) => {
+      const selectedSet = new Set(selectedSwitchIds);
+      updateTopology((raw) => {
+        for (const n of raw.nodes) {
+          if (n.type !== 'switch') continue;
+          if (!Array.isArray(n.groups)) n.groups = [];
+
+          if (originalName && originalName !== groupName) {
+            n.groups = n.groups.filter((g) => g !== originalName);
+          }
+
+          if (selectedSet.has(n.id)) {
+            if (!n.groups.includes(groupName)) {
+              n.groups.push(groupName);
+            }
+          } else {
+            n.groups = n.groups.filter((g) => g !== groupName);
+          }
+        }
+      });
+      showToast(`Group "${groupName}" saved (${selectedSwitchIds.length} switches)`);
+      setTick((t) => t + 1);
+    },
+    [updateTopology, showToast]
+  );
+
+  const handleDeleteGroup = useCallback(
+    (groupName) => {
+      updateTopology((raw) => {
+        for (const n of raw.nodes) {
+          if (Array.isArray(n.groups)) {
+            n.groups = n.groups.filter((g) => g !== groupName);
+          }
+        }
+      });
+      if (activeGroupName === groupName) {
+        goGlobal();
+      }
+      showToast(`Group "${groupName}" deleted`);
+      setTick((t) => t + 1);
+    },
+    [updateTopology, showToast, activeGroupName, goGlobal]
+  );
+
+  const handleUpdateNodeGroups = useCallback(
+    (nodeId, newGroups) => {
+      updateTopology((raw) => {
+        const node = raw.nodes.find((n) => n.id === nodeId);
+        if (node) {
+          node.groups = newGroups;
+        }
+      });
+      showToast(`Updated groups for ${nodeId}`);
+      setTick((t) => t + 1);
+    },
+    [updateTopology, showToast]
+  );
+
+  const handleRemoveNodeFromGroup = useCallback(
+    (nodeId, groupName) => {
+      updateTopology((raw) => {
+        const node = raw.nodes.find((n) => n.id === nodeId);
+        if (node && Array.isArray(node.groups)) {
+          node.groups = node.groups.filter((g) => g !== groupName);
+        }
+      });
+      showToast(`Removed from "${groupName}"`);
+      setTick((t) => t + 1);
+    },
+    [updateTopology, showToast]
   );
 
   const handleSearchPick = useCallback(
     (entry) => {
+      if (entry.kind === 'group') {
+        openGroup(entry.groupName);
+        return;
+      }
+
       if (entry.kind === 'building') {
         setView('global');
         setMode('graph');
         setActiveBuildingId(null);
+        setActiveGroupName(null);
         setSelectedId(entry.buildingId);
         setHighlightIds([entry.buildingId]);
         setFocusRequest({ ids: [entry.buildingId], mode: 'fitThenCenter', key: `find-${entry.buildingId}-${Date.now()}` });
@@ -341,7 +616,7 @@ export default function App() {
       
       focusNode(entry.nodeId);
     },
-    [focusNode]
+    [focusNode, openGroup]
   );
 
   /* ---------------- node interactions ---------------- */
@@ -528,6 +803,7 @@ export default function App() {
       
       setGlobalGraph(patchNodes);
       setBuildingGraph(patchNodes);
+      setGroupGraph(patchNodes);
     }
   }, [updateTopology, showToast]);
 
@@ -560,6 +836,7 @@ export default function App() {
       ...(isBuilding ? [{ key: 'open', label: 'Open building →' }] : []),
       { key: 'neighbors', label: 'Highlight neighbors' },
       ...(isBuilding ? [] : [
+        { key: 'assign-group', label: 'Assign Groups...' },
         { key: 'monitor', label: 'Monitor node' },
         { key: 'add-link', label: 'Connect Link' },
         { key: 'edit', label: 'Edit Node' },
@@ -577,6 +854,7 @@ export default function App() {
       if (key === 'details') setSelectedId(graphNode.id);
       if (key === 'open' && isBuilding) openBuilding(graphNode.data.buildingId);
       if (key === 'neighbors') highlightNeighbors(graphNode);
+      if (key === 'assign-group') setQuickAssignNode(node);
       if (key === 'monitor') monitorNode(node);
       if (key === 'add-link') setEditingLinkNode(node);
       if (key === 'edit') {
@@ -613,14 +891,20 @@ export default function App() {
       <Header 
         stats={stats} 
         view={view} 
+        groupName={activeGroupName}
         mode={mode} 
         onModeChange={setMode} 
         onSimulateAlarm={simulateAlarm} 
         onAddNode={handleAddNode} 
+        onOpenGroups={() => { setEditingGroupInitial(null); setIsGroupManagerOpen(true); }}
+        groupsCount={data?.groups?.length || 0}
         onToggleAlarms={() => setIsAlarmPanelOpen(o => !o)}
         onReset={handleReset}
         onOpenTrash={() => setIsTrashOpen(true)}
         deletedCount={deletedElements.length}
+        onOpenHelp={() => setIsHelpOpen(true)}
+        onOpenLoadModal={() => setIsLoadModalOpen(true)}
+        isCustomDataset={isCustomDataset}
       >
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
       </Header>
@@ -640,9 +924,11 @@ export default function App() {
 
         <Breadcrumbs
           building={activeBuilding}
-          node={view === 'building' ? selectedNode : null}
+          group={view === 'group' ? { name: activeGroupName } : null}
+          node={(view === 'building' || view === 'group') ? selectedNode : null}
           onGoGlobal={goGlobal}
           onGoBuilding={(id) => openBuilding(id)}
+          onGoGroup={(name) => openGroup(name)}
         />
       </div>
 
@@ -679,7 +965,7 @@ export default function App() {
                   />
                 )}
               />
-              <FilterPanel filters={filters} onChange={setFilters} />
+              <FilterPanel filters={filters} onChange={setFilters} availableGroups={data?.groups || []} />
               {hovered && (
                 <div className="hoverchip">
                   <b>{hovered.data?.name || hovered.label || hovered.id}</b>
@@ -694,9 +980,9 @@ export default function App() {
                     </span>
                   ) : (
                     <span>
-                      {data?.nodesById.get(hovered.id)?.ipAddress} ·{' '}
-                      {data?.nodesById.get(hovered.id)?.status} ·{' '}
-                      {data?.nodesById.get(hovered.id)?.location}
+                      {data?.nodesById.get(hovered.id)?.ipAddress || hovered.data?.ipAddress || 'Standalone · Air-gapped'} ·{' '}
+                      {data?.nodesById.get(hovered.id)?.status || hovered.data?.status || 'up'} ·{' '}
+                      {data?.nodesById.get(hovered.id)?.location || hovered.data?.location || 'Isolated'}
                     </span>
                   )}
                 </div>
@@ -705,12 +991,29 @@ export default function App() {
                 onZoomIn={() => graphRef.current?.zoomIn()}
                 onZoomOut={() => graphRef.current?.zoomOut()}
                 onFit={() => graphRef.current?.fit()}
+                onOpenHelp={() => setIsHelpOpen(true)}
               />
               <Legend view={view} />
               {view === 'building' && buildingGraph && (
                 <div className="viewbadge">
                   {activeBuilding.name} · {activeBuilding.switchIds.length} switches ·{' '}
                   {buildingGraph.uplinkRouterIds.length} uplink routers
+                </div>
+              )}
+              {view === 'group' && groupGraph && (
+                <div className="viewbadge group-viewbadge">
+                  <span className="group-badge-icon">📁</span>
+                  <span>
+                    <b>{groupGraph.groupName}</b> · {groupGraph.switchCount} switches across {groupGraph.buildingsCount} building{groupGraph.buildingsCount === 1 ? '' : 's'}
+                  </span>
+                  <button
+                    type="button"
+                    className={`btn-uplink-toggle ${includeUplinksInGroup ? 'active' : ''}`}
+                    onClick={() => setIncludeUplinksInGroup((v) => !v)}
+                    title={includeUplinksInGroup ? 'Hide uplink distribution routers' : 'Show uplink distribution routers'}
+                  >
+                    {includeUplinksInGroup ? '✓ With Uplinks' : '+ Switches Only'}
+                  </button>
                 </div>
               )}
             </>
@@ -728,6 +1031,19 @@ export default function App() {
           interfaceCount={selectedNode ? (data.interfacesByNode.get(selectedNode.id) || []).length : 0}
           owningBuilding={selectedNode ? mappingIndex?.buildingBySwitchId.get(selectedNode.id) : null}
           floor={selectedNode ? mappingIndex?.floorBySwitchId.get(selectedNode.id) : null}
+          groupName={view === 'group' ? activeGroupName : null}
+          groupStats={view === 'group' && groupGraph ? groupGraph.stats : null}
+          onOpenGroup={openGroup}
+          onEditGroup={(name) => {
+            setEditingGroupInitial(name);
+            setIsGroupManagerOpen(true);
+          }}
+          onSelectNode={(id) => {
+            setSelectedId(id);
+            setHighlightIds([id]);
+            setFocusRequest({ ids: [id], mode: 'fitThenCenter', key: `sw-${id}-${Date.now()}` });
+          }}
+          onGoGlobal={goGlobal}
           onMonitor={monitorNode}
           onHighlightNeighbors={highlightNeighbors}
           onOpenBuilding={(id) => openBuilding(id)}
@@ -744,6 +1060,10 @@ export default function App() {
               handleDeleteNode(n.id);
             }
           }}
+          onAddToGroup={(n) => setQuickAssignNode(n)}
+          onRemoveFromGroup={handleRemoveNodeFromGroup}
+          onHighlightGroup={handleHighlightGroup}
+          data={data}
           now={DATASET_NOW}
         />
       </main>
@@ -810,6 +1130,52 @@ export default function App() {
           onClose={() => setIsTrashOpen(false)} 
           deletedElements={deletedElements} 
           onRestore={handleRestoreNode} 
+        />
+      )}
+      {isGroupManagerOpen && (
+        <GroupManagerModal
+          isOpen={isGroupManagerOpen}
+          onClose={() => {
+            setIsGroupManagerOpen(false);
+            setEditingGroupInitial(null);
+          }}
+          data={data}
+          mappingIndex={mappingIndex}
+          onSaveGroup={handleSaveGroup}
+          onDeleteGroup={handleDeleteGroup}
+          onHighlightGroup={handleHighlightGroup}
+          onOpenGroup={openGroup}
+          initialEditingGroup={editingGroupInitial}
+          tick={tick}
+        />
+      )}
+      {quickAssignNode && (
+        <QuickAssignGroupModal
+          node={quickAssignNode}
+          allGroups={data?.groups || []}
+          onSave={handleUpdateNodeGroups}
+          onOpenFullManager={() => {
+            setQuickAssignNode(null);
+            setEditingGroupInitial(null);
+            setIsGroupManagerOpen(true);
+          }}
+          onClose={() => setQuickAssignNode(null)}
+        />
+      )}
+      {isHelpOpen && (
+        <HelpModal
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+        />
+      )}
+      {isLoadModalOpen && (
+        <LoadTopologyModal
+          isOpen={isLoadModalOpen}
+          onClose={() => setIsLoadModalOpen(false)}
+          onLoadCustom={handleLoadCustom}
+          onResetDefault={handleResetToDefault}
+          isCustomLoaded={isCustomDataset}
+          activeDatasetName={activeDatasetName}
         />
       )}
     </div>

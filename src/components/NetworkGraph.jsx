@@ -1,5 +1,6 @@
-import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { GraphCanvas, darkTheme, Sphere, Badge } from 'reagraph';
+import { BoxGeometry } from 'three';
 
 /**
  * Reagraph-based renderer. Replaces the hand-rolled canvas/D3 draw loop.
@@ -8,6 +9,8 @@ import { GraphCanvas, darkTheme, Sphere, Badge } from 'reagraph';
  * topology transform produced and renders them. Both the global hierarchy
  * and a single building view go through this same component.
  */
+
+const sharedBoxGeometry = new BoxGeometry(1, 1, 1);
 
 const theme = {
   ...darkTheme,
@@ -63,6 +66,31 @@ const NetworkGraph = forwardRef(function NetworkGraph(
 ) {
   const graphRef = useRef(null);
   const [hoveredId, setHoveredId] = useState(null);
+  const draggedPositionsRef = useRef(new Map());
+  const isMouseDownRef = useRef(false);
+
+  // When positions map reference changes (e.g. view switch between global/building/group),
+  // reset dragged positions cache so new layout is applied cleanly.
+  useEffect(() => {
+    draggedPositionsRef.current.clear();
+  }, [positions]);
+
+  // Track global pointer down / up to completely suppress hover events during node dragging
+  // or canvas panning. This avoids 60 FPS re-render storms and hoverchip churn.
+  useEffect(() => {
+    const handleDown = (e) => {
+      if (e.button === 0) isMouseDownRef.current = true;
+    };
+    const handleUp = () => {
+      isMouseDownRef.current = false;
+    };
+    window.addEventListener('pointerdown', handleDown);
+    window.addEventListener('pointerup', handleUp);
+    return () => {
+      window.removeEventListener('pointerdown', handleDown);
+      window.removeEventListener('pointerup', handleUp);
+    };
+  }, []);
 
   // Nodes adjacent to whatever is selected/hovered — Reagraph dims everything
   // that isn't in `actives`, which gives us neighbour highlighting for free.
@@ -92,9 +120,19 @@ const NetworkGraph = forwardRef(function NetworkGraph(
   }, [hoveredId, selectedId, highlightIds, adjacency, edges]);
 
   const getNodePosition = useCallback(
-    (id) => positions.get(id) || { x: 0, y: 0, z: 0 },
+    (id) => draggedPositionsRef.current.get(id) || positions.get(id) || { x: 0, y: 0, z: 0 },
     [positions]
   );
+
+  const handleNodeDragged = useCallback((node) => {
+    if (node?.id && node?.position) {
+      draggedPositionsRef.current.set(node.id, {
+        x: node.position.x,
+        y: node.position.y,
+        z: node.position.z,
+      });
+    }
+  }, []);
 
   useImperativeHandle(
     ref,
@@ -109,6 +147,7 @@ const NetworkGraph = forwardRef(function NetworkGraph(
 
   const handlePointerOver = useCallback(
     (node) => {
+      if (isMouseDownRef.current) return;
       setHoveredId(node.id);
       onHover?.(node);
     },
@@ -116,6 +155,7 @@ const NetworkGraph = forwardRef(function NetworkGraph(
   );
 
   const handlePointerOut = useCallback(() => {
+    if (isMouseDownRef.current) return;
     setHoveredId(null);
     onHover?.(null);
   }, [onHover]);
@@ -128,6 +168,8 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       edges={edges}
       layoutType="custom"
       layoutOverrides={{ getNodePosition }}
+      draggable={true}
+      onNodeDragged={handleNodeDragged}
       cameraMode="pan"
       animated={false}
       // "nodes" keeps labels camera-independent. Density is controlled by
@@ -146,19 +188,19 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       onNodePointerOut={handlePointerOut}
       onNodeContextMenu={(node) => onContextMenu?.(node)}
       onEdgePointerOver={(edge) => {
+        if (isMouseDownRef.current) return;
         document.body.style.cursor = 'pointer';
         handlePointerOver(edge);
       }}
       onEdgePointerOut={() => {
+        if (isMouseDownRef.current) return;
         document.body.style.cursor = 'default';
         handlePointerOut();
       }}
       onEdgeClick={(edge) => {
-        console.log('Clicked edge:', edge);
         onSelect?.(edge);
       }}
       onCanvasClick={() => {
-        console.log('Clicked canvas');
         onSelect?.(null);
       }}
       contextMenu={
@@ -172,8 +214,10 @@ const NetworkGraph = forwardRef(function NetworkGraph(
         return (
           <group>
             {isRouter ? (
-              <mesh>
-                <boxGeometry args={[rest.size * 1.75, rest.size * 1.75, rest.size * 1.75]} />
+              <mesh
+                geometry={sharedBoxGeometry}
+                scale={[rest.size * 1.75, rest.size * 1.75, rest.size * 1.75]}
+              >
                 <meshBasicMaterial color={rest.color} transparent={true} opacity={rest.opacity ?? 1} />
               </mesh>
             ) : (

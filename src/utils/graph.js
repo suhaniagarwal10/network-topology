@@ -62,10 +62,12 @@ export const KIND_GLYPH = {
   building: '\u{1F3E2}', // 🏢
   switch: '\u{1F500}', // 🔀
   router: '\u{1F310}', // 🌐
+  group: '\u{1F4C1}', // 📁
 };
 
 export function tierLabel(node) {
   if (!node) return '';
+  if (node.isStandalone || node.tier === 'standalone') return 'Standalone device (unconnected)';
   if (node.tier === 'core') return 'Core router';
   if (node.tier === 'distribution') return 'Distribution router';
   if (node.type === 'switch') return 'Access switch';

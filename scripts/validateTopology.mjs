@@ -104,6 +104,9 @@ check(
   'every alarm points at a real device',
   raw.alarms.every((a) => nodesById.has(a.nodeId))
 );
+check('every switch has a building field', switches.every((s) => typeof s.building === 'string' && s.building.length > 0));
+check('every node has a groups array', raw.nodes.every((n) => Array.isArray(n.groups) && n.groups.every((g) => typeof g === 'string')));
+check('multi-group membership is supported', raw.nodes.some((n) => Array.isArray(n.groups) && n.groups.length > 1));
 
 /* ---------- 2. the mapping ---------- */
 

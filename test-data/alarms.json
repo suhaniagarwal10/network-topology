@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ALM-TEST-001",
+    "nodeId": "SW-HQ-F3-02",
+    "severity": "critical",
+    "description": "Switch offline - Dual PSU failure and link loss",
+    "raisedAt": "2026-09-25T14:30:00",
+    "status": "active"
+  },
+  {
+    "id": "ALM-TEST-002",
+    "nodeId": "DIST-BRANCH-01",
+    "severity": "warning",
+    "description": "High CPU utilization (94%) detected on control plane",
+    "raisedAt": "2026-09-25T15:10:00",
+    "status": "active"
+  },
+  {
+    "id": "ALM-TEST-003",
+    "nodeId": "SW-HQ-F2-02",
+    "severity": "warning",
+    "description": "Chassis fan tray #2 RPM below threshold",
+    "raisedAt": "2026-09-25T16:00:00",
+    "status": "active"
+  },
+  {
+    "id": "ALM-TEST-004",
+    "nodeId": "SW-WST-F3-01",
+    "severity": "warning",
+    "description": "Spanning Tree topology change notification storm",
+    "raisedAt": "2026-09-25T16:45:00",
+    "status": "active"
+  },
+  {
+    "id": "ALM-TEST-005",
+    "nodeId": "STANDALONE-TEST-02",
+    "severity": "warning",
+    "description": "Standalone lab switch isolated - unlinked test port active",
+    "raisedAt": "2026-09-25T17:00:00",
+    "status": "active"
+  }
+]

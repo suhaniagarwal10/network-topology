@@ -27,7 +27,29 @@ export default function DetailsPanel({
   onAddLink,
   onEditLinkBundle,
   now,
+  onAddToGroup,
+  onRemoveFromGroup,
+  onHighlightGroup,
+  onOpenGroup,
+  groupName,
+  groupStats,
+  onEditGroup,
+  onSelectNode,
+  onGoGlobal,
+  data,
 }) {
+  if (groupName && !node && !link && !building) {
+    return (
+      <GroupDetails
+        groupName={groupName}
+        stats={groupStats}
+        onEditGroup={onEditGroup}
+        onSelectNode={onSelectNode}
+        onGoGlobal={onGoGlobal}
+      />
+    );
+  }
+
   if (building && !node && !link) {
     return (
       <BuildingDetails
@@ -35,6 +57,9 @@ export default function DetailsPanel({
         stats={buildingStats}
         alarms={alarms}
         onOpenBuilding={onOpenBuilding}
+        onHighlightGroup={onHighlightGroup}
+        onOpenGroup={onOpenGroup}
+        data={data}
         now={now}
       />
     );
@@ -91,17 +116,73 @@ export default function DetailsPanel({
         <Row k="Severity" v={<Dot color={color} text={node.severity} />} />
         <Row k="IP address" v={node.ipAddress} />
         <Row k="Location" v={<span className="plain">{node.location}</span>} />
-        {owningBuilding && (
-          <Row
-            k="Building"
-            v={
+        <Row
+          k="Building"
+          v={
+            node.building ? (
+              owningBuilding ? (
+                <button type="button" className="linkish" onClick={() => onOpenBuilding?.(owningBuilding.id)}>
+                  {node.building}
+                </button>
+              ) : (
+                <span className="plain">{node.building}</span>
+              )
+            ) : owningBuilding ? (
               <button type="button" className="linkish" onClick={() => onOpenBuilding?.(owningBuilding.id)}>
                 {owningBuilding.name}
               </button>
-            }
-          />
-        )}
+            ) : (
+              <span className="plain" style={{ color: 'var(--sub)' }}>N/A (Router)</span>
+            )
+          }
+        />
         {floor && <Row k="Floor" v={<span className="plain">{floor.name}</span>} />}
+        <Row
+          k="Groups"
+          v={
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, minWidth: 150 }}>
+              {(!node.groups || node.groups.length === 0) ? (
+                <span className="plain" style={{ color: 'var(--sub)' }}>None</span>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-end' }}>
+                  {node.groups.map(g => (
+                    <span
+                      key={g}
+                      className="group-badge"
+                      title={`Click to view group "${g}" only on screen`}
+                      onClick={() => onOpenGroup ? onOpenGroup(g) : onHighlightGroup?.(g)}
+                    >
+                      <span className="group-badge-icon">🏷️</span>
+                      <span className="group-badge-text">{g}</span>
+                      {onRemoveFromGroup && (
+                        <button
+                          type="button"
+                          className="group-badge-remove"
+                          title={`Remove from ${g}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveFromGroup(node.id, g);
+                          }}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {onAddToGroup && (
+                <button
+                  type="button"
+                  onClick={() => onAddToGroup(node)}
+                  className="btn-add-group-link"
+                >
+                  + Assign Groups
+                </button>
+              )}
+            </div>
+          }
+        />
         <Row
           k="Interfaces"
           v={
@@ -180,11 +261,28 @@ export default function DetailsPanel({
   );
 }
 
-function BuildingDetails({ building, stats, alarms, onOpenBuilding, now }) {
+function BuildingDetails({ building, stats, alarms, onOpenBuilding, onHighlightGroup, data, now }) {
   if (!stats) return null;
   const recent = [...(alarms || [])]
     .sort((a, b) => (a.raisedAt < b.raisedAt ? 1 : -1))
     .slice(0, 6);
+
+  const groupsInBuilding = [];
+  if (data?.nodesById && building?.switchIds) {
+    const counts = new Map();
+    for (const id of building.switchIds) {
+      const sw = data.nodesById.get(id);
+      if (sw && Array.isArray(sw.groups)) {
+        for (const g of sw.groups) {
+          if (g) counts.set(g, (counts.get(g) || 0) + 1);
+        }
+      }
+    }
+    for (const [name, count] of counts.entries()) {
+      groupsInBuilding.push({ name, count });
+    }
+    groupsInBuilding.sort((a, b) => b.count - a.count);
+  }
 
   return (
     <aside className="details">
@@ -232,6 +330,25 @@ function BuildingDetails({ building, stats, alarms, onOpenBuilding, now }) {
           ))}
       </div>
 
+      {groupsInBuilding.length > 0 && (
+        <>
+          <div className="section-title">Groups in this building ({groupsInBuilding.length})</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+            {groupsInBuilding.map((g) => (
+              <span
+                key={g.name}
+                className="group-badge"
+                title={`Click to view group "${g.name}" only on screen`}
+                onClick={() => onOpenGroup ? onOpenGroup(g.name) : onHighlightGroup?.(g.name)}
+              >
+                <span className="group-badge-icon">🏷️</span>
+                <span className="group-badge-text">{g.name} ({g.count})</span>
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+
       <div className="section-title">Recent alarms ({(alarms || []).length})</div>
       {recent.length === 0 ? (
         <div className="empty-hint">No alarms in this building.</div>
@@ -252,6 +369,100 @@ function BuildingDetails({ building, stats, alarms, onOpenBuilding, now }) {
 
       <div className="btnrow">
         <button onClick={() => onOpenBuilding(building.id)}>View switches →</button>
+      </div>
+    </aside>
+  );
+}
+
+function GroupDetails({ groupName, stats, onEditGroup, onSelectNode, onGoGlobal }) {
+  if (!stats) return null;
+
+  return (
+    <aside className="details">
+      <h2>
+        <span className="glyph">📁</span> Group: {groupName}
+      </h2>
+      <div className="details-sub">
+        Custom switch group · {stats.total} switches across {stats.buildings.length} building{stats.buildings.length === 1 ? '' : 's'}
+      </div>
+
+      <div className="kv">
+        <Row k="Total switches" v={stats.total} />
+        <Row k="Connected" v={<Dot color="#22c55e" text={String(stats.connected)} />} />
+        <Row k="Connecting" v={<Dot color="#eab308" text={String(stats.connecting)} />} />
+        <Row k="Down" v={<Dot color="#ef4444" text={String(stats.down)} />} />
+        <Row k="Worst severity" v={<Dot color={severityColor(stats.worstSeverity)} text={stats.worstSeverity} />} />
+        <Row k="Active alarms" v={stats.activeAlarmCount} />
+      </div>
+
+      <div className="section-title">Severity breakdown</div>
+      <div className="sevbars">
+        {['critical', 'major', 'warning', 'minor', 'normal'].map((sev) => {
+          const count = stats.severity[sev] || 0;
+          const pct = stats.total ? (count / stats.total) * 100 : 0;
+          return (
+            <div className="sevbar" key={sev}>
+              <span className="sevbar-label">{sev}</span>
+              <span className="sevbar-track">
+                <span className="sevbar-fill" style={{ width: `${pct}%`, background: SEV_COLOR[sev] }} />
+              </span>
+              <span className="sevbar-count">{count}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="section-title">Buildings in this group ({stats.buildings.length})</div>
+      <div className="floorlist">
+        {stats.buildings.map((b) => (
+          <div className="floorrow" key={b.name} style={{ flexDirection: 'column', gap: 6, padding: '8px 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <strong style={{ fontSize: '12px', color: '#c084fc' }}>🏢 {b.name}</strong>
+              <span className="floorcount">{b.count} switches</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {b.switches.map((sw) => (
+                <button
+                  key={sw.id}
+                  type="button"
+                  onClick={() => onSelectNode?.(sw.id)}
+                  style={{
+                    background: '#1a2231',
+                    border: '1px solid var(--border)',
+                    color: '#e2e8f0',
+                    borderRadius: 4,
+                    padding: '2px 6px',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                  title={`${sw.name} (${sw.ipAddress}) · ${sw.status}`}
+                >
+                  <span className="dot" style={{ background: statusColor(sw.status), width: 6, height: 6 }} />
+                  {sw.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="btnrow" style={{ marginTop: 16 }}>
+        {onEditGroup && (
+          <button
+            onClick={() => onEditGroup(groupName)}
+            style={{ background: '#8b5cf6', color: '#fff', border: 'none', fontWeight: 600 }}
+          >
+            ✏️ Edit Group
+          </button>
+        )}
+        {onGoGlobal && (
+          <button onClick={onGoGlobal}>
+            ← Back to Network
+          </button>
+        )}
       </div>
     </aside>
   );

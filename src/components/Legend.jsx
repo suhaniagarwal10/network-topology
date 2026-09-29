@@ -19,10 +19,10 @@ export default function Legend({ view }) {
       </div>
       {view === 'global' ? (
         <div className="legend-item legend-hint">
-          🌐 Router &nbsp; 🏢 Building &nbsp;— double-click a building to open it
+          🌐 Router &nbsp; 🏢 Building &nbsp; 📦 Standalone &nbsp;— double-click a building to open it
         </div>
       ) : (
-        <div className="legend-item legend-hint">🌐 Uplink router &nbsp; 🔀 Switch</div>
+        <div className="legend-item legend-hint">🌐 Uplink router &nbsp; 🔀 Switch &nbsp; 📦 Standalone</div>
       )}
     </div>
   );

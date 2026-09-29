@@ -1,0 +1,39 @@
+[
+  { "link_id": "LNK-BB-01", "source_interface_id": "IF-CORE-1-BB1", "target_interface_id": "IF-CORE-2-BB1", "status": "up", "bandwidth_mbps": 100000 },
+  
+  { "link_id": "LNK-C1-DHQ1", "source_interface_id": "IF-CORE-1-D1", "target_interface_id": "IF-DHQ-1-UP1", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-C2-DHQ1", "source_interface_id": "IF-CORE-2-D1", "target_interface_id": "IF-DHQ-1-UP2", "status": "up", "bandwidth_mbps": 10000 },
+  
+  { "link_id": "LNK-C1-DHQ2", "source_interface_id": "IF-CORE-1-D2", "target_interface_id": "IF-DHQ-2-UP1", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-C2-DHQ2", "source_interface_id": "IF-CORE-2-D2", "target_interface_id": "IF-DHQ-2-UP2", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-C1-DBR1", "source_interface_id": "IF-CORE-1-D3", "target_interface_id": "IF-DBR-1-UP1", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-C2-DBR1", "source_interface_id": "IF-CORE-2-D3", "target_interface_id": "IF-DBR-1-UP2", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-C1-DBR2", "source_interface_id": "IF-CORE-1-D4", "target_interface_id": "IF-DBR-2-UP1", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-C2-DBR2", "source_interface_id": "IF-CORE-2-D4", "target_interface_id": "IF-DBR-2-UP2", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-DHQ1-SW1", "source_interface_id": "IF-DHQ-1-SW1", "target_interface_id": "IF-HQ-F1-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DHQ1-SW2", "source_interface_id": "IF-DHQ-1-SW2", "target_interface_id": "IF-HQ-F2-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DHQ1-SW3", "source_interface_id": "IF-DHQ-1-SW3", "target_interface_id": "IF-HQ-F3-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-DHQ2-SW4", "source_interface_id": "IF-DHQ-2-SW4", "target_interface_id": "IF-HQ-F1-02-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DHQ2-SW5", "source_interface_id": "IF-DHQ-2-SW5", "target_interface_id": "IF-HQ-F2-02-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DHQ2-SW6", "source_interface_id": "IF-DHQ-2-SW6", "target_interface_id": "IF-HQ-F3-02-UP", "status": "down", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-DBR1-SW1", "source_interface_id": "IF-DBR-1-SW1", "target_interface_id": "IF-WST-F1-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DBR1-SW2", "source_interface_id": "IF-DBR-1-SW2", "target_interface_id": "IF-WST-F2-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DBR1-SW3", "source_interface_id": "IF-DBR-1-SW3", "target_interface_id": "IF-WST-F3-01-UP", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-DBR2-SW4", "source_interface_id": "IF-DBR-2-SW4", "target_interface_id": "IF-WST-F1-02-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DBR2-SW5", "source_interface_id": "IF-DBR-2-SW5", "target_interface_id": "IF-WST-F2-02-UP", "status": "up", "bandwidth_mbps": 10000 },
+  { "link_id": "LNK-DBR2-SW6", "source_interface_id": "IF-DBR-2-SW6", "target_interface_id": "IF-WST-F3-02-UP", "status": "up", "bandwidth_mbps": 10000 },
+
+  { "link_id": "LNK-HQ-F1-PEER", "source_interface_id": "IF-HQ-F1-01-PEER", "target_interface_id": "IF-HQ-F1-02-PEER", "status": "up", "bandwidth_mbps": 1000 },
+  { "link_id": "LNK-HQ-F2-PEER", "source_interface_id": "IF-HQ-F2-01-PEER", "target_interface_id": "IF-HQ-F2-02-PEER", "status": "up", "bandwidth_mbps": 1000 },
+  { "link_id": "LNK-HQ-F3-PEER", "source_interface_id": "IF-HQ-F3-01-PEER", "target_interface_id": "IF-HQ-F3-02-PEER", "status": "down", "bandwidth_mbps": 1000 },
+
+  { "link_id": "LNK-WST-F1-PEER", "source_interface_id": "IF-WST-F1-01-PEER", "target_interface_id": "IF-WST-F1-02-PEER", "status": "up", "bandwidth_mbps": 1000 },
+  { "link_id": "LNK-WST-F2-PEER", "source_interface_id": "IF-WST-F2-01-PEER", "target_interface_id": "IF-WST-F2-02-PEER", "status": "up", "bandwidth_mbps": 1000 },
+  { "link_id": "LNK-WST-F3-PEER", "source_interface_id": "IF-WST-F3-01-PEER", "target_interface_id": "IF-WST-F3-02-PEER", "status": "up", "bandwidth_mbps": 1000 }
+]
