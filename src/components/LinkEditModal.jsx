@@ -65,8 +65,9 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           
           <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-            Target Node ID:
+            Target Node:
             <input 
+              list="target-nodes-list"
               value={target} 
               onChange={e => setTarget(e.target.value)} 
               placeholder="e.g. Switch-0042"
@@ -74,6 +75,11 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
               disabled={isEditing}
               style={{ background: isEditing ? '#334155' : '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
             />
+            <datalist id="target-nodes-list">
+              {(data?.nodes || []).map(n => (
+                <option key={n.id} value={n.name}>{n.id}</option>
+              ))}
+            </datalist>
           </label>
           
           {!isEditing && (

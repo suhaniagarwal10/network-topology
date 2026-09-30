@@ -131,7 +131,7 @@ function addAggregatedEdge(map, aId, bId, link) {
   entry.bandwidthMbps += link.bandwidth_mbps || 0;
 }
 
-function finishEdges(map) {
+function finishEdges(map, settings, data) {
   const result = [];
   for (const entry of map.values()) {
     const allDown = entry.downCount === entry.count;
@@ -141,25 +141,30 @@ function finishEdges(map) {
       ? `${entry.count} links${entry.downCount ? ` · ${entry.downCount} down` : ''}`
       : `${bwLabel(entry.bandwidthMbps)}${allDown ? ' · down' : ''}`;
 
-    // Add interface details
+    // Build interface details for HTML tooltip
+    let interfaceDetails = '';
     if (entry.count === 1) {
       const l = entry.links[0];
-      const sIf = l.source_interface_id || 'Auto';
-      const tIf = l.target_interface_id || 'Auto';
-      baseLabel += `\nsource: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
+      const sIf = getInterfaceLabel(l.source_interface_id, settings, data);
+      const tIf = getInterfaceLabel(l.target_interface_id, settings, data);
+      interfaceDetails = `source: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
     } else if (entry.count <= 3) {
-      // If a small bundle, list them
-      const list = entry.links.map(l => `\nsource: ${entry.source} (${l.source_interface_id || 'Auto'}) target: ${entry.target} (${l.target_interface_id || 'Auto'})`);
-      baseLabel += list.join('');
+      const list = entry.links.map(l => {
+        const sIf = getInterfaceLabel(l.source_interface_id, settings, data);
+        const tIf = getInterfaceLabel(l.target_interface_id, settings, data);
+        return `source: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
+      });
+      interfaceDetails = list.join(' | ');
     } else {
-      baseLabel += `\n(Multiple interfaces)`;
+      interfaceDetails = '(Multiple interfaces)';
     }
 
     const reverseKey = `${entry.target}->${entry.source}`;
     const isBidirectional = map.has(reverseKey);
     
-    const size = entry.count > 1 ? Math.min(2, 1 + Math.log10(entry.count) * 0.5) : 0.8;
-    const fill = allDown ? '#ef4444' : someDown ? '#f59e0b' : '#3f4a5c';
+    // Increase size significantly so the 3D raycaster has a massive hit area
+    const size = entry.count > 1 ? Math.min(5, 2.5 + Math.log10(entry.count) * 1.5) : 2.5;
+    const fill = allDown ? '#ef4444' : someDown ? '#f59e0b' : '#64748b';
 
     result.push({
       id: entry.id,
@@ -168,7 +173,6 @@ function finishEdges(map) {
       size,
       fill,
       dashed: allDown,
-      label: (isBidirectional ? '▶ ' : '') + baseLabel,
       arrowPlacement: 'end',
       data: {
         kind: 'link',
@@ -176,6 +180,7 @@ function finishEdges(map) {
         downCount: entry.downCount,
         linkIds: entry.links.map(l => l.link_id),
         bandwidthMbps: entry.bandwidthMbps,
+        interfaceDetails,
       },
     });
   }
@@ -186,7 +191,7 @@ function finishEdges(map) {
  * Global view: core -> distribution -> buildings
  * ------------------------------------------------------------------ */
 
-export function buildGlobalGraph(data, mappingIndex) {
+export function buildGlobalGraph(data, mappingIndex, settings = {}) {
   const { buildings, buildingBySwitchId } = mappingIndex;
 
   const coreNodes = data.nodes.filter((n) => n.tier === 'core');
@@ -335,7 +340,7 @@ export function buildGlobalGraph(data, mappingIndex) {
   for (const n of coreNodes) {
     nodes.push({
       id: n.id,
-      label: n.name,
+      label: getNodeLabel(n, settings),
       subLabel: coreSiteShare.get(n.id) || 'Backbone',
       fill: severityColor(n.severity),
       size: NODE_SIZE.core,
@@ -432,7 +437,7 @@ export function buildGlobalGraph(data, mappingIndex) {
     });
     nodes.push({
       id: sn.id,
-      label: sn.name,
+      label: getNodeLabel(sn, settings),
       subLabel: 'Standalone',
       fill: severityColor(sn.severity),
       size: NODE_SIZE.distribution,
@@ -505,7 +510,7 @@ export function buildGlobalGraph(data, mappingIndex) {
 
   return {
     nodes,
-    edges: finishEdges(edgeMap),
+    edges: finishEdges(edgeMap, settings, data),
     positions,
     buildingStats,
     sites,
@@ -518,7 +523,7 @@ export function buildGlobalGraph(data, mappingIndex) {
  * Building view: every individual switch in the building
  * ------------------------------------------------------------------ */
 
-export function buildBuildingGraph(building, data, mappingIndex) {
+export function buildBuildingGraph(building, data, mappingIndex, settings = {}) {
   const memberSet = new Set(building.switchIds);
   const positions = new Map();
   const nodes = [];
@@ -586,7 +591,7 @@ export function buildBuildingGraph(building, data, mappingIndex) {
   for (const r of routers) {
     nodes.push({
       id: r.id,
-      label: r.name,
+      label: getNodeLabel(r, settings),
       subLabel: r.tier === 'core' ? 'Core' : 'Distribution',
       fill: severityColor(r.severity),
       size: NODE_SIZE.core - 2,
@@ -601,7 +606,7 @@ export function buildBuildingGraph(building, data, mappingIndex) {
     const stats = computeDeviceStats(n, data);
     nodes.push({
       id: n.id,
-      label: n.name,
+      label: getNodeLabel(n, settings),
       subLabel: `${floor ? `${floor.name} · ` : ''}${n.status}`,
       fill: severityColor(n.severity),
       size: NODE_SIZE.switch + (stats.activeAlarmCount > 0 ? 2 : 0),
@@ -620,7 +625,7 @@ export function buildBuildingGraph(building, data, mappingIndex) {
     const owner = mappingIndex.buildingBySwitchId.get(n.id);
     nodes.push({
       id: n.id,
-      label: n.name,
+      label: getNodeLabel(n, settings),
       subLabel: owner ? `in ${owner.name}` : 'external',
       fill: '#64748b',
       size: NODE_SIZE.external,
@@ -663,7 +668,7 @@ export function buildBuildingGraph(building, data, mappingIndex) {
     });
     nodes.push({
       id: sn.id,
-      label: sn.name,
+      label: getNodeLabel(sn, settings),
       subLabel: 'Standalone',
       fill: severityColor(sn.severity),
       size: NODE_SIZE.switch,
@@ -699,7 +704,7 @@ export function buildBuildingGraph(building, data, mappingIndex) {
 
   return {
     nodes,
-    edges: finishEdges(edgeMap),
+    edges: finishEdges(edgeMap, settings, data),
     positions,
     floorBands,
     uplinkRouterIds: [...uplinkRouterIds],
@@ -780,7 +785,7 @@ export function computeGroupStats(groupName, data) {
  * Group view: displays ONLY the switches belonging to this particular group,
  * organized into columns by building, with their real links and uplinks.
  */
-export function buildGroupGraph(groupName, data, mappingIndex, options = { includeUplinks: true }) {
+export function buildGroupGraph(groupName, data, mappingIndex, options = { includeUplinks: true }, settings = {}) {
   const memberSwitches = (data?.nodes || []).filter(
     (n) => n.type === 'switch' && Array.isArray(n.groups) && n.groups.includes(groupName)
   );
@@ -872,7 +877,7 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
       if (!r || !positions.has(r.id)) continue;
       nodes.push({
         id: r.id,
-        label: r.name,
+        label: getNodeLabel(r, settings),
         subLabel: `${r.location} · ${r.tier === 'core' ? 'Core' : 'Dist'}`,
         fill: severityColor(r.severity),
         size: NODE_SIZE.core - 2,
@@ -893,7 +898,7 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
     const floor = mappingIndex?.floorBySwitchId?.get(sw.id);
     nodes.push({
       id: sw.id,
-      label: sw.name,
+      label: getNodeLabel(sw, settings),
       subLabel: `${sw.building || 'Unknown'}${floor ? ` (${floor.name})` : ''} · ${sw.status}`,
       fill: severityColor(sw.severity),
       size: NODE_SIZE.switch + (stats.activeAlarmCount > 0 ? 2 : 0),
@@ -921,7 +926,7 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
 
   return {
     nodes,
-    edges: finishEdges(edgeMap),
+    edges: finishEdges(edgeMap, settings, data),
     positions,
     groupName,
     memberSwitches,

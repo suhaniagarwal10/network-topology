@@ -21,6 +21,7 @@ import GroupManagerModal from './components/GroupManagerModal';
 import QuickAssignGroupModal from './components/QuickAssignGroupModal';
 import HelpModal from './components/HelpModal';
 import LoadTopologyModal from './components/LoadTopologyModal';
+import SettingsModal from './components/SettingsModal';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -71,6 +72,11 @@ export default function App() {
   const [quickAssignNode, setQuickAssignNode] = useState(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState({
+    nodeLabel: 'name',
+    interfaceLabel: 'name',
+  });
   const [isCustomDataset, setIsCustomDataset] = useState(() => {
     return localStorage.getItem('network-topology-is-custom') === 'true';
   });
@@ -169,25 +175,25 @@ export default function App() {
   // Full rebuilds on structural changes only (initial load, add/delete nodes, simulate alarm)
   useEffect(() => {
     if (data && mappingIndex) {
-      setGlobalGraph(buildGlobalGraph(data, mappingIndex));
+      setGlobalGraph(buildGlobalGraph(data, mappingIndex, settings));
     }
-  }, [data?.nodes, data?.links, mappingIndex, tick]);
+  }, [data?.nodes, data?.links, mappingIndex, tick, settings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeBuilding) {
-      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex));
+      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex, settings));
     } else {
       setBuildingGraph(null);
     }
-  }, [data?.nodes, data?.links, mappingIndex, activeBuildingId, tick]);
+  }, [data?.nodes, data?.links, mappingIndex, activeBuildingId, tick, settings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeGroupName) {
-      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }));
+      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }, settings));
     } else {
       setGroupGraph(null);
     }
-  }, [data?.nodes, data?.links, mappingIndex, activeGroupName, includeUplinksInGroup, tick]);
+  }, [data?.nodes, data?.links, mappingIndex, activeGroupName, includeUplinksInGroup, tick, settings]);
 
   const graph = view === 'group' ? groupGraph : (view === 'building' ? buildingGraph : globalGraph);
 
@@ -650,9 +656,13 @@ export default function App() {
       }
     });
     setIsNodeModalOpen(false);
+    setSelectedId(nodeData.id);
+    setHighlightIds([nodeData.id]);
+    setFocusRequest({ ids: [nodeData.id], mode: 'fitThenCenter', key: `sw-${nodeData.id}-${Date.now()}` });
   }, [updateTopology, showToast]);
 
   const handleSaveLink = useCallback((linkPayload) => {
+    let sourceId, targetId;
     updateTopology((raw) => {
       if (linkPayload.isEdit) {
         let count = 0;
@@ -660,6 +670,8 @@ export default function App() {
           if (linkPayload.linkIds.includes(raw.links[i].link_id)) {
             raw.links[i].bandwidth_mbps = linkPayload.bandwidth_mbps;
             raw.links[i].status = linkPayload.status;
+            sourceId = raw.links[i].source;
+            targetId = raw.links[i].target;
             count++;
           }
         }
@@ -667,11 +679,17 @@ export default function App() {
       } else {
         const { isEdit, ...newLink } = linkPayload;
         raw.links.push(newLink);
-        showToast(`Added link from ${newLink.source} to ${newLink.target}`);
+        sourceId = newLink.source;
+        targetId = newLink.target;
+        showToast(`Added link from ${sourceId} to ${targetId}`);
       }
     });
     setEditingLinkNode(null);
     setEditingLinkBundle(null);
+    if (sourceId && targetId) {
+      setHighlightIds([sourceId, targetId]);
+      setFocusRequest({ ids: [sourceId, targetId], mode: 'fitThenCenter', key: `lnk-${Date.now()}` });
+    }
   }, [updateTopology, showToast]);
 
   const handleDeleteNode = useCallback((id) => {
@@ -905,6 +923,7 @@ export default function App() {
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenLoadModal={() => setIsLoadModalOpen(true)}
         isCustomDataset={isCustomDataset}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       >
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
       </Header>
@@ -966,17 +985,35 @@ export default function App() {
                 )}
               />
               <FilterPanel filters={filters} onChange={setFilters} availableGroups={data?.groups || []} />
-              {hovered && (
-                <div className="hoverchip">
-                  <b>{hovered.data?.name || hovered.label || hovered.id}</b>
-                  {hovered.data?.kind === 'building' ? (
-                    <span>
-                      {hovered.data.stats.total} switches · {hovered.data.stats.connected} connected ·{' '}
-                      {hovered.data.stats.activeAlarmCount} active alarms
-                    </span>
-                  ) : hovered.data?.kind === 'link' ? (
-                    <span>
-                      {hovered.source} ↔ {hovered.target} · {hovered.data.count} bundled links
+              {hovered && (() => {
+                const getNodeDisplay = (nodeId) => {
+                  const node = data?.nodesById.get(nodeId);
+                  if (!node) return nodeId;
+                  if (settings.nodeLabel === 'id') return node.id;
+                  if (settings.nodeLabel === 'ip') return node.ipAddress || node.ip_address || 'No IP';
+                  return node.name || node.id;
+                };
+                return (
+                  <div className="hoverchip">
+                    <b>{hovered.data?.kind === 'link' ? 'Link Details' : (hovered.data?.kind === 'building' ? (hovered.label || hovered.id) : getNodeDisplay(hovered.id))}</b>
+                    {hovered.data?.kind === 'building' ? (
+                      <span>
+                        {hovered.data.stats.total} switches · {hovered.data.stats.connected} connected ·{' '}
+                        {hovered.data.stats.activeAlarmCount} active alarms
+                      </span>
+                    ) : hovered.data?.kind === 'link' ? (
+                      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontWeight: 600 }}>{getNodeDisplay(hovered.source)} ↔ {getNodeDisplay(hovered.target)}</span>
+                        <span>
+                          {hovered.data.count} link{hovered.data.count !== 1 ? 's' : ''} ·{' '}
+                        {hovered.data.bandwidthMbps >= 1000 
+                          ? `${(hovered.data.bandwidthMbps / 1000).toFixed(1).replace('.0', '')} Gbps` 
+                          : `${hovered.data.bandwidthMbps} Mbps`}
+                        {hovered.data.downCount > 0 ? ` · ${hovered.data.downCount} down` : ''}
+                      </span>
+                      {hovered.data.interfaceDetails && (
+                        <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>{hovered.data.interfaceDetails}</span>
+                      )}
                     </span>
                   ) : (
                     <span>
@@ -986,7 +1023,8 @@ export default function App() {
                     </span>
                   )}
                 </div>
-              )}
+              );
+              })()}
               <ZoomControls
                 onZoomIn={() => graphRef.current?.zoomIn()}
                 onZoomOut={() => graphRef.current?.zoomOut()}
@@ -1071,6 +1109,8 @@ export default function App() {
       {isNodeModalOpen && (
         <NodeModal
           node={editingNode}
+          data={data}
+          availableGroups={data?.groups || []}
           onSave={handleSaveNode}
           onClose={() => setIsNodeModalOpen(false)}
         />
@@ -1176,6 +1216,13 @@ export default function App() {
           onResetDefault={handleResetToDefault}
           isCustomLoaded={isCustomDataset}
           activeDatasetName={activeDatasetName}
+        />
+      )}
+      {isSettingsOpen && (
+        <SettingsModal
+          settings={settings}
+          onSave={setSettings}
+          onClose={() => setIsSettingsOpen(false)}
         />
       )}
     </div>

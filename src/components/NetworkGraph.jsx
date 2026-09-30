@@ -39,11 +39,11 @@ const theme = {
   ring: { fill: '#1f2937', activeFill: '#60a5fa' },
   edge: {
     ...darkTheme.edge,
-    fill: '#334155',
+    fill: '#475569',
     activeFill: '#93c5fd',
-    opacity: 0.4,
+    opacity: 0.8,
     selectedOpacity: 1,
-    inactiveOpacity: 0.05,
+    inactiveOpacity: 0.15,
     label: { ...darkTheme.edge.label, color: '#94a3b8', activeColor: '#e2e8f0' },
   },
   arrow: { fill: '#3f4a5c', activeFill: '#93c5fd' },
@@ -145,8 +145,14 @@ const NetworkGraph = forwardRef(function NetworkGraph(
     []
   );
 
+  const hoverTimeoutRef = useRef(null);
+
   const handlePointerOver = useCallback(
     (node) => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+        hoverTimeoutRef.current = null;
+      }
       if (isMouseDownRef.current) return;
       setHoveredId(node.id);
       onHover?.(node);
@@ -156,8 +162,14 @@ const NetworkGraph = forwardRef(function NetworkGraph(
 
   const handlePointerOut = useCallback(() => {
     if (isMouseDownRef.current) return;
-    setHoveredId(null);
-    onHover?.(null);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    // Freeze the hover for 1.5 seconds before it disappears
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredId(null);
+      onHover?.(null);
+    }, 1500);
   }, [onHover]);
 
   return (

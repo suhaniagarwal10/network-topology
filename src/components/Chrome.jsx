@@ -28,7 +28,7 @@ export function ZoomControls({ onZoomIn, onZoomOut, onFit, onOpenHelp }) {
   );
 }
 
-export function Header({ stats, view, groupName, mode, onModeChange, onSimulateAlarm, onAddNode, onOpenGroups, groupsCount = 0, onToggleAlarms, onReset, onOpenTrash, deletedCount, onOpenHelp, onOpenLoadModal, isCustomDataset = false, children }) {
+export function Header({ stats, view, groupName, mode, onModeChange, onSimulateAlarm, onAddNode, onOpenGroups, groupsCount = 0, onToggleAlarms, onReset, onOpenTrash, deletedCount, onOpenHelp, onOpenLoadModal, isCustomDataset = false, onOpenSettings, children }) {
   return (
     <header>
       <h1>
@@ -133,6 +133,11 @@ export function Header({ stats, view, groupName, mode, onModeChange, onSimulateA
             }}>
               {groupsCount}
             </span>
+          </button>
+        )}
+        {onOpenSettings && (
+          <button onClick={onOpenSettings} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#475569', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+            ⚙️ Settings
           </button>
         )}
         <button onClick={onAddNode} style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>

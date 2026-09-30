@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function NodeModal({ node, onSave, onClose }) {
+export default function NodeModal({ node, data, availableGroups = [], onSave, onClose }) {
   const [formData, setFormData] = useState(() => ({
     id: node?.id || '',
     name: node?.name || node?.label || '',
@@ -124,20 +124,32 @@ export default function NodeModal({ node, onSave, onClose }) {
               <label htmlFor="modal-node-location">Location (Site)</label>
               <input
                 id="modal-node-location"
+                list="locations-list"
                 value={formData.location}
                 onChange={e => setFormData({ ...formData, location: e.target.value })}
                 placeholder="e.g. Data Center 1"
               />
+              <datalist id="locations-list">
+                {Array.from(new Set((data?.nodes || []).map(n => n.location).filter(Boolean))).map(loc => (
+                  <option key={loc} value={loc} />
+                ))}
+              </datalist>
             </div>
             <div className="form-group">
               <label htmlFor="modal-node-building">Building</label>
               <input
                 id="modal-node-building"
+                list="buildings-list"
                 value={formData.building || ''}
                 onChange={e => setFormData({ ...formData, building: e.target.value })}
                 placeholder="e.g. DC1 Building A"
                 disabled={formData.type === 'router'}
               />
+              <datalist id="buildings-list">
+                {Array.from(new Set((data?.nodes || []).map(n => n.building).filter(Boolean))).map(bldg => (
+                  <option key={bldg} value={bldg} />
+                ))}
+              </datalist>
             </div>
           </div>
 
@@ -166,7 +178,8 @@ export default function NodeModal({ node, onSave, onClose }) {
             <div style={{ display: 'flex', gap: 6 }}>
               <input
                 type="text"
-                placeholder="Add to group (type and click Add)..."
+                list="available-groups-list"
+                placeholder="Add to group (type or select)..."
                 value={groupInput}
                 onChange={e => setGroupInput(e.target.value)}
                 onKeyDown={e => {
@@ -176,6 +189,11 @@ export default function NodeModal({ node, onSave, onClose }) {
                   }
                 }}
               />
+              <datalist id="available-groups-list">
+                {availableGroups.map(g => (
+                  <option key={g} value={g} />
+                ))}
+              </datalist>
               <button
                 type="button"
                 onClick={addGroup}
