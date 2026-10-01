@@ -13,6 +13,20 @@
  */
 import { buildingHealthLevel, severityColor, worstSeverity, bwLabel } from './graph.js';
 
+export function getNodeLabel(n, settings) {
+  if (settings?.nodeLabel === 'id') return n.id;
+  if (settings?.nodeLabel === 'ip') return n.ipAddress || n.ip_address || 'No IP';
+  return n.name || n.id;
+}
+
+export function getInterfaceLabel(ifaceId, settings, data) {
+  if (!ifaceId || ifaceId === 'Auto') return 'Auto';
+  if (settings?.interfaceLabel === 'id') return ifaceId;
+  const iface = data?.interfacesById?.get(ifaceId);
+  if (!iface) return ifaceId;
+  return iface.name || ifaceId;
+}
+
 /* ------------------------------------------------------------------ *
  * Layout constants. Reagraph works in world units; these are tuned so a
  * 180-node global view fits comfortably and reads as distinct tiers.
