@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { KIND_GLYPH, severityColor, tierLabel } from '../utils/graph.js';
+import { getNodeLabel } from '../utils/topologyTransform.js';
 
 /**
  * Search across every routable thing in the topology:
@@ -13,7 +14,7 @@ import { KIND_GLYPH, severityColor, tierLabel } from '../utils/graph.js';
 
 const MAX_RESULTS = 14;
 
-function buildIndex(data, mappingIndex) {
+function buildIndex(data, mappingIndex, settings) {
   if (!data || !mappingIndex) return [];
   const entries = [];
 
@@ -66,13 +67,15 @@ function buildIndex(data, mappingIndex) {
     if (n.groups && n.groups.length > 0) {
       subtitleParts.push(`Groups: ${n.groups.join(', ')}`);
     }
+    const primaryLabel = getNodeLabel(n, settings);
+    const secondaryLabel = primaryLabel === n.id ? n.name : n.id;
 
     entries.push({
       kind: n.type === 'switch' ? 'switch' : 'router',
       id: n.id,
       nodeId: n.id,
       buildingId: building?.id || null,
-      title: `${n.name} (${n.id})`,
+      title: secondaryLabel && secondaryLabel !== primaryLabel ? `${primaryLabel} (${secondaryLabel})` : primaryLabel,
       subtitle: subtitleParts.join(' · '),
       status: n.status,
       haystack: `${n.id} ${n.name} ${n.ipAddress} ${n.location} ${n.building || ''} ${(n.groups || []).join(' ')} ${tierLabel(n)} ${
@@ -84,21 +87,23 @@ function buildIndex(data, mappingIndex) {
 
   // Standalone unlinked devices
   const standaloneNodes = [
-    { id: 'STANDALONE-GW-01', name: 'STANDALONE-GW-01', type: 'router', status: 'up', severity: 'normal', location: 'Site A', desc: 'Perimeter Security Gateway' },
-    { id: 'STANDALONE-DR-02', name: 'STANDALONE-DR-02', type: 'router', status: 'up', severity: 'warning', location: 'Site B', desc: 'Disaster Recovery Node' },
-    { id: 'STANDALONE-LAB-03', name: 'STANDALONE-LAB-03', type: 'switch', status: 'up', severity: 'normal', location: 'Site C', desc: 'Testbed Appliance' },
+    { id: 'STANDALONE-GW-01', name: 'STANDALONE-GW-01', ipAddress: '10.255.0.1', type: 'router', status: 'up', severity: 'normal', location: 'Site A', desc: 'Perimeter Security Gateway' },
+    { id: 'STANDALONE-DR-02', name: 'STANDALONE-DR-02', ipAddress: '10.255.0.2', type: 'router', status: 'up', severity: 'warning', location: 'Site B', desc: 'Disaster Recovery Node' },
+    { id: 'STANDALONE-LAB-03', name: 'STANDALONE-LAB-03', ipAddress: '10.255.0.3', type: 'switch', status: 'up', severity: 'normal', location: 'Site C', desc: 'Testbed Appliance' },
   ];
 
   for (const sn of standaloneNodes) {
+    const primaryLabel = getNodeLabel(sn, settings);
+    const secondaryLabel = primaryLabel === sn.id ? sn.name : sn.id;
     entries.push({
       kind: sn.type === 'switch' ? 'switch' : 'router',
       id: sn.id,
       nodeId: sn.id,
       buildingId: null,
-      title: `${sn.name} (${sn.id})`,
+      title: secondaryLabel && secondaryLabel !== primaryLabel ? `${primaryLabel} (${secondaryLabel})` : primaryLabel,
       subtitle: `Standalone · ${sn.desc} · ${sn.location}`,
       status: sn.status,
-      haystack: `${sn.id} ${sn.name} ${sn.desc} standalone isolated unlinked air-gapped ${sn.location}`.toLowerCase(),
+      haystack: `${sn.id} ${sn.name} ${sn.ipAddress} ${sn.desc} standalone isolated unlinked air-gapped ${sn.location}`.toLowerCase(),
       color: severityColor(sn.severity),
     });
   }
@@ -115,12 +120,12 @@ function score(entry, q) {
   return 4;
 }
 
-export default function SearchBar({ data, mappingIndex, onPick, placeholder }) {
+export default function SearchBar({ data, mappingIndex, onPick, placeholder, settings }) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const boxRef = useRef(null);
 
-  const index = useMemo(() => buildIndex(data, mappingIndex), [data, mappingIndex]);
+  const index = useMemo(() => buildIndex(data, mappingIndex, settings), [data, mappingIndex, settings]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();

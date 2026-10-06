@@ -22,7 +22,7 @@ const theme = {
     activeFill: '#60a5fa',
     opacity: 1,
     selectedOpacity: 1,
-    inactiveOpacity: 0.25,
+    inactiveOpacity: 1,
     label: {
       ...darkTheme.node.label,
       color: '#cbd5e1',
@@ -39,21 +39,34 @@ const theme = {
   ring: { fill: '#1f2937', activeFill: '#60a5fa' },
   edge: {
     ...darkTheme.edge,
-    fill: '#475569',
+    fill: '#64748b',
     activeFill: '#93c5fd',
-    opacity: 0.8,
+    opacity: 0.85,
     selectedOpacity: 1,
-    inactiveOpacity: 0.15,
+    inactiveOpacity: 0.75,
     label: { ...darkTheme.edge.label, color: '#94a3b8', activeColor: '#e2e8f0' },
   },
-  arrow: { fill: '#3f4a5c', activeFill: '#93c5fd' },
+  arrow: { fill: '#64748b', activeFill: '#93c5fd' },
 };
+
+const DRAG_STORAGE_KEY = 'network_topology_dragged_positions';
+
+function loadSavedDraggedPositions() {
+  try {
+    const raw = localStorage.getItem(DRAG_STORAGE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) || {};
+  } catch {
+    return {};
+  }
+}
 
 const NetworkGraph = forwardRef(function NetworkGraph(
   {
     nodes,
     edges,
     positions,
+    viewKey = 'global',
     selectedId,
     highlightIds,
     onSelect,
@@ -66,14 +79,13 @@ const NetworkGraph = forwardRef(function NetworkGraph(
 ) {
   const graphRef = useRef(null);
   const [hoveredId, setHoveredId] = useState(null);
-  const draggedPositionsRef = useRef(new Map());
+  const hoveredIdRef = useRef(null);
+  const draggedPositionsRef = useRef(loadSavedDraggedPositions());
+  const positionsRef = useRef(positions);
+  positionsRef.current = positions;
+  const viewKeyRef = useRef(viewKey);
+  viewKeyRef.current = viewKey;
   const isMouseDownRef = useRef(false);
-
-  // When positions map reference changes (e.g. view switch between global/building/group),
-  // reset dragged positions cache so new layout is applied cleanly.
-  useEffect(() => {
-    draggedPositionsRef.current.clear();
-  }, [positions]);
 
   // Track global pointer down / up to completely suppress hover events during node dragging
   // or canvas panning. This avoids 60 FPS re-render storms and hoverchip churn.
@@ -92,8 +104,13 @@ const NetworkGraph = forwardRef(function NetworkGraph(
     };
   }, []);
 
-  // Nodes adjacent to whatever is selected/hovered — Reagraph dims everything
-  // that isn't in `actives`, which gives us neighbour highlighting for free.
+  const validIdSet = useMemo(() => {
+    const set = new Set();
+    for (const n of nodes) set.add(n.id);
+    for (const e of edges) set.add(e.id);
+    return set;
+  }, [nodes, edges]);
+
   const adjacency = useMemo(() => {
     const map = new Map();
     for (const e of edges) {
@@ -105,32 +122,68 @@ const NetworkGraph = forwardRef(function NetworkGraph(
     return map;
   }, [edges]);
 
+  const validSelections = useMemo(() => {
+    if (selectedId && validIdSet.has(selectedId)) return [selectedId];
+    return [];
+  }, [selectedId, validIdSet]);
+
   const actives = useMemo(() => {
-    if (highlightIds && highlightIds.length > 0) return highlightIds;
-    const focus = hoveredId || selectedId;
+    if (highlightIds && highlightIds.length > 0) {
+      return highlightIds.filter((id) => validIdSet.has(id));
+    }
+    const focus = (hoveredId && validIdSet.has(hoveredId))
+      ? hoveredId
+      : (selectedId && validIdSet.has(selectedId) ? selectedId : null);
     if (!focus) return [];
+
+    const focusEdge = edges.find((e) => e.id === focus);
+    if (focusEdge) {
+      const ids = [focusEdge.id, focusEdge.source, focusEdge.target];
+      for (const e of edges) {
+        if (
+          (e.source === focusEdge.source && e.target === focusEdge.target) ||
+          (e.source === focusEdge.target && e.target === focusEdge.source)
+        ) {
+          ids.push(e.id);
+        }
+      }
+      return ids;
+    }
+
     const neighbours = adjacency.get(focus);
     const ids = [focus, ...(neighbours ? [...neighbours] : [])];
-    // Include the edges between the focus node and its neighbours so the
-    // connecting lines stay lit rather than dimmed.
     for (const e of edges) {
       if (e.source === focus || e.target === focus) ids.push(e.id);
     }
     return ids;
-  }, [hoveredId, selectedId, highlightIds, adjacency, edges]);
+  }, [hoveredId, selectedId, highlightIds, adjacency, edges, validIdSet]);
 
-  const getNodePosition = useCallback(
-    (id) => draggedPositionsRef.current.get(id) || positions.get(id) || { x: 0, y: 0, z: 0 },
-    [positions]
-  );
+  const getNodePosition = useCallback((id) => {
+    const viewDrags = draggedPositionsRef.current[viewKeyRef.current];
+    if (viewDrags && viewDrags[id]) {
+      return viewDrags[id];
+    }
+    return positionsRef.current?.get(id) || { x: 0, y: 0, z: 0 };
+  }, []);
+
+  const layoutOverrides = useMemo(() => ({ getNodePosition }), [getNodePosition]);
 
   const handleNodeDragged = useCallback((node) => {
     if (node?.id && node?.position) {
-      draggedPositionsRef.current.set(node.id, {
+      const vk = viewKeyRef.current;
+      if (!draggedPositionsRef.current[vk]) {
+        draggedPositionsRef.current[vk] = {};
+      }
+      draggedPositionsRef.current[vk][node.id] = {
         x: node.position.x,
         y: node.position.y,
         z: node.position.z,
-      });
+      };
+      try {
+        localStorage.setItem(DRAG_STORAGE_KEY, JSON.stringify(draggedPositionsRef.current));
+      } catch {
+        // Ignore storage quota errors
+      }
     }
   }, []);
 
@@ -141,6 +194,10 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       center: (ids) => graphRef.current?.centerGraph(ids && ids.length ? ids : undefined),
       zoomIn: () => graphRef.current?.zoomIn(),
       zoomOut: () => graphRef.current?.zoomOut(),
+      clearDraggedPositions: () => {
+        draggedPositionsRef.current = {};
+        localStorage.removeItem(DRAG_STORAGE_KEY);
+      },
     }),
     []
   );
@@ -153,7 +210,9 @@ const NetworkGraph = forwardRef(function NetworkGraph(
         clearTimeout(hoverTimeoutRef.current);
         hoverTimeoutRef.current = null;
       }
-      if (isMouseDownRef.current) return;
+      if (isMouseDownRef.current || !node?.id) return;
+      if (hoveredIdRef.current === node.id) return;
+      hoveredIdRef.current = node.id;
       setHoveredId(node.id);
       onHover?.(node);
     },
@@ -165,11 +224,11 @@ const NetworkGraph = forwardRef(function NetworkGraph(
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
-    // Freeze the hover for 1.5 seconds before it disappears
     hoverTimeoutRef.current = setTimeout(() => {
+      hoveredIdRef.current = null;
       setHoveredId(null);
       onHover?.(null);
-    }, 1500);
+    }, 150);
   }, [onHover]);
 
   return (
@@ -179,20 +238,19 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       nodes={nodes}
       edges={edges}
       layoutType="custom"
-      layoutOverrides={{ getNodePosition }}
+      layoutOverrides={layoutOverrides}
       draggable={true}
       onNodeDragged={handleNodeDragged}
       cameraMode="pan"
       animated={false}
-      // "nodes" keeps labels camera-independent. Density is controlled by
-      // simply not giving the 140 distribution routers a label — see
-      // buildGlobalGraph — rather than by hoping the camera is close enough.
+      // "nodes" keeps labels camera-independent so all core, distribution,
+      // and building nodes display their label and subLabel clearly.
       labelType="nodes"
       edgeArrowPosition="end"
       edgeInterpolation="curved"
       minDistance={200}
       maxDistance={45000}
-      selections={selectedId ? [selectedId] : []}
+      selections={validSelections}
       actives={actives}
       onNodeClick={(node) => onSelect?.(node)}
       onNodeDoubleClick={(node) => onActivate?.(node)}
@@ -222,13 +280,15 @@ const NetworkGraph = forwardRef(function NetworkGraph(
         const hasAlarm = node.data?.stats?.activeAlarmCount > 0;
         const alarmCount = node.data?.stats?.activeAlarmCount || 0;
         const isRouter = node.data?.deviceType === 'router';
+        const isDistRouter = isRouter && node.data?.tier === 'distribution';
+        const boxScale = isDistRouter ? rest.size * 1.1 : rest.size * 1.75;
         
         return (
           <group>
             {isRouter ? (
               <mesh
                 geometry={sharedBoxGeometry}
-                scale={[rest.size * 1.75, rest.size * 1.75, rest.size * 1.75]}
+                scale={[boxScale, boxScale, boxScale]}
               >
                 <meshBasicMaterial color={rest.color} transparent={true} opacity={rest.opacity ?? 1} />
               </mesh>

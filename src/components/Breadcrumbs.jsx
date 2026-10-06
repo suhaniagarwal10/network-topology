@@ -1,4 +1,5 @@
 import { KIND_GLYPH } from '../utils/graph.js';
+import { getNodeLabel } from '../utils/topologyTransform.js';
 
 /**
  * Network Topology  >  DC1 Building A  >  Switch-0025
@@ -7,7 +8,7 @@ import { KIND_GLYPH } from '../utils/graph.js';
  * Always shows which level the user is currently looking at, and every
  * ancestor crumb is clickable to get back up.
  */
-export default function Breadcrumbs({ building, group, node, onGoGlobal, onGoBuilding, onGoGroup }) {
+export default function Breadcrumbs({ building, group, node, onGoGlobal, onGoBuilding, onGoGroup, settings }) {
   const isGlobal = !building && !group;
 
   return (
@@ -49,7 +50,7 @@ export default function Breadcrumbs({ building, group, node, onGoGlobal, onGoBui
           <span className="crumb-sep">›</span>
           <span className="crumb current">
             <span className="glyph">{node.type === 'switch' ? KIND_GLYPH.switch : KIND_GLYPH.router}</span>
-            {node.name}
+            {getNodeLabel(node, settings)}
           </span>
         </>
       )}

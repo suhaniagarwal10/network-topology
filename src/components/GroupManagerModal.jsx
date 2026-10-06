@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { statusColor } from '../utils/graph.js';
+import { getNodeLabel } from '../utils/topologyTransform.js';
 
 export default function GroupManagerModal({
   isOpen,
@@ -12,6 +13,7 @@ export default function GroupManagerModal({
   onOpenGroup,
   initialEditingGroup = null,
   tick = 0,
+  settings,
 }) {
   const [viewMode, setViewMode] = useState(initialEditingGroup ? 'editor' : 'list');
   const [groupName, setGroupName] = useState('');
@@ -23,6 +25,7 @@ export default function GroupManagerModal({
   const [collapsedBuildings, setCollapsedBuildings] = useState(new Set());
   const [isPillsExpanded, setIsPillsExpanded] = useState(false);
   const [formError, setFormError] = useState('');
+  const [groupNameTouched, setGroupNameTouched] = useState(false);
   const [revision, setRevision] = useState(0);
 
   // Collect all existing groups and their members - recomputes instantly on data, tick, or revision
@@ -31,8 +34,9 @@ export default function GroupManagerModal({
     const map = new Map();
 
     for (const node of data.nodes) {
-      if (node.type !== 'switch' || !Array.isArray(node.groups)) continue;
-      for (const g of node.groups) {
+      if (!Array.isArray(node.groups)) continue;
+      for (const rawG of node.groups) {
+        const g = typeof rawG === 'string' ? rawG.trim() : '';
         if (!g) continue;
         if (!map.has(g)) {
           map.set(g, {
@@ -43,7 +47,7 @@ export default function GroupManagerModal({
         }
         const item = map.get(g);
         item.switches.push(node);
-        const bName = node.building || 'Unassigned';
+        const bName = node.building || (node.type === 'router' ? `Routers (${node.location || 'Network'})` : 'Unassigned');
         item.buildingCounts.set(bName, (item.buildingCounts.get(bName) || 0) + 1);
       }
     }
@@ -61,12 +65,28 @@ export default function GroupManagerModal({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [data?.nodes, data?.groups, tick, revision]);
 
+  const validateGroupName = (val) => {
+    const trimmed = (val || '').trim();
+    if (!trimmed) return 'Please enter a group name.';
+    if (trimmed.length < 2 || trimmed.length > 50) return 'Group name must be between 2 and 50 characters.';
+    if (!/^[a-zA-Z0-9_\-\s]+$/.test(trimmed)) {
+      return 'Group name may only contain letters, numbers, spaces, hyphens, and underscores.';
+    }
+    if (trimmed !== originalGroupName && groupsSummary.some(g => g.name.toLowerCase() === trimmed.toLowerCase())) {
+      return `A group named "${trimmed}" already exists.`;
+    }
+    return '';
+  };
+
+  const groupNameError = validateGroupName(groupName);
+
   // Open editor for a group or create new
   const startCreateNew = () => {
     setGroupName('');
     setOriginalGroupName(null);
     setSelectedSwitchIds(new Set());
     setFormError('');
+    setGroupNameTouched(false);
     setSwitchFilterMode('ALL');
     setViewMode('editor');
   };
@@ -76,6 +96,7 @@ export default function GroupManagerModal({
     setOriginalGroupName(groupItem.name);
     setSelectedSwitchIds(new Set(groupItem.switches.map(s => s.id)));
     setFormError('');
+    setGroupNameTouched(false);
     setSwitchFilterMode('ALL');
     setViewMode('editor');
   };
@@ -89,6 +110,7 @@ export default function GroupManagerModal({
         setGroupName(initialEditingGroup);
         setOriginalGroupName(null);
         setSelectedSwitchIds(new Set());
+        setGroupNameTouched(false);
         setSwitchFilterMode('ALL');
         setViewMode('editor');
       }
@@ -96,7 +118,7 @@ export default function GroupManagerModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialEditingGroup]);
 
-  // Building structure with switches filtered by site, search query, and selected/unselected state
+  // Building structure with switches & routers filtered by site, search query, and selected/unselected state
   const buildingsWithSwitches = useMemo(() => {
     if (!data?.nodes || !mappingIndex?.buildings) return [];
 
@@ -115,7 +137,7 @@ export default function GroupManagerModal({
           if (!query) return true;
           return (
             sw.id.toLowerCase().includes(query) ||
-            sw.name.toLowerCase().includes(query) ||
+            (sw.name || '').toLowerCase().includes(query) ||
             (sw.ipAddress && sw.ipAddress.toLowerCase().includes(query)) ||
             b.name.toLowerCase().includes(query)
           );
@@ -126,6 +148,42 @@ export default function GroupManagerModal({
           building: b,
           switches,
           totalInBuilding: b.switchIds.length,
+        });
+      }
+    }
+
+    // Also include routers grouped by site so routers in groups can be viewed/managed
+    const routersBySite = new Map();
+    for (const n of data.nodes) {
+      if (n.type !== 'router') continue;
+      const site = n.location || 'Network';
+      if (!routersBySite.has(site)) routersBySite.set(site, []);
+      routersBySite.get(site).push(n);
+    }
+    for (const [site, rList] of routersBySite.entries()) {
+      if (siteFilter !== 'ALL' && site !== siteFilter) continue;
+      const virtualBldg = {
+        id: `ROUTERS-${site}`,
+        name: `Routers (${site})`,
+        site,
+        switchIds: rList.map(r => r.id),
+      };
+      const filteredRouters = rList.filter(r => {
+        if (switchFilterMode === 'SELECTED' && !selectedSwitchIds.has(r.id)) return false;
+        if (switchFilterMode === 'UNSELECTED' && selectedSwitchIds.has(r.id)) return false;
+        if (!query) return true;
+        return (
+          r.id.toLowerCase().includes(query) ||
+          (r.name || '').toLowerCase().includes(query) ||
+          (r.ipAddress && r.ipAddress.toLowerCase().includes(query)) ||
+          virtualBldg.name.toLowerCase().includes(query)
+        );
+      });
+      if (filteredRouters.length > 0 || (!query && switchFilterMode === 'ALL')) {
+        result.push({
+          building: virtualBldg,
+          switches: filteredRouters,
+          totalInBuilding: rList.length,
         });
       }
     }
@@ -196,15 +254,11 @@ export default function GroupManagerModal({
 
   const handleSave = (e) => {
     e.preventDefault();
+    setGroupNameTouched(true);
     const trimmed = groupName.trim();
-    if (!trimmed) {
-      setFormError('Please enter a group name.');
-      return;
-    }
-
-    // Check collision if new or renamed
-    if (trimmed !== originalGroupName && groupsSummary.some(g => g.name.toLowerCase() === trimmed.toLowerCase())) {
-      setFormError(`A group named "${trimmed}" already exists.`);
+    const nameErr = validateGroupName(groupName);
+    if (nameErr) {
+      setFormError(nameErr);
       return;
     }
 
@@ -220,6 +274,7 @@ export default function GroupManagerModal({
     setOriginalGroupName(null);
     setSelectedSwitchIds(new Set());
     setFormError('');
+    setGroupNameTouched(false);
   };
 
   const handleDelete = (name) => {
@@ -345,24 +400,28 @@ export default function GroupManagerModal({
             </div>
           ) : (
             /* ================= Group Editor ================= */
-            <form onSubmit={handleSave} className="group-editor-view">
-              {formError && <div className="form-error-banner">{formError}</div>}
+            <form onSubmit={handleSave} noValidate className="group-editor-view">
+              {formError && <div className="form-error-banner">⚠️ {formError}</div>}
 
               {/* Group Name & Stats Bar */}
               <div className="editor-top-bar">
                 <div className="form-group" style={{ flex: 1, margin: 0 }}>
                   <label htmlFor="group-name-input">
-                    Group Name <span style={{ color: 'var(--critical)' }}>*</span>
+                    Group Name <span className="field-required">*</span>
                   </label>
                   <input
                     id="group-name-input"
                     type="text"
-                    required
                     placeholder="e.g. Critical-HVAC, East-Wing-Backbone, Core-Sync..."
                     value={groupName}
                     onChange={e => { setGroupName(e.target.value); setFormError(''); }}
+                    onBlur={() => setGroupNameTouched(true)}
+                    className={groupNameTouched && groupNameError ? 'input-invalid' : ''}
                     style={{ fontSize: '1rem', fontWeight: 600 }}
                   />
+                  {groupNameTouched && groupNameError && (
+                    <span className="field-error-msg">⚠️ {groupNameError}</span>
+                  )}
                 </div>
 
                 <div className="selection-stats-box">
@@ -406,8 +465,8 @@ export default function GroupManagerModal({
                       const sw = data?.nodesById.get(id);
                       return (
                         <span key={id} className="selected-sw-pill">
-                          <span className="sw-pill-name">{sw?.name || id}</span>
-                          <span className="sw-pill-bldg">({sw?.building || 'Unknown'})</span>
+                          <span className="sw-pill-name">{sw ? getNodeLabel(sw, settings) : id}</span>
+                          <span className="sw-pill-bldg">({sw?.building || sw?.location || 'Unknown'})</span>
                           <button
                             type="button"
                             className="sw-pill-remove"
@@ -558,7 +617,7 @@ export default function GroupManagerModal({
                                   />
                                   <div className="switch-card-info">
                                     <div className="sw-id-name">
-                                      <strong>{sw.name}</strong>
+                                      <strong>{getNodeLabel(sw, settings)}</strong>
                                       <span className="sw-id-sub">({sw.id})</span>
                                     </div>
                                     <div className="sw-meta-row">
@@ -603,7 +662,6 @@ export default function GroupManagerModal({
                   <button
                     type="submit"
                     className="btn-primary"
-                    disabled={!groupName.trim() || selectedSwitchIds.size === 0}
                   >
                     {originalGroupName ? 'Save Changes' : 'Create Group'}
                   </button>

@@ -14,9 +14,10 @@
 import { buildingHealthLevel, severityColor, worstSeverity, bwLabel } from './graph.js';
 
 export function getNodeLabel(n, settings) {
-  if (settings?.nodeLabel === 'id') return n.id;
-  if (settings?.nodeLabel === 'ip') return n.ipAddress || n.ip_address || 'No IP';
-  return n.name || n.id;
+  if (!n) return '';
+  if (settings?.nodeLabel === 'id') return String(n.id || n.node_id || '');
+  if (settings?.nodeLabel === 'ip') return String(n.ipAddress || n.ip_address || n.ip || 'No IP');
+  return String(n.name || n.id || '');
 }
 
 export function getInterfaceLabel(ifaceId, settings, data) {
@@ -32,25 +33,25 @@ export function getInterfaceLabel(ifaceId, settings, data) {
  * 180-node global view fits comfortably and reads as distinct tiers.
  * ------------------------------------------------------------------ */
 const LAYOUT = {
-  backboneY: 400, // core routers that span sites
-  coreY: 250, // core routers anchored to one site
-  distTopY: 100,
-  distRowGap: 35,
-  routersPerRow: 4,
-  routerGap: 30,
-  buildingY: -180,
-  colWidth: 100, // one building + the uplink routers stacked above it
-  colGap: 30,
-  siteGap: 100,
-  coreGap: 90,
+  backboneY: 420, // core routers that span sites
+  coreY: 270, // core routers anchored to one site
+  distTopY: 110,
+  distRowGap: 48,
+  routersPerRow: 3,
+  routerGap: 62,
+  buildingY: -190,
+  colWidth: 160, // one building + the uplink routers stacked above it
+  colGap: 42,
+  siteGap: 110,
+  coreGap: 95,
 };
 
 export const NODE_SIZE = {
   core: 9,
-  distribution: 3,
+  distribution: 8,
   building: 8,
   switch: 9,
-  external: 6,
+  external: 8,
 };
 
 /* ------------------------------------------------------------------ *
@@ -146,6 +147,10 @@ function addAggregatedEdge(map, aId, bId, link) {
 }
 
 function finishEdges(map, settings, data) {
+  const formatEndpoint = (id) => {
+    const n = data?.nodesById?.get(id);
+    return n ? getNodeLabel(n, settings) : id;
+  };
   const result = [];
   for (const entry of map.values()) {
     const allDown = entry.downCount === entry.count;
@@ -157,16 +162,18 @@ function finishEdges(map, settings, data) {
 
     // Build interface details for HTML tooltip
     let interfaceDetails = '';
+    const srcLabel = formatEndpoint(entry.source);
+    const tgtLabel = formatEndpoint(entry.target);
     if (entry.count === 1) {
       const l = entry.links[0];
       const sIf = getInterfaceLabel(l.source_interface_id, settings, data);
       const tIf = getInterfaceLabel(l.target_interface_id, settings, data);
-      interfaceDetails = `source: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
+      interfaceDetails = `source: ${srcLabel} (${sIf}) target: ${tgtLabel} (${tIf})`;
     } else if (entry.count <= 3) {
       const list = entry.links.map(l => {
         const sIf = getInterfaceLabel(l.source_interface_id, settings, data);
         const tIf = getInterfaceLabel(l.target_interface_id, settings, data);
-        return `source: ${entry.source} (${sIf}) target: ${entry.target} (${tIf})`;
+        return `source: ${srcLabel} (${sIf}) target: ${tgtLabel} (${tIf})`;
       });
       interfaceDetails = list.join(' | ');
     } else {
@@ -209,7 +216,11 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
   const { buildings, buildingBySwitchId } = mappingIndex;
 
   const coreNodes = data.nodes.filter((n) => n.tier === 'core');
-  const distNodes = data.nodes.filter((n) => n.tier === 'distribution');
+  const distNodes = data.nodes.filter(
+    (n) =>
+      n.tier === 'distribution' ||
+      (n.type === 'router' && n.tier !== 'core' && n.tier !== 'standalone' && !n.isStandalone)
+  );
 
   const sites = [...new Set([...coreNodes, ...distNodes].map((n) => n.location))].sort();
   const buildingsBySite = new Map(sites.map((s) => [s, []]));
@@ -355,7 +366,7 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
     nodes.push({
       id: n.id,
       label: getNodeLabel(n, settings),
-      subLabel: coreSiteShare.get(n.id) || 'Backbone',
+      subLabel: coreSiteShare.get(n.id) || n.location || 'Backbone',
       fill: severityColor(n.severity),
       size: NODE_SIZE.core,
       data: {
@@ -369,12 +380,11 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
     });
   }
 
-  // Distribution routers deliberately carry no label: 140 of them at once
-  // would bury the view in text. They are identified on hover, on selection
-  // and through search instead.
   for (const n of distNodes) {
     nodes.push({
       id: n.id,
+      label: getNodeLabel(n, settings),
+      subLabel: n.location || 'Distribution',
       fill: severityColor(n.severity),
       size: NODE_SIZE.distribution,
       data: {
@@ -403,6 +413,8 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
           tier: 'standalone',
           status: n.status || 'up',
           severity: n.severity || 'normal',
+          ipAddress: n.ipAddress || n.ip_address || '10.254.0.1',
+          location: n.location || 'Standalone',
           isStandalone: true,
           description: n.description || 'Isolated standalone device',
         }))
@@ -415,6 +427,8 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
             tier: 'standalone',
             status: 'up',
             severity: 'normal',
+            ipAddress: '10.254.0.1',
+            location: 'Data Center 1',
             isStandalone: true,
             description: 'Air-gapped perimeter security gateway (unlinked)',
           },
@@ -426,6 +440,8 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
             tier: 'standalone',
             status: 'up',
             severity: 'warning',
+            ipAddress: '10.254.0.2',
+            location: 'Data Center 2',
             isStandalone: true,
             description: 'Cold standby disaster recovery node (offline)',
           },
@@ -437,6 +453,8 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
             tier: 'standalone',
             status: 'up',
             severity: 'normal',
+            ipAddress: '10.254.0.3',
+            location: 'NOC Central',
             isStandalone: true,
             description: 'Isolated testbed switch appliance',
           },
@@ -452,7 +470,7 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
     nodes.push({
       id: sn.id,
       label: getNodeLabel(sn, settings),
-      subLabel: 'Standalone',
+      subLabel: sn.location && sn.location !== 'Standalone' ? `${sn.location} · Standalone` : 'Standalone',
       fill: severityColor(sn.severity),
       size: NODE_SIZE.distribution,
       data: {
@@ -463,6 +481,8 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
         isStandalone: true,
         nodeId: sn.id,
         name: sn.name,
+        ipAddress: sn.ipAddress,
+        location: sn.location,
         stats: {
           alarmCount: sn.severity === 'warning' ? 1 : 0,
           activeAlarmCount: sn.severity === 'warning' ? 1 : 0,
@@ -481,9 +501,10 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
     // Labels have to stay short: 30 of them share the width of the screen.
     // The full name is in the hover chip, the card grid and the details panel.
     const letter = (b.shortName || b.name).replace(/^Building\s*/i, '');
+    const defaultBldgLabel = b.siteCode ? `${b.siteCode} ${letter}` : b.name;
     nodes.push({
       id: b.id,
-      label: b.siteCode ? `${b.siteCode} ${letter}` : b.name,
+      label: settings?.nodeLabel === 'id' ? b.id : defaultBldgLabel,
       subLabel: `${stats.total} sw`,
       fill: severityColor(buildingHealthLevel(stats)),
       size: NODE_SIZE.building,
@@ -606,9 +627,9 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
     nodes.push({
       id: r.id,
       label: getNodeLabel(r, settings),
-      subLabel: r.tier === 'core' ? 'Core' : 'Distribution',
+      subLabel: r.location ? `${r.location} · ${r.tier === 'core' ? 'Core' : 'Dist'}` : (r.tier === 'core' ? 'Core' : 'Distribution'),
       fill: severityColor(r.severity),
-      size: NODE_SIZE.core - 2,
+      size: NODE_SIZE.core,
       data: { kind: 'device', deviceType: r.type, tier: r.tier, nodeId: r.id, role: 'uplink' },
     });
   }
@@ -657,6 +678,8 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
       tier: 'standalone',
       status: 'up',
       severity: 'normal',
+      ipAddress: '10.254.1.1',
+      location: building.site,
       isStandalone: true,
       description: 'Unconnected spare bench switch',
     },
@@ -668,6 +691,8 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
       tier: 'standalone',
       status: 'up',
       severity: 'warning',
+      ipAddress: '10.254.1.2',
+      location: building.site,
       isStandalone: true,
       description: 'Isolated test rack unit (unlinked)',
     },
@@ -683,7 +708,7 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
     nodes.push({
       id: sn.id,
       label: getNodeLabel(sn, settings),
-      subLabel: 'Standalone',
+      subLabel: sn.location ? `${sn.location} · Standalone` : 'Standalone',
       fill: severityColor(sn.severity),
       size: NODE_SIZE.switch,
       data: {
@@ -694,6 +719,8 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
         isStandalone: true,
         nodeId: sn.id,
         name: sn.name,
+        ipAddress: sn.ipAddress,
+        location: sn.location,
         building: building.name,
         stats: {
           alarmCount: sn.severity === 'warning' ? 1 : 0,
@@ -731,16 +758,16 @@ export function buildBuildingGraph(building, data, mappingIndex, settings = {}) 
  * ------------------------------------------------------------------ */
 
 /**
- * Compute health stats across all switches in a custom group.
+ * Compute health stats across all devices (switches and routers) in a custom group.
  */
 export function computeGroupStats(groupName, data) {
-  const switches = (data?.nodes || []).filter(
-    (n) => n.type === 'switch' && Array.isArray(n.groups) && n.groups.includes(groupName)
+  const members = (data?.nodes || []).filter(
+    (n) => Array.isArray(n.groups) && n.groups.includes(groupName)
   );
 
   const stats = {
     groupName,
-    total: switches.length,
+    total: members.length,
     connected: 0,
     connecting: 0,
     down: 0,
@@ -757,25 +784,25 @@ export function computeGroupStats(groupName, data) {
   const severities = [];
   const seenLinks = new Set();
 
-  for (const sw of switches) {
-    const st = (sw.status || '').toLowerCase();
+  for (const dev of members) {
+    const st = (dev.status || '').toLowerCase();
     if (st === 'connected' || st === 'up') stats.connected += 1;
     else if (st === 'connecting') stats.connecting += 1;
     else if (st === 'down') stats.down += 1;
 
-    const sev = (sw.severity || 'normal').toLowerCase();
+    const sev = (dev.severity || 'normal').toLowerCase();
     severities.push(sev);
     if (stats.severity[sev] !== undefined) stats.severity[sev] += 1;
 
-    const bName = sw.building || 'Unassigned';
+    const bName = dev.building || (dev.type === 'router' ? `Routers (${dev.location || 'Network'})` : 'Unassigned');
     if (!byBldg.has(bName)) byBldg.set(bName, []);
-    byBldg.get(bName).push(sw);
+    byBldg.get(bName).push(dev);
 
-    const alarms = data.alarmsByNode.get(sw.id) || [];
+    const alarms = data.alarmsByNode.get(dev.id) || [];
     stats.alarmCount += alarms.length;
     stats.activeAlarmCount += alarms.filter((a) => a.status === 'active').length;
 
-    for (const link of data.linksByNode.get(sw.id) || []) {
+    for (const link of data.linksByNode.get(dev.id) || []) {
       if (seenLinks.has(link.link_id)) continue;
       seenLinks.add(link.link_id);
       stats.linkCount += 1;
@@ -796,38 +823,41 @@ export function computeGroupStats(groupName, data) {
 }
 
 /**
- * Group view: displays ONLY the switches belonging to this particular group,
- * organized into columns by building, with their real links and uplinks.
+ * Group view: displays ONLY the devices belonging to this particular group,
+ * organized into columns by building/site, with their real links and uplinks.
  */
 export function buildGroupGraph(groupName, data, mappingIndex, options = { includeUplinks: true }, settings = {}) {
-  const memberSwitches = (data?.nodes || []).filter(
-    (n) => n.type === 'switch' && Array.isArray(n.groups) && n.groups.includes(groupName)
+  const memberDevices = (data?.nodes || []).filter(
+    (n) => Array.isArray(n.groups) && n.groups.includes(groupName)
   );
+  const memberIdSet = new Set(memberDevices.map((n) => n.id));
 
   const positions = new Map();
   const nodes = [];
 
-  // Group member switches by building
+  // Group member devices by building (or router site)
   const byBuilding = new Map();
-  for (const sw of memberSwitches) {
-    const bName = sw.building || 'Unassigned';
+  for (const dev of memberDevices) {
+    const bName = dev.building || (dev.type === 'router' ? `Routers (${dev.location || 'Network'})` : 'Unassigned');
     if (!byBuilding.has(bName)) byBuilding.set(bName, []);
-    byBuilding.get(bName).push(sw);
+    byBuilding.get(bName).push(dev);
   }
 
   const buildingNames = Array.from(byBuilding.keys()).sort();
   const includeUplinks = options.includeUplinks !== false;
 
   // Find distribution routers uplinked by each building's switches in this group
+  // (excluding routers that are already direct members of the group)
   const uplinkRoutersByBuilding = new Map();
   const allUplinkRouterIds = new Set();
 
   if (includeUplinks) {
-    for (const [bName, bSwitches] of byBuilding.entries()) {
+    for (const [bName, bDevices] of byBuilding.entries()) {
       const routerIds = new Set();
-      for (const sw of bSwitches) {
-        for (const link of data.linksByNode.get(sw.id) || []) {
-          const otherId = link.a === sw.id ? link.b : link.a;
+      for (const dev of bDevices) {
+        for (const link of data.linksByNode.get(dev.id) || []) {
+          const otherId = link.a === dev.id ? link.b : link.a;
+          if (memberIdSet.has(otherId)) continue;
           const other = data.nodesById.get(otherId);
           if (other && other.type === 'router') {
             routerIds.add(otherId);
@@ -852,10 +882,10 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
 
   buildingNames.forEach((bName, colIdx) => {
     const colCenterX = -totalWidth / 2 + colIdx * COL_WIDTH;
-    const bSwitches = byBuilding.get(bName) || [];
+    const bDevices = byBuilding.get(bName) || [];
     const uplinks = uplinkRoutersByBuilding.get(bName) || [];
 
-    // Position routers for this building on top
+    // Position uplink routers for this building on top
     if (includeUplinks && uplinks.length > 0) {
       const rGap = 84;
       const rWidth = (uplinks.length - 1) * rGap;
@@ -868,18 +898,18 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
       });
     }
 
-    // Position switches in a tidy grid under this building's column
-    const perRow = Math.max(1, Math.min(3, Math.ceil(Math.sqrt(bSwitches.length * 1.5))));
-    const startY = includeUplinks ? 40 : 80;
+    // Position member devices in a tidy grid under this column
+    const perRow = Math.max(1, Math.min(3, Math.ceil(Math.sqrt(bDevices.length * 1.5))));
+    const startY = includeUplinks && uplinks.length > 0 ? 40 : 80;
 
-    bSwitches.forEach((sw, idx) => {
+    bDevices.forEach((dev, idx) => {
       const row = Math.floor(idx / perRow);
       const col = idx % perRow;
-      const inThisRow = Math.min(perRow, bSwitches.length - row * perRow);
+      const inThisRow = Math.min(perRow, bDevices.length - row * perRow);
       const rowWidth = (inThisRow - 1) * SW_COL_GAP;
       const x = colCenterX - rowWidth / 2 + col * SW_COL_GAP;
       const y = startY - row * SW_ROW_GAP;
-      positions.set(sw.id, { x, y, z: 0 });
+      positions.set(dev.id, { x, y, z: 0 });
     });
   });
 
@@ -894,7 +924,7 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
         label: getNodeLabel(r, settings),
         subLabel: `${r.location} · ${r.tier === 'core' ? 'Core' : 'Dist'}`,
         fill: severityColor(r.severity),
-        size: NODE_SIZE.core - 2,
+        size: NODE_SIZE.core,
         data: {
           kind: 'device',
           deviceType: r.type,
@@ -906,23 +936,26 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
     }
   }
 
-  // 2. Member switches of the group
-  for (const sw of memberSwitches) {
-    const stats = computeDeviceStats(sw, data);
-    const floor = mappingIndex?.floorBySwitchId?.get(sw.id);
+  // 2. Member devices (switches and routers) of the group
+  for (const dev of memberDevices) {
+    const stats = computeDeviceStats(dev, data);
+    const floor = mappingIndex?.floorBySwitchId?.get(dev.id);
+    const isRouter = dev.type === 'router';
     nodes.push({
-      id: sw.id,
-      label: getNodeLabel(sw, settings),
-      subLabel: `${sw.building || 'Unknown'}${floor ? ` (${floor.name})` : ''} · ${sw.status}`,
-      fill: severityColor(sw.severity),
-      size: NODE_SIZE.switch + (stats.activeAlarmCount > 0 ? 2 : 0),
+      id: dev.id,
+      label: getNodeLabel(dev, settings),
+      subLabel: isRouter
+        ? `${dev.location || 'Network'} · Router · ${dev.status}`
+        : `${dev.building || 'Unknown'}${floor ? ` (${floor.name})` : ''} · ${dev.status}`,
+      fill: severityColor(dev.severity),
+      size: (isRouter ? NODE_SIZE.core : NODE_SIZE.switch) + (stats.activeAlarmCount > 0 ? 2 : 0),
       data: {
         kind: 'device',
-        deviceType: 'switch',
-        tier: 'access',
-        nodeId: sw.id,
-        building: sw.building,
-        groups: sw.groups,
+        deviceType: dev.type,
+        tier: dev.tier || (isRouter ? 'distribution' : 'access'),
+        nodeId: dev.id,
+        building: dev.building,
+        groups: dev.groups,
         stats,
       },
     });
@@ -931,8 +964,8 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
   /* ---- Edges: Links between members and to uplinks ---------------- */
   const drawn = new Set(nodes.map((n) => n.id));
   const edgeMap = new Map();
-  for (const sw of memberSwitches) {
-    for (const link of data.linksByNode.get(sw.id) || []) {
+  for (const dev of memberDevices) {
+    for (const link of data.linksByNode.get(dev.id) || []) {
       if (!drawn.has(link.a) || !drawn.has(link.b)) continue;
       addAggregatedEdge(edgeMap, link.a, link.b, link);
     }
@@ -943,8 +976,8 @@ export function buildGroupGraph(groupName, data, mappingIndex, options = { inclu
     edges: finishEdges(edgeMap, settings, data),
     positions,
     groupName,
-    memberSwitches,
-    switchCount: memberSwitches.length,
+    memberSwitches: memberDevices,
+    switchCount: memberDevices.length,
     buildingsCount: buildingNames.length,
     buildingNames,
     stats: computeGroupStats(groupName, data),

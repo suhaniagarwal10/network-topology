@@ -141,15 +141,42 @@ export function applyBuildingMapping(nodes, mapping, ctx = {}) {
   });
 
   // Safety net: a switch that no rule claimed still has to be reachable in
-  // the UI, so it gets an auto-created building rather than vanishing.
+  // the UI. First check if its `building` property matches an existing building by name/id;
+  // otherwise it gets an auto-created building rather than vanishing.
   const unmatched = switches.filter((s) => !claimed.has(s.id));
   if (unmatched.length > 0 && options.autoAssignUnmatched !== false) {
     const byGroup = new Map();
+    const modifiedRules = new Set();
+
     for (const sw of unmatched) {
-      const groupKey = sw.building || sw.location || 'Default Site';
-      if (!byGroup.has(groupKey)) byGroup.set(groupKey, []);
-      byGroup.get(groupKey).push(sw);
+      const wantedBldg = (sw.building || '').trim();
+      const existingBldg = wantedBldg
+        ? buildings.find(
+            (b) =>
+              b.name.toLowerCase() === wantedBldg.toLowerCase() ||
+              b.id.toLowerCase() === wantedBldg.toLowerCase()
+          )
+        : null;
+
+      if (existingBldg) {
+        existingBldg.switchIds.push(sw.id);
+        claimed.set(sw.id, existingBldg.id);
+        modifiedRules.add(existingBldg.id);
+      } else {
+        const groupKey = wantedBldg || sw.location || 'Default Site';
+        if (!byGroup.has(groupKey)) byGroup.set(groupKey, []);
+        byGroup.get(groupKey).push(sw);
+      }
     }
+
+    for (const bId of modifiedRules) {
+      const bldg = buildings.find((b) => b.id === bId);
+      const rule = rules.find((r) => r.id === bId) || { id: bId, floorCount: options.defaultFloorCount };
+      if (bldg) {
+        bldg.floors = buildFloors(rule, bldg.switchIds, options.defaultFloorCount);
+      }
+    }
+
     let seq = 0;
     for (const [groupName, swList] of byGroup) {
       seq += 1;

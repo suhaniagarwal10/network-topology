@@ -22,17 +22,45 @@ export default function QuickAssignGroupModal({
     });
   };
 
+  const resolveGroupName = (rawName) => {
+    const trimmed = (rawName || '').trim();
+    if (!trimmed) return '';
+    const existing = allGroups.find(g => g.toLowerCase() === trimmed.toLowerCase());
+    return existing || trimmed;
+  };
+
   const handleAddNewGroup = (e) => {
     e.preventDefault();
     const trimmed = newGroupName.trim();
-    if (!trimmed) return;
-    setSelectedGroups(prev => new Set([...prev, trimmed]));
+    if (!trimmed) {
+      setError('Please enter a group name.');
+      return;
+    }
+    if (trimmed.length > 50) {
+      setError('Group name must be 50 characters or fewer.');
+      return;
+    }
+    const canonical = resolveGroupName(trimmed);
+    if (selectedGroups.has(canonical)) {
+      setError(`Node is already assigned to "${canonical}".`);
+      return;
+    }
+    setSelectedGroups(prev => new Set([...prev, canonical]));
     setNewGroupName('');
     setError('');
   };
 
   const handleSave = () => {
-    onSave(node.id, Array.from(selectedGroups));
+    const finalSet = new Set(selectedGroups);
+    const pending = newGroupName.trim();
+    if (pending) {
+      if (pending.length > 50) {
+        setError('Group name must be 50 characters or fewer.');
+        return;
+      }
+      finalSet.add(resolveGroupName(pending));
+    }
+    onSave(node.id, Array.from(finalSet));
     onClose();
   };
 
@@ -94,18 +122,22 @@ export default function QuickAssignGroupModal({
         </div>
 
         {/* Add new group quick input */}
-        <form onSubmit={handleAddNewGroup} style={{ marginBottom: 18 }}>
+        <form onSubmit={handleAddNewGroup} noValidate style={{ marginBottom: 18 }}>
           <label style={{ fontSize: '0.8rem', color: 'var(--sub)' }}>Or create new group:</label>
           <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
             <input
               type="text"
               placeholder="New group name..."
               value={newGroupName}
-              onChange={e => setNewGroupName(e.target.value)}
+              onChange={e => {
+                setNewGroupName(e.target.value);
+                if (error) setError('');
+              }}
+              className={error ? 'input-invalid' : ''}
               style={{
                 flex: 1,
                 background: 'var(--panel2)',
-                border: '1px solid var(--border)',
+                border: error ? '1px solid var(--critical)' : '1px solid var(--border)',
                 color: 'var(--text)',
                 padding: '6px 10px',
                 borderRadius: 4,
@@ -114,7 +146,6 @@ export default function QuickAssignGroupModal({
             />
             <button
               type="submit"
-              disabled={!newGroupName.trim()}
               style={{
                 background: '#8b5cf6',
                 color: '#fff',
@@ -129,7 +160,7 @@ export default function QuickAssignGroupModal({
               + Add
             </button>
           </div>
-          {error && <div style={{ color: 'var(--critical)', fontSize: '0.75rem', marginTop: 4 }}>{error}</div>}
+          {error && <span className="field-error-msg" style={{ marginTop: 4 }}>⚠️ {error}</span>}
         </form>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 14 }}>

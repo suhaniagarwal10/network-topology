@@ -25,6 +25,11 @@ export function parseRawTopologyData(raw) {
   raw.nodes.forEach((n) => {
     n.id = n.id || n.node_id;
     n.type = n.type || n.node_type?.toLowerCase() || 'switch';
+    n.status = n.status || 'connected';
+    n.severity = n.severity || (n.status === 'down' ? 'critical' : n.status === 'connecting' ? 'warning' : 'normal');
+    if (n.type === 'router' && (!n.tier || n.tier === 'access')) {
+      n.tier = 'distribution';
+    }
     n.building = n.building !== undefined ? n.building : (n.type === 'switch' ? null : null);
     n.groups = Array.isArray(n.groups) ? n.groups : [];
   });
