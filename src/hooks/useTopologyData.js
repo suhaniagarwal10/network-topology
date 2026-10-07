@@ -25,6 +25,11 @@ export function parseRawTopologyData(raw) {
   raw.nodes.forEach((n) => {
     n.id = n.id || n.node_id;
     n.type = n.type || n.node_type?.toLowerCase() || 'switch';
+    n.status = n.status || 'connected';
+    n.severity = n.severity || (n.status === 'down' ? 'critical' : n.status === 'connecting' ? 'warning' : 'normal');
+    if (n.type === 'router' && (!n.tier || n.tier === 'access')) {
+      n.tier = 'distribution';
+    }
     n.building = n.building !== undefined ? n.building : (n.type === 'switch' ? null : null);
     n.groups = Array.isArray(n.groups) ? n.groups : [];
   });
@@ -32,9 +37,11 @@ export function parseRawTopologyData(raw) {
   const ifaceToNode = new Map(raw.interfaces.map((i) => [i.interface_id, i.node_id]));
 
   const interfacesByNode = new Map();
+  const interfacesById = new Map();
   for (const i of raw.interfaces) {
     if (!interfacesByNode.has(i.node_id)) interfacesByNode.set(i.node_id, []);
     interfacesByNode.get(i.node_id).push(i);
+    interfacesById.set(i.interface_id, i);
   }
 
   const alarmsByNode = new Map();
@@ -158,6 +165,7 @@ export function parseRawTopologyData(raw) {
     groups: allGroups,
     interfaces: raw.interfaces,
     interfacesByNode,
+    interfacesById,
     resolvedLinks,
     linksByNode,
     alarmsByNode,

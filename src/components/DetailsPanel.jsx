@@ -1,4 +1,5 @@
 import { SEV_COLOR, severityColor, statusColor, tierLabel, timeAgo } from '../utils/graph.js';
+import { getNodeLabel } from '../utils/topologyTransform.js';
 
 /**
  * Right-hand inspector. Shows either:
@@ -37,6 +38,7 @@ export default function DetailsPanel({
   onSelectNode,
   onGoGlobal,
   data,
+  settings,
 }) {
   if (groupName && !node && !link && !building) {
     return (
@@ -46,6 +48,7 @@ export default function DetailsPanel({
         onEditGroup={onEditGroup}
         onSelectNode={onSelectNode}
         onGoGlobal={onGoGlobal}
+        settings={settings}
       />
     );
   }
@@ -61,15 +64,20 @@ export default function DetailsPanel({
         onOpenGroup={onOpenGroup}
         data={data}
         now={now}
+        settings={settings}
       />
     );
   }
 
   if (link && !node && !building) {
+    const srcNode = data?.nodesById?.get(link.source);
+    const tgtNode = data?.nodesById?.get(link.target);
+    const srcLabel = srcNode ? getNodeLabel(srcNode, settings) : link.source;
+    const tgtLabel = tgtNode ? getNodeLabel(tgtNode, settings) : link.target;
     return (
       <aside className="details">
         <h2>Link Bundle</h2>
-        <div className="details-sub">{link.source} ↔ {link.target}</div>
+        <div className="details-sub">{srcLabel} ↔ {tgtLabel}</div>
         
         <div className="kv">
           <Row k="Total links" v={link.data.count} />
@@ -106,10 +114,11 @@ export default function DetailsPanel({
 
   return (
     <aside className="details">
-      <h2>{node.name}</h2>
+      <h2>{getNodeLabel(node, settings)}</h2>
       <div className="details-sub">{tierLabel(node)}</div>
 
       <div className="kv">
+        <Row k="Name" v={node.name} />
         <Row k="ID" v={node.id} />
         <Row k="Type" v={<span style={{ textTransform: 'capitalize' }}>{node.type}</span>} />
         <Row k="Status" v={<Dot color={sColor} text={node.status} />} />
@@ -261,7 +270,7 @@ export default function DetailsPanel({
   );
 }
 
-function BuildingDetails({ building, stats, alarms, onOpenBuilding, onHighlightGroup, data, now }) {
+function BuildingDetails({ building, stats, alarms, onOpenBuilding, onHighlightGroup, onOpenGroup, data, now, settings }) {
   if (!stats) return null;
   const recent = [...(alarms || [])]
     .sort((a, b) => (a.raisedAt < b.raisedAt ? 1 : -1))
@@ -353,18 +362,21 @@ function BuildingDetails({ building, stats, alarms, onOpenBuilding, onHighlightG
       {recent.length === 0 ? (
         <div className="empty-hint">No alarms in this building.</div>
       ) : (
-        recent.map((a) => (
-          <div className={`alarm ${a.severity}`} key={a.id}>
-            <div className="top">
-              <span className={`sev ${a.severity}`}>{a.severity}</span>
-              <span className="time">{timeAgo(a.raisedAt, now)}</span>
+        recent.map((a) => {
+          const alarmNode = data?.nodesById?.get(a.nodeId);
+          return (
+            <div className={`alarm ${a.severity}`} key={a.id}>
+              <div className="top">
+                <span className={`sev ${a.severity}`}>{a.severity}</span>
+                <span className="time">{timeAgo(a.raisedAt, now)}</span>
+              </div>
+              <div className="desc">{a.description}</div>
+              <div className="id">
+                {alarmNode ? getNodeLabel(alarmNode, settings) : a.nodeId} · {a.id}
+              </div>
             </div>
-            <div className="desc">{a.description}</div>
-            <div className="id">
-              {a.nodeId} · {a.id}
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
 
       <div className="btnrow">
@@ -374,7 +386,7 @@ function BuildingDetails({ building, stats, alarms, onOpenBuilding, onHighlightG
   );
 }
 
-function GroupDetails({ groupName, stats, onEditGroup, onSelectNode, onGoGlobal }) {
+function GroupDetails({ groupName, stats, onEditGroup, onSelectNode, onGoGlobal, settings }) {
   if (!stats) return null;
 
   return (
@@ -441,7 +453,7 @@ function GroupDetails({ groupName, stats, onEditGroup, onSelectNode, onGoGlobal 
                   title={`${sw.name} (${sw.ipAddress}) · ${sw.status}`}
                 >
                   <span className="dot" style={{ background: statusColor(sw.status), width: 6, height: 6 }} />
-                  {sw.name}
+                  {getNodeLabel(sw, settings)}
                 </button>
               ))}
             </div>

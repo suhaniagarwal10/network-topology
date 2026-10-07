@@ -12,6 +12,7 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
   const [status, setStatus] = useState(initialStatus);
   const [sourceIface, setSourceIface] = useState('');
   const [targetIface, setTargetIface] = useState('');
+  const [touched, setTouched] = useState({});
 
   const sourceInterfaces = useMemo(() => {
     return data?.interfacesByNode.get(initialSource) || [];
@@ -23,7 +24,7 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
     
     if (data?.nodesById.has(target.trim())) return target.trim();
     
-    const matchedNode = (data?.nodes || []).find(n => n.name.toLowerCase() === t);
+    const matchedNode = (data?.nodes || []).find(n => (n.name || '').toLowerCase() === t);
     return matchedNode ? matchedNode.id : null;
   }, [data, target]);
 
@@ -32,8 +33,40 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
     return data?.interfacesByNode.get(resolvedTargetId) || [];
   }, [data, resolvedTargetId]);
 
+  const validateTarget = (val) => {
+    if (isEditing) return '';
+    const t = (val || '').trim();
+    if (!t) return 'Target node is required.';
+    if (t.toLowerCase() === initialSource.toLowerCase() || (resolvedTargetId && resolvedTargetId === initialSource)) {
+      return 'Cannot link a node to itself.';
+    }
+    if (!resolvedTargetId) {
+      return `Node "${t}" not found in topology.`;
+    }
+    return '';
+  };
+
+  const validateBandwidth = (val) => {
+    const str = String(val ?? '').trim();
+    if (!str) return 'Bandwidth is required.';
+    const num = Number(str);
+    if (Number.isNaN(num)) return 'Bandwidth must be a valid number.';
+    if (num <= 0) return 'Bandwidth must be greater than 0 Mbps.';
+    if (num > 10000000) return 'Bandwidth cannot exceed 10,000,000 Mbps.';
+    return '';
+  };
+
+  const targetError = validateTarget(target);
+  const bandwidthError = validateBandwidth(bandwidth);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setTouched({ target: true, bandwidth: true });
+
+    if (targetError || bandwidthError) {
+      return;
+    }
+
     const finalTargetId = resolvedTargetId || target.trim();
     if (!finalTargetId) return;
     
@@ -60,44 +93,57 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
         <h2>{isEditing ? 'Edit Link Bundle' : `Add Link from ${sourceNode?.name || initialSource}`}</h2>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-            Target Node ID:
+          <div className="form-group">
+            <label htmlFor="link-target-node">
+              Target Node {!isEditing && <span className="field-required">*</span>}
+            </label>
             <input 
+              id="link-target-node"
+              list="target-nodes-list"
               value={target} 
               onChange={e => setTarget(e.target.value)} 
-              placeholder="e.g. Switch-0042"
-              required
+              onBlur={() => setTouched(prev => ({ ...prev, target: true }))}
+              placeholder="e.g. Switch-0042 or S-0042"
               disabled={isEditing}
-              style={{ background: isEditing ? '#334155' : '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
+              className={touched.target && targetError ? 'input-invalid' : ''}
+              style={{ background: isEditing ? '#334155' : undefined }}
             />
-          </label>
+            <datalist id="target-nodes-list">
+              {(data?.nodes || []).filter(n => n.id !== initialSource).map(n => (
+                <option key={n.id} value={n.name}>{n.id}</option>
+              ))}
+            </datalist>
+            {touched.target && targetError && (
+              <span className="field-error-msg">⚠️ {targetError}</span>
+            )}
+          </div>
           
           {!isEditing && (
             <>
-              <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-                Source Interface:
+              <div className="form-group">
+                <label htmlFor="link-src-iface">Source Interface</label>
                 <select 
+                  id="link-src-iface"
                   value={sourceIface} 
                   onChange={e => setSourceIface(e.target.value)}
-                  style={{ background: '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
                 >
                   <option value="">-- Auto Assign --</option>
                   {sourceInterfaces.map(i => (
                     <option key={i.interface_id} value={i.interface_id}>{i.name} ({i.status})</option>
                   ))}
                 </select>
-              </label>
+              </div>
 
-              <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-                Target Interface:
+              <div className="form-group">
+                <label htmlFor="link-tgt-iface">Target Interface</label>
                 <select 
+                  id="link-tgt-iface"
                   value={targetIface} 
                   onChange={e => setTargetIface(e.target.value)}
-                  style={{ background: '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
                   disabled={!resolvedTargetId || targetInterfaces.length === 0}
                 >
                   <option value="">
@@ -107,31 +153,41 @@ export default function LinkEditModal({ sourceNode, linkBundle, data, onSave, on
                     <option key={i.interface_id} value={i.interface_id}>{i.name} ({i.status})</option>
                   ))}
                 </select>
-              </label>
+              </div>
             </>
           )}
           
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-            Bandwidth (Mbps):
+          <div className="form-group">
+            <label htmlFor="link-bandwidth">
+              Bandwidth (Mbps) <span className="field-required">*</span>
+            </label>
             <input 
+              id="link-bandwidth"
               type="number"
+              min="1"
+              max="10000000"
               value={bandwidth} 
               onChange={e => setBandwidth(e.target.value)}
-              style={{ background: '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
+              onBlur={() => setTouched(prev => ({ ...prev, bandwidth: true }))}
+              className={touched.bandwidth && bandwidthError ? 'input-invalid' : ''}
+              placeholder="e.g. 1000"
             />
-          </label>
+            {touched.bandwidth && bandwidthError && (
+              <span className="field-error-msg">⚠️ {bandwidthError}</span>
+            )}
+          </div>
 
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-            Status:
+          <div className="form-group">
+            <label htmlFor="link-status">Status</label>
             <select 
+              id="link-status"
               value={status} 
               onChange={e => setStatus(e.target.value)}
-              style={{ background: '#1e293b', border: '1px solid #334155', color: '#f8fafc', padding: '6px 8px', borderRadius: '4px' }}
             >
               <option value="up">UP</option>
               <option value="down">DOWN</option>
             </select>
-          </label>
+          </div>
 
           <div className="modal-actions" style={{ marginTop: '8px' }}>
             <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>

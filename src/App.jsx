@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTopologyData } from './hooks/useTopologyData';
 import { useBuildingMapping } from './hooks/useBuildingMapping';
-import { buildBuildingGraph, buildGlobalGraph, buildGroupGraph, computeBuildingStats } from './utils/topologyTransform';
+import { buildBuildingGraph, buildGlobalGraph, buildGroupGraph, computeBuildingStats, getNodeLabel } from './utils/topologyTransform';
 import NetworkGraph from './components/NetworkGraph';
 import BuildingView from './components/BuildingView';
 import DetailsPanel from './components/DetailsPanel';
@@ -21,6 +21,7 @@ import GroupManagerModal from './components/GroupManagerModal';
 import QuickAssignGroupModal from './components/QuickAssignGroupModal';
 import HelpModal from './components/HelpModal';
 import LoadTopologyModal from './components/LoadTopologyModal';
+import SettingsModal from './components/SettingsModal';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -51,15 +52,26 @@ export default function App() {
     localStorage.setItem('network_topology_trash', JSON.stringify(deletedElements));
   }, [deletedElements]);
 
+  const savedUiState = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('network_topology_ui_state');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
   // 'global'  -> core routers / distribution routers / buildings
   // 'building'-> the individual switches inside one building
   // 'group'   -> only the switches belonging to a selective multi-building group
-  const [view, setView] = useState('global');
-  const [mode, setMode] = useState('graph'); // global view only: graph | cards
-  const [activeBuildingId, setActiveBuildingId] = useState(null);
-  const [activeGroupName, setActiveGroupName] = useState(null);
-  const [includeUplinksInGroup, setIncludeUplinksInGroup] = useState(true);
-  const [selectedId, setSelectedId] = useState(null);
+  const [view, setView] = useState(() => savedUiState?.view || 'global');
+  const [mode, setMode] = useState(() => savedUiState?.mode || 'graph'); // global view only: graph | cards
+  const [activeBuildingId, setActiveBuildingId] = useState(() => savedUiState?.activeBuildingId || null);
+  const [activeGroupName, setActiveGroupName] = useState(() => savedUiState?.activeGroupName || null);
+  const [includeUplinksInGroup, setIncludeUplinksInGroup] = useState(() =>
+    savedUiState?.includeUplinksInGroup !== undefined ? savedUiState.includeUplinksInGroup : true
+  );
+  const [selectedId, setSelectedId] = useState(() => savedUiState?.selectedId || null);
   const [highlightIds, setHighlightIds] = useState(null);
   const [toast, setToast] = useState(null);
   const [focusRequest, setFocusRequest] = useState(null);
@@ -71,6 +83,11 @@ export default function App() {
   const [quickAssignNode, setQuickAssignNode] = useState(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState(() => savedUiState?.settings || {
+    nodeLabel: 'name',
+    interfaceLabel: 'name',
+  });
   const [isCustomDataset, setIsCustomDataset] = useState(() => {
     return localStorage.getItem('network-topology-is-custom') === 'true';
   });
@@ -83,11 +100,15 @@ export default function App() {
     setTimeout(() => setToast(null), 2400);
   }, []);
 
+  const graphRef = useRef(null);
+
   const handleLoadCustom = useCallback((rawPayload) => {
     const name = rawPayload.meta?.name || 'Custom Dataset';
     localStorage.setItem('network-topology-is-custom', 'true');
     localStorage.setItem('network-topology-dataset-name', name);
     localStorage.setItem('network-topology-data', JSON.stringify(rawPayload));
+    localStorage.removeItem('network_topology_ui_state');
+    graphRef.current?.clearDraggedPositions?.();
     setIsCustomDataset(true);
     setActiveDatasetName(name);
     loadFromRaw(rawPayload);
@@ -105,6 +126,8 @@ export default function App() {
     localStorage.removeItem('network-topology-is-custom');
     localStorage.removeItem('network-topology-dataset-name');
     localStorage.removeItem('network-topology-data');
+    localStorage.removeItem('network_topology_ui_state');
+    graphRef.current?.clearDraggedPositions?.();
     setIsCustomDataset(false);
     setActiveDatasetName('Default Topology (1,500 Devices)');
     resetDemo();
@@ -118,43 +141,44 @@ export default function App() {
     showToast('Restored default 1,500-device enterprise topology');
   }, [resetDemo, showToast]);
 
-  const graphRef = useRef(null);
-
   const simulateAlarm = useCallback(() => {
     if (!data) return;
     const switches = data.nodes.filter(n => n.type === 'switch');
     if (switches.length === 0) return;
     const target = switches[Math.floor(Math.random() * switches.length)];
-    
-    if (!data.alarmsByNode.has(target.id)) {
-      data.alarmsByNode.set(target.id, []);
-    }
-    
-    data.alarmsByNode.get(target.id).push({
+    const newAlarm = {
       alarmId: `A-${Date.now()}`,
       nodeId: target.id,
       status: 'active',
       severity: 'critical',
       description: 'Simulated interactive alarm spike!',
       raisedAt: new Date().toISOString()
+    };
+
+    updateTopology((raw) => {
+      if (!Array.isArray(raw.alarms)) raw.alarms = [];
+      raw.alarms.push(newAlarm);
+      const rawNode = raw.nodes.find((n) => n.id === target.id);
+      if (rawNode) {
+        rawNode.severity = 'critical';
+      }
     });
-    
+
     // Force a re-render and re-computation of graphs by updating tick
     setTick(t => t + 1);
     
-    // Auto-navigate and highlight the building/node so user sees the cool UI updates
+    // Highlight the building/node in-place without zooming out the camera
     const building = mappingIndex?.buildingBySwitchId.get(target.id);
     if (building) {
       if (view === 'global') {
         setSelectedId(building.id);
         setHighlightIds([building.id]);
-        setFocusRequest({ ids: [building.id], mode: 'fitThenCenter', key: `sim-${building.id}-${Date.now()}` });
       }
       showToast(`⚠️ Simulated Alarm triggered in ${building.name} on ${target.name}!`);
     } else {
       showToast(`⚠️ Simulated Alarm triggered on ${target.name}!`);
     }
-  }, [data, mappingIndex, view, showToast]);
+  }, [data, mappingIndex, view, showToast, updateTopology]);
 
 
 
@@ -169,31 +193,41 @@ export default function App() {
   // Full rebuilds on structural changes only (initial load, add/delete nodes, simulate alarm)
   useEffect(() => {
     if (data && mappingIndex) {
-      setGlobalGraph(buildGlobalGraph(data, mappingIndex));
+      setGlobalGraph(buildGlobalGraph(data, mappingIndex, settings));
     }
-  }, [data?.nodes, data?.links, mappingIndex, tick]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, tick, settings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeBuilding) {
-      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex));
+      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex, settings));
     } else {
       setBuildingGraph(null);
     }
-  }, [data?.nodes, data?.links, mappingIndex, activeBuildingId, tick]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeBuildingId, tick, settings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeGroupName) {
-      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }));
+      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }, settings));
     } else {
       setGroupGraph(null);
     }
-  }, [data?.nodes, data?.links, mappingIndex, activeGroupName, includeUplinksInGroup, tick]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeGroupName, includeUplinksInGroup, tick, settings]);
 
   const graph = view === 'group' ? groupGraph : (view === 'building' ? buildingGraph : globalGraph);
 
+  useEffect(() => {
+    if (!data || !mappingIndex) return;
+    if (view === 'building' && (!activeBuildingId || !mappingIndex.buildingsById.has(activeBuildingId))) {
+      setView('global');
+      setActiveBuildingId(null);
+    } else if (view === 'group' && !activeGroupName) {
+      setView('global');
+    }
+  }, [data, mappingIndex, view, activeBuildingId, activeGroupName]);
+
   /* ---------------- filters ---------------- */
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState(() => savedUiState?.filters || {
     router: true,
     switch: true,
     up: true,
@@ -205,6 +239,26 @@ export default function App() {
     normal: true,
     selectedGroup: 'ALL',
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'network_topology_ui_state',
+        JSON.stringify({
+          view,
+          mode,
+          activeBuildingId,
+          activeGroupName,
+          includeUplinksInGroup,
+          selectedId,
+          settings,
+          filters,
+        })
+      );
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [view, mode, activeBuildingId, activeGroupName, includeUplinksInGroup, selectedId, settings, filters]);
 
   const filteredGraph = useMemo(() => {
     if (!graph) return null;
@@ -247,7 +301,7 @@ export default function App() {
           if (!hasMember) return false;
         } else {
           const rawNode = data?.nodesById.get(n.id);
-          if (rawNode && rawNode.type === 'switch') {
+          if (rawNode) {
             if (!Array.isArray(rawNode.groups) || !rawNode.groups.includes(filters.selectedGroup)) {
               return false;
             }
@@ -425,21 +479,25 @@ export default function App() {
     [showToast]
   );
 
+  const lastFocusKeyRef = useRef(null);
+
   // Focus is deferred a tick so Reagraph has laid the new graph out before we
-  // ask the camera to frame something in it.
-  //
-  // 'fitThenCenter' matters for single targets: fitting the camera to one node
-  // fills the screen with that node and loses all context, so we frame the
-  // whole graph first and then pan to the target, which stays highlighted.
+  // ask the camera to frame something in it. Guarded by lastFocusKeyRef so
+  // subsequent graph data updates never re-trigger an old fit/zoom-out.
   useEffect(() => {
-    if (!focusRequest) return;
+    if (!focusRequest || !graph) return;
+    if (lastFocusKeyRef.current === focusRequest.key) return;
+
     const timers = [];
     timers.push(
       setTimeout(() => {
+        lastFocusKeyRef.current = focusRequest.key;
         const { ids, mode } = focusRequest;
         if (mode === 'fitThenCenter') {
           graphRef.current?.fit();
           timers.push(setTimeout(() => graphRef.current?.center(ids), 420));
+        } else if (mode === 'center') {
+          graphRef.current?.center(ids || undefined);
         } else {
           graphRef.current?.fit(ids || undefined);
         }
@@ -459,7 +517,7 @@ export default function App() {
         if (Array.isArray(node.groups) && node.groups.includes(activeGroupName)) {
           setSelectedId(nodeId);
           setHighlightIds([nodeId]);
-          setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `focus-${nodeId}-${Date.now()}` });
+          setFocusRequest({ ids: [nodeId], mode: 'center', key: `focus-${nodeId}-${Date.now()}` });
           return;
         }
       }
@@ -467,22 +525,33 @@ export default function App() {
       if (node.type === 'switch') {
         const building = mappingIndex.buildingBySwitchId.get(nodeId);
         if (building) {
-          openBuilding(building.id, nodeId);
-          setHighlightIds([nodeId]);
+          if (view === 'building' && activeBuildingId === building.id) {
+            setSelectedId(nodeId);
+            setHighlightIds([nodeId]);
+            setFocusRequest({ ids: [nodeId], mode: 'center', key: `focus-${nodeId}-${Date.now()}` });
+          } else {
+            openBuilding(building.id, nodeId);
+            setHighlightIds([nodeId]);
+          }
           showToast(`${node.name || nodeId} — ${building.name}`);
           return;
         }
       }
 
+      const wasGlobalGraph = view === 'global' && mode === 'graph';
       setView('global');
       setMode('graph');
       setActiveBuildingId(null);
       setActiveGroupName(null);
       setSelectedId(nodeId);
       setHighlightIds([nodeId]);
-      setFocusRequest({ ids: [nodeId], mode: 'fitThenCenter', key: `focus-${nodeId}-${Date.now()}` });
+      setFocusRequest({
+        ids: [nodeId],
+        mode: wasGlobalGraph ? 'center' : 'fitThenCenter',
+        key: `focus-${nodeId}-${Date.now()}`,
+      });
     },
-    [data, mappingIndex, openBuilding, showToast, view, activeGroupName]
+    [data, mappingIndex, openBuilding, showToast, view, mode, activeBuildingId, activeGroupName]
   );
 
   const handleHighlightGroup = useCallback(
@@ -495,18 +564,20 @@ export default function App() {
           .map((n) => n.id);
 
       if (memberIds.length === 0) {
-        showToast(`Group "${groupName}" has no switches.`);
+        showToast(`Group "${groupName}" has no members.`);
         return;
       }
 
       const bldgs = new Set();
+      const directIds = new Set();
       memberIds.forEach((id) => {
         const b = mappingIndex?.buildingBySwitchId.get(id);
         if (b) bldgs.add(b.id);
+        else directIds.add(id);
       });
 
       if (view === 'global') {
-        const targetIds = Array.from(bldgs);
+        const targetIds = [...bldgs, ...directIds];
         setHighlightIds(targetIds.length > 0 ? targetIds : null);
         setFocusRequest({
           ids: targetIds.length > 0 ? targetIds : null,
@@ -518,7 +589,7 @@ export default function App() {
         setFocusRequest({ ids: memberIds, mode: 'fit', key: `grp-${groupName}-${Date.now()}` });
       }
 
-      showToast(`Viewing group "${groupName}" (${memberIds.length} switches across ${bldgs.size} buildings)`);
+      showToast(`Viewing group "${groupName}" (${memberIds.length} device${memberIds.length === 1 ? '' : 's'})`);
     },
     [data, mappingIndex, view, showToast]
   );
@@ -528,7 +599,6 @@ export default function App() {
       const selectedSet = new Set(selectedSwitchIds);
       updateTopology((raw) => {
         for (const n of raw.nodes) {
-          if (n.type !== 'switch') continue;
           if (!Array.isArray(n.groups)) n.groups = [];
 
           if (originalName && originalName !== groupName) {
@@ -544,7 +614,7 @@ export default function App() {
           }
         }
       });
-      showToast(`Group "${groupName}" saved (${selectedSwitchIds.length} switches)`);
+      showToast(`Group "${groupName}" saved (${selectedSwitchIds.length} device${selectedSwitchIds.length === 1 ? '' : 's'})`);
       setTick((t) => t + 1);
     },
     [updateTopology, showToast]
@@ -604,19 +674,24 @@ export default function App() {
       }
 
       if (entry.kind === 'building') {
+        const wasGlobalGraph = view === 'global' && mode === 'graph';
         setView('global');
         setMode('graph');
         setActiveBuildingId(null);
         setActiveGroupName(null);
         setSelectedId(entry.buildingId);
         setHighlightIds([entry.buildingId]);
-        setFocusRequest({ ids: [entry.buildingId], mode: 'fitThenCenter', key: `find-${entry.buildingId}-${Date.now()}` });
+        setFocusRequest({
+          ids: [entry.buildingId],
+          mode: wasGlobalGraph ? 'center' : 'fitThenCenter',
+          key: `find-${entry.buildingId}-${Date.now()}`,
+        });
         return;
       }
       
       focusNode(entry.nodeId);
     },
-    [focusNode, openGroup]
+    [focusNode, openGroup, view, mode]
   );
 
   /* ---------------- node interactions ---------------- */
@@ -640,19 +715,80 @@ export default function App() {
 
   const handleSaveNode = useCallback((nodeData) => {
     updateTopology((raw) => {
+      // Collect existing group names across all nodes (case-insensitive map -> canonical name)
+      const existingGroupsMap = new Map();
+      for (const n of raw.nodes) {
+        if (Array.isArray(n.groups)) {
+          for (const g of n.groups) {
+            if (typeof g === 'string' && g.trim()) {
+              existingGroupsMap.set(g.trim().toLowerCase(), g.trim());
+            }
+          }
+        }
+      }
+
+      const normalizedGroups = [];
+      const createdGroups = [];
+      for (const rawG of (Array.isArray(nodeData.groups) ? nodeData.groups : [])) {
+        const trimmed = typeof rawG === 'string' ? rawG.trim() : '';
+        if (!trimmed) continue;
+        const lower = trimmed.toLowerCase();
+        const canonical = existingGroupsMap.get(lower) || trimmed;
+        if (!existingGroupsMap.has(lower)) {
+          createdGroups.push(canonical);
+          existingGroupsMap.set(lower, canonical);
+        }
+        if (!normalizedGroups.includes(canonical)) {
+          normalizedGroups.push(canonical);
+        }
+      }
+
       const idx = raw.nodes.findIndex(n => n.id === nodeData.id);
+      const defaultSeverity = nodeData.status === 'down'
+        ? 'critical'
+        : nodeData.status === 'connecting'
+        ? 'warning'
+        : 'normal';
+      const normalizedTier = nodeData.type === 'router' && (!nodeData.tier || nodeData.tier === 'access')
+        ? 'distribution'
+        : nodeData.tier;
+
+      const groupSuffix = createdGroups.length > 0
+        ? ` & created group "${createdGroups.join(', ')}"`
+        : normalizedGroups.length > 0
+        ? ` in group "${normalizedGroups.join(', ')}"`
+        : '';
+
       if (idx >= 0) {
-        raw.nodes[idx] = { ...raw.nodes[idx], ...nodeData };
-        showToast(`Updated node ${nodeData.id}`);
+        raw.nodes[idx] = {
+          ...raw.nodes[idx],
+          ...nodeData,
+          groups: normalizedGroups,
+          tier: normalizedTier,
+          severity: raw.nodes[idx].severity || defaultSeverity,
+        };
+        showToast(`Updated node ${nodeData.id}${groupSuffix}`);
       } else {
-        raw.nodes.push({ ...nodeData });
-        showToast(`Added node ${nodeData.id}`);
+        raw.nodes.push({
+          ...nodeData,
+          groups: normalizedGroups,
+          tier: normalizedTier,
+          severity: nodeData.severity || defaultSeverity,
+        });
+        if (raw.meta) {
+          raw.meta.nodeCount = raw.nodes.length;
+        }
+        showToast(`Added node ${nodeData.id}${groupSuffix}`);
       }
     });
     setIsNodeModalOpen(false);
+    setHighlightIds(null);
+    setSelectedId(nodeData.id);
+    setTick((t) => t + 1);
   }, [updateTopology, showToast]);
 
   const handleSaveLink = useCallback((linkPayload) => {
+    let sourceId, targetId;
     updateTopology((raw) => {
       if (linkPayload.isEdit) {
         let count = 0;
@@ -660,6 +796,8 @@ export default function App() {
           if (linkPayload.linkIds.includes(raw.links[i].link_id)) {
             raw.links[i].bandwidth_mbps = linkPayload.bandwidth_mbps;
             raw.links[i].status = linkPayload.status;
+            sourceId = raw.links[i].source;
+            targetId = raw.links[i].target;
             count++;
           }
         }
@@ -667,11 +805,17 @@ export default function App() {
       } else {
         const { isEdit, ...newLink } = linkPayload;
         raw.links.push(newLink);
-        showToast(`Added link from ${newLink.source} to ${newLink.target}`);
+        sourceId = newLink.source;
+        targetId = newLink.target;
+        showToast(`Added link from ${sourceId} to ${targetId}`);
       }
     });
     setEditingLinkNode(null);
     setEditingLinkBundle(null);
+    if (sourceId && targetId) {
+      setHighlightIds([sourceId, targetId]);
+    }
+    setTick((t) => t + 1);
   }, [updateTopology, showToast]);
 
   const handleDeleteNode = useCallback((id) => {
@@ -713,6 +857,7 @@ export default function App() {
       showToast(`Deleted node ${id}`);
     });
     setSelectedId(null);
+    setTick((t) => t + 1);
   }, [updateTopology, showToast]);
 
   const handleRestoreNode = useCallback((idx) => {
@@ -738,10 +883,13 @@ export default function App() {
     });
 
     setDeletedElements(prev => prev.filter((_, i) => i !== idx));
+    setTick((t) => t + 1);
   }, [deletedElements, updateTopology, showToast]);
 
   const handleReset = useCallback(() => {
     setDeletedElements([]);
+    localStorage.removeItem('network_topology_ui_state');
+    graphRef.current?.clearDraggedPositions?.();
     resetDemo();
   }, [resetDemo]);
 
@@ -905,8 +1053,9 @@ export default function App() {
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenLoadModal={() => setIsLoadModalOpen(true)}
         isCustomDataset={isCustomDataset}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       >
-        <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} />
+        <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} settings={settings} />
       </Header>
 
       <div className="top-bars" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -929,6 +1078,7 @@ export default function App() {
           onGoGlobal={goGlobal}
           onGoBuilding={(id) => openBuilding(id)}
           onGoGroup={(name) => openGroup(name)}
+          settings={settings}
         />
       </div>
 
@@ -951,6 +1101,7 @@ export default function App() {
                 nodes={filteredGraph.nodes}
                 edges={filteredGraph.edges}
                 positions={filteredGraph.positions}
+                viewKey={`${view}:${activeBuildingId || ''}:${activeGroupName || ''}`}
                 selectedId={selectedId}
                 highlightIds={highlightIds}
                 onSelect={handleSelect}
@@ -966,17 +1117,33 @@ export default function App() {
                 )}
               />
               <FilterPanel filters={filters} onChange={setFilters} availableGroups={data?.groups || []} />
-              {hovered && (
-                <div className="hoverchip">
-                  <b>{hovered.data?.name || hovered.label || hovered.id}</b>
-                  {hovered.data?.kind === 'building' ? (
-                    <span>
-                      {hovered.data.stats.total} switches · {hovered.data.stats.connected} connected ·{' '}
-                      {hovered.data.stats.activeAlarmCount} active alarms
-                    </span>
-                  ) : hovered.data?.kind === 'link' ? (
-                    <span>
-                      {hovered.source} ↔ {hovered.target} · {hovered.data.count} bundled links
+              {hovered && (() => {
+                const getNodeDisplay = (nodeId) => {
+                  const node = data?.nodesById.get(nodeId);
+                  if (!node) return hovered?.label || nodeId;
+                  return getNodeLabel(node, settings);
+                };
+                return (
+                  <div className="hoverchip">
+                    <b>{hovered.data?.kind === 'link' ? 'Link Details' : (hovered.data?.kind === 'building' ? (hovered.label || hovered.id) : getNodeDisplay(hovered.id))}</b>
+                    {hovered.data?.kind === 'building' ? (
+                      <span>
+                        {hovered.data.stats.total} switches · {hovered.data.stats.connected} connected ·{' '}
+                        {hovered.data.stats.activeAlarmCount} active alarms
+                      </span>
+                    ) : hovered.data?.kind === 'link' ? (
+                      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontWeight: 600 }}>{getNodeDisplay(hovered.source)} ↔ {getNodeDisplay(hovered.target)}</span>
+                        <span>
+                          {hovered.data.count} link{hovered.data.count !== 1 ? 's' : ''} ·{' '}
+                        {hovered.data.bandwidthMbps >= 1000 
+                          ? `${(hovered.data.bandwidthMbps / 1000).toFixed(1).replace('.0', '')} Gbps` 
+                          : `${hovered.data.bandwidthMbps} Mbps`}
+                        {hovered.data.downCount > 0 ? ` · ${hovered.data.downCount} down` : ''}
+                      </span>
+                      {hovered.data.interfaceDetails && (
+                        <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>{hovered.data.interfaceDetails}</span>
+                      )}
                     </span>
                   ) : (
                     <span>
@@ -986,7 +1153,8 @@ export default function App() {
                     </span>
                   )}
                 </div>
-              )}
+              );
+              })()}
               <ZoomControls
                 onZoomIn={() => graphRef.current?.zoomIn()}
                 onZoomOut={() => graphRef.current?.zoomOut()}
@@ -1041,7 +1209,7 @@ export default function App() {
           onSelectNode={(id) => {
             setSelectedId(id);
             setHighlightIds([id]);
-            setFocusRequest({ ids: [id], mode: 'fitThenCenter', key: `sw-${id}-${Date.now()}` });
+            setFocusRequest({ ids: [id], mode: 'center', key: `sw-${id}-${Date.now()}` });
           }}
           onGoGlobal={goGlobal}
           onMonitor={monitorNode}
@@ -1064,6 +1232,7 @@ export default function App() {
           onRemoveFromGroup={handleRemoveNodeFromGroup}
           onHighlightGroup={handleHighlightGroup}
           data={data}
+          settings={settings}
           now={DATASET_NOW}
         />
       </main>
@@ -1071,6 +1240,8 @@ export default function App() {
       {isNodeModalOpen && (
         <NodeModal
           node={editingNode}
+          data={data}
+          availableGroups={data?.groups || []}
           onSave={handleSaveNode}
           onClose={() => setIsNodeModalOpen(false)}
         />
@@ -1078,18 +1249,21 @@ export default function App() {
       
       {viewingLinksNode && (
         <LinkModal
-          nodeName={data?.nodesById.get(viewingLinksNode)?.name || viewingLinksNode}
+          nodeName={data?.nodesById.get(viewingLinksNode) ? getNodeLabel(data.nodesById.get(viewingLinksNode), settings) : viewingLinksNode}
           links={data?.linksByNode.get(viewingLinksNode) || []}
+          data={data}
+          settings={settings}
           onClose={() => setViewingLinksNode(null)}
         />
       )}
       
       {viewingInterfacesNode && (
         <InterfaceModal
-          nodeName={data?.nodesById.get(viewingInterfacesNode)?.name || viewingInterfacesNode}
+          nodeName={data?.nodesById.get(viewingInterfacesNode) ? getNodeLabel(data.nodesById.get(viewingInterfacesNode), settings) : viewingInterfacesNode}
           interfaces={data?.interfacesByNode.get(viewingInterfacesNode) || []}
           nodeSeverity={data?.nodesById.get(viewingInterfacesNode)?.severity}
           nodeStatus={data?.nodesById.get(viewingInterfacesNode)?.status}
+          settings={settings}
           onClose={() => setViewingInterfacesNode(null)}
         />
       )}
@@ -1097,6 +1271,8 @@ export default function App() {
       {isAlarmPanelOpen && (
         <AlarmPanel
           alarms={allAlarms}
+          data={data}
+          settings={settings}
           onClose={() => setIsAlarmPanelOpen(false)}
           onAcknowledge={id => handleUpdateAlarm(id, 'acknowledged')}
           onResolve={id => handleUpdateAlarm(id, 'resolved')}
@@ -1147,6 +1323,7 @@ export default function App() {
           onOpenGroup={openGroup}
           initialEditingGroup={editingGroupInitial}
           tick={tick}
+          settings={settings}
         />
       )}
       {quickAssignNode && (
@@ -1176,6 +1353,16 @@ export default function App() {
           onResetDefault={handleResetToDefault}
           isCustomLoaded={isCustomDataset}
           activeDatasetName={activeDatasetName}
+        />
+      )}
+      {isSettingsOpen && (
+        <SettingsModal
+          settings={settings}
+          onSave={(newSettings) => {
+            setSettings(newSettings);
+            showToast('Display settings updated');
+          }}
+          onClose={() => setIsSettingsOpen(false)}
         />
       )}
     </div>
