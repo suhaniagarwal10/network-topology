@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
+import BuildingPicker from './BuildingPicker';
 
-export default function NodeModal({ node, data, availableGroups = [], onSave, onClose }) {
+export default function NodeModal({ node, data, buildings = [], availableGroups = [], onSave, onClose }) {
   const [formData, setFormData] = useState(() => ({
     id: node?.id || '',
     name: node?.name || node?.label || '',
@@ -21,9 +22,21 @@ export default function NodeModal({ node, data, availableGroups = [], onSave, on
     return Array.from(new Set((data?.nodes || []).map(n => n.location).filter(Boolean)));
   }, [data?.nodes]);
 
-  const buildingSuggestions = useMemo(() => {
-    return Array.from(new Set((data?.nodes || []).map(n => n.building).filter(Boolean)));
-  }, [data?.nodes]);
+  // Every building the node can join: the mapped buildings (with their site
+  // and size), plus any building named on a node that the mapping doesn't know.
+  const buildingOptions = useMemo(() => {
+    const byName = new Map();
+    for (const b of buildings) {
+      if (!b?.name) continue;
+      byName.set(b.name, { name: b.name, site: b.site, switchCount: b.switchIds?.length ?? null });
+    }
+    for (const n of data?.nodes || []) {
+      if (n.building && !byName.has(n.building)) {
+        byName.set(n.building, { name: n.building, site: n.location || '', switchCount: null });
+      }
+    }
+    return Array.from(byName.values());
+  }, [buildings, data?.nodes]);
 
   const validateField = useCallback((field, value, currentFormData = formData) => {
     switch (field) {
@@ -291,21 +304,21 @@ export default function NodeModal({ node, data, availableGroups = [], onSave, on
               <label htmlFor="modal-node-building">
                 Building {formData.type === 'switch' && <span className="field-required">*</span>}
               </label>
-              <input
+              <BuildingPicker
                 id="modal-node-building"
-                list="buildings-list"
                 value={formData.building || ''}
-                onChange={e => handleChange('building', e.target.value)}
+                options={buildingOptions}
+                preferredSite={formData.location.trim()}
+                onChange={val => handleChange('building', val)}
+                // Autofill the site from the chosen building.
+                onPick={opt => {
+                  if (opt.site) setFormData(prev => ({ ...prev, building: opt.name, location: opt.site }));
+                }}
                 onBlur={() => handleBlur('building')}
-                className={touched.building && errors.building ? 'input-invalid' : ''}
-                placeholder={formData.type === 'switch' ? 'e.g. DC1 Building A' : 'Not applicable for routers'}
+                invalid={touched.building && Boolean(errors.building)}
+                placeholder={formData.type === 'switch' ? 'Pick a building' : 'Not applicable for routers'}
                 disabled={formData.type === 'router'}
               />
-              <datalist id="buildings-list">
-                {buildingSuggestions.map(bldg => (
-                  <option key={bldg} value={bldg} />
-                ))}
-              </datalist>
               {touched.building && errors.building && (
                 <span className="field-error-msg">⚠️ {errors.building}</span>
               )}

@@ -1144,6 +1144,7 @@ export default function App() {
                       {hovered.data.interfaceDetails && (
                         <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>{hovered.data.interfaceDetails}</span>
                       )}
+                      <span style={{ fontSize: '10px', color: '#5c6675' }}>Click anywhere to dismiss</span>
                     </span>
                   ) : (
                     <span>
@@ -1241,6 +1242,7 @@ export default function App() {
         <NodeModal
           node={editingNode}
           data={data}
+          buildings={mappingIndex?.buildings || []}
           availableGroups={data?.groups || []}
           onSave={handleSaveNode}
           onClose={() => setIsNodeModalOpen(false)}
