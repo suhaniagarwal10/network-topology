@@ -21,7 +21,8 @@ import GroupManagerModal from './components/GroupManagerModal';
 import QuickAssignGroupModal from './components/QuickAssignGroupModal';
 import HelpModal from './components/HelpModal';
 import LoadTopologyModal from './components/LoadTopologyModal';
-import SettingsModal from './components/SettingsModal';
+import SettingsPanel from './components/SettingsPanel';
+import { DEFAULT_SETTINGS } from './utils/settings.js';
 import './index.css';
 
 // Fixed reference time for "3h ago"-style alarm ages in the generated sample
@@ -84,10 +85,12 @@ export default function App() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [settings, setSettings] = useState(() => savedUiState?.settings || {
-    nodeLabel: 'name',
-    interfaceLabel: 'name',
-  });
+  const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...savedUiState?.settings }));
+  // Only label formats change graph content; link width is applied at render time.
+  const labelSettings = useMemo(
+    () => ({ nodeLabel: settings.nodeLabel, interfaceLabel: settings.interfaceLabel }),
+    [settings.nodeLabel, settings.interfaceLabel]
+  );
   const [isCustomDataset, setIsCustomDataset] = useState(() => {
     return localStorage.getItem('network-topology-is-custom') === 'true';
   });
@@ -193,25 +196,25 @@ export default function App() {
   // Full rebuilds on structural changes only (initial load, add/delete nodes, simulate alarm)
   useEffect(() => {
     if (data && mappingIndex) {
-      setGlobalGraph(buildGlobalGraph(data, mappingIndex, settings));
+      setGlobalGraph(buildGlobalGraph(data, mappingIndex, labelSettings));
     }
-  }, [data?.nodes, data?.resolvedLinks, mappingIndex, tick, settings]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, tick, labelSettings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeBuilding) {
-      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex, settings));
+      setBuildingGraph(buildBuildingGraph(activeBuilding, data, mappingIndex, labelSettings));
     } else {
       setBuildingGraph(null);
     }
-  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeBuildingId, tick, settings]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeBuildingId, tick, labelSettings]);
 
   useEffect(() => {
     if (data && mappingIndex && activeGroupName) {
-      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }, settings));
+      setGroupGraph(buildGroupGraph(activeGroupName, data, mappingIndex, { includeUplinks: includeUplinksInGroup }, labelSettings));
     } else {
       setGroupGraph(null);
     }
-  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeGroupName, includeUplinksInGroup, tick, settings]);
+  }, [data?.nodes, data?.resolvedLinks, mappingIndex, activeGroupName, includeUplinksInGroup, tick, labelSettings]);
 
   const graph = view === 'group' ? groupGraph : (view === 'building' ? buildingGraph : globalGraph);
 
@@ -699,6 +702,8 @@ export default function App() {
   const handleSelect = useCallback((node) => {
     setHighlightIds(null);
     setSelectedId(node ? node.id : null);
+    // Picking something on the canvas brings its details back into the side panel.
+    if (node) setIsSettingsOpen(false);
   }, []);
 
   const handleActivate = useCallback(
@@ -1053,7 +1058,7 @@ export default function App() {
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenLoadModal={() => setIsLoadModalOpen(true)}
         isCustomDataset={isCustomDataset}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen((open) => !open)}
       >
         <SearchBar data={data} mappingIndex={mappingIndex} onPick={handleSearchPick} settings={settings} />
       </Header>
@@ -1107,6 +1112,7 @@ export default function App() {
                 onSelect={handleSelect}
                 onActivate={handleActivate}
                 onHover={setHovered}
+                linkWidth={settings.linkWidth}
                 renderContextMenu={(graphNode, onClose) => (
                   <ContextMenu
                     node={graphNode}
@@ -1189,6 +1195,13 @@ export default function App() {
           <Toast message={toast} />
         </div>
 
+        {isSettingsOpen ? (
+          <SettingsPanel
+            settings={settings}
+            onChange={setSettings}
+            onClose={() => setIsSettingsOpen(false)}
+          />
+        ) : (
         <DetailsPanel
           node={selectedNode}
           building={selectedBuilding}
@@ -1235,12 +1248,14 @@ export default function App() {
           settings={settings}
           now={DATASET_NOW}
         />
+        )}
       </main>
       
       {isNodeModalOpen && (
         <NodeModal
           node={editingNode}
           data={data}
+          buildings={mappingIndex?.buildings || []}
           availableGroups={data?.groups || []}
           onSave={handleSaveNode}
           onClose={() => setIsNodeModalOpen(false)}
@@ -1353,16 +1368,6 @@ export default function App() {
           onResetDefault={handleResetToDefault}
           isCustomLoaded={isCustomDataset}
           activeDatasetName={activeDatasetName}
-        />
-      )}
-      {isSettingsOpen && (
-        <SettingsModal
-          settings={settings}
-          onSave={(newSettings) => {
-            setSettings(newSettings);
-            showToast('Display settings updated');
-          }}
-          onClose={() => setIsSettingsOpen(false)}
         />
       )}
     </div>

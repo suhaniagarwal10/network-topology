@@ -36,11 +36,11 @@ const LAYOUT = {
   backboneY: 420, // core routers that span sites
   coreY: 270, // core routers anchored to one site
   distTopY: 110,
-  distRowGap: 48,
+  distRowGap: 75,
   routersPerRow: 3,
-  routerGap: 62,
-  buildingY: -190,
-  colWidth: 160, // one building + the uplink routers stacked above it
+  routerGap: 88,
+  buildingY: -230,
+  colWidth: 200, // one building + the uplink routers stacked above it
   colGap: 42,
   siteGap: 110,
   coreGap: 95,
@@ -271,6 +271,16 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
   };
 
   const siteColumns = new Map(sites.map((s) => [s, columnsForSite(s)]));
+
+  // Keep the building row below the deepest stack of uplink routers so the
+  // larger router boxes never collide with the buildings.
+  let maxDistRows = 0;
+  for (const cols of siteColumns.values()) {
+    for (const col of cols) {
+      maxDistRows = Math.max(maxDistRows, Math.ceil(col.routers.length / LAYOUT.routersPerRow));
+    }
+  }
+  const buildingY = Math.min(LAYOUT.buildingY, LAYOUT.distTopY - maxDistRows * LAYOUT.distRowGap - 40);
   const siteWidths = sites.map((s) => {
     const cols = siteColumns.get(s).length;
     return cols * LAYOUT.colWidth + (cols - 1) * LAYOUT.colGap;
@@ -298,7 +308,7 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
       const cx = left + LAYOUT.colWidth / 2 + i * (LAYOUT.colWidth + LAYOUT.colGap);
 
       if (col.building) {
-        positions.set(col.building.id, { x: cx, y: LAYOUT.buildingY, z: 0 });
+        positions.set(col.building.id, { x: cx, y: buildingY, z: 0 });
       }
 
       col.routers.forEach((routerId, j) => {
