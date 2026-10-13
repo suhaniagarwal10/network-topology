@@ -47,11 +47,11 @@ const LAYOUT = {
 };
 
 export const NODE_SIZE = {
-  core: 9,
-  distribution: 8,
-  building: 8,
-  switch: 9,
-  external: 8,
+  core: 60,
+  distribution: 50,
+  building: 60,
+  switch: 40,
+  external: 40,
 };
 
 /* ------------------------------------------------------------------ *
