@@ -33,17 +33,25 @@ export function getInterfaceLabel(ifaceId, settings, data) {
  * 180-node global view fits comfortably and reads as distinct tiers.
  * ------------------------------------------------------------------ */
 const LAYOUT = {
-  backboneY: 420, // core routers that span sites
-  coreY: 270, // core routers anchored to one site
-  distTopY: 110,
-  distRowGap: 48,
-  routersPerRow: 3,
-  routerGap: 62,
-  buildingY: -190,
-  colWidth: 160, // one building + the uplink routers stacked above it
-  colGap: 42,
-  siteGap: 110,
-  coreGap: 95,
+  backboneY: 680, // core routers that span sites
+  coreY: 400, // core routers anchored to one site
+  distTopY: 150,
+  distRowGap: 105,
+  // Two per row keeps the usual building column narrow, so the estate fits
+  // the screen with large icons. A building with many uplink routers widens
+  // its own column instead of growing a tall stack: no stack is deeper than
+  // maxRouterRows.
+  routersPerRow: 2,
+  maxRouterRows: 4,
+  routerGap: 110,
+  buildingY: -230,
+  // Vertical gap between the lowest uplink router row and the buildings.
+  // Generous on purpose: links fan out instead of piling into one band.
+  buildingGap: 320,
+  colWidth: 210, // one building + the uplink routers stacked above it
+  colGap: 45,
+  siteGap: 140,
+  coreGap: 160,
 };
 
 export const NODE_SIZE = {
@@ -271,9 +279,24 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
   };
 
   const siteColumns = new Map(sites.map((s) => [s, columnsForSite(s)]));
+
+  const perRowFor = (col) =>
+    Math.max(LAYOUT.routersPerRow, Math.ceil(col.routers.length / LAYOUT.maxRouterRows));
+  const colWidthFor = (col) =>
+    Math.max(LAYOUT.colWidth, (perRowFor(col) - 1) * LAYOUT.routerGap + LAYOUT.colWidth / 2);
+
+  // Keep the building row below the deepest stack of uplink routers so the
+  // larger router boxes never collide with the buildings.
+  let maxDistRows = 0;
+  for (const cols of siteColumns.values()) {
+    for (const col of cols) {
+      maxDistRows = Math.max(maxDistRows, Math.ceil(col.routers.length / perRowFor(col)));
+    }
+  }
+  const buildingY = Math.min(LAYOUT.buildingY, LAYOUT.distTopY - maxDistRows * LAYOUT.distRowGap - LAYOUT.buildingGap);
   const siteWidths = sites.map((s) => {
-    const cols = siteColumns.get(s).length;
-    return cols * LAYOUT.colWidth + (cols - 1) * LAYOUT.colGap;
+    const cols = siteColumns.get(s);
+    return cols.reduce((sum, col) => sum + colWidthFor(col), 0) + (cols.length - 1) * LAYOUT.colGap;
   });
 
   const totalWidth =
@@ -294,17 +317,21 @@ export function buildGlobalGraph(data, mappingIndex, settings = {}) {
     const { left } = siteBounds.get(site);
     const cols = siteColumns.get(site);
 
-    cols.forEach((col, i) => {
-      const cx = left + LAYOUT.colWidth / 2 + i * (LAYOUT.colWidth + LAYOUT.colGap);
+    let colLeft = left;
+    cols.forEach((col) => {
+      const width = colWidthFor(col);
+      const cx = colLeft + width / 2;
+      colLeft += width + LAYOUT.colGap;
+      const perRow = perRowFor(col);
 
       if (col.building) {
-        positions.set(col.building.id, { x: cx, y: LAYOUT.buildingY, z: 0 });
+        positions.set(col.building.id, { x: cx, y: buildingY, z: 0 });
       }
 
       col.routers.forEach((routerId, j) => {
-        const row = Math.floor(j / LAYOUT.routersPerRow);
-        const inRow = Math.min(LAYOUT.routersPerRow, col.routers.length - row * LAYOUT.routersPerRow);
-        const k = j % LAYOUT.routersPerRow;
+        const row = Math.floor(j / perRow);
+        const inRow = Math.min(perRow, col.routers.length - row * perRow);
+        const k = j % perRow;
         const rowWidth = (inRow - 1) * LAYOUT.routerGap;
         positions.set(routerId, {
           x: cx - rowWidth / 2 + k * LAYOUT.routerGap,

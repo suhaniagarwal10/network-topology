@@ -91,6 +91,7 @@ main { position: relative; display: grid; grid-template-columns: 1fr 340px; over
 .legend-sep { width: 1px; height: 14px; background: var(--border); }
 .legend-item { display: flex; align-items: center; gap: 6px; color: var(--sub); }
 .legend-hint { color: #5c6675; }
+.legend-icon { width: 16px; height: 16px; display: inline-block; }
 .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .dashline { width: 16px; height: 0; border-top: 2px dashed var(--critical); display: inline-block; }
 
@@ -259,7 +260,8 @@ input.input-invalid {
   line-height: 1.3;
 }
 .form-row { display: flex; gap: 12px; }
-.form-row > .form-group { flex: 1; }
+.form-row > .form-group { flex: 1; min-width: 0; }
+.form-row .form-group input, .form-row .form-group select { width: 100%; box-sizing: border-box; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 .btn-cancel { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
 .btn-save { background: #3b82f6; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
@@ -551,3 +553,43 @@ input.input-invalid {
 .btn-help:hover { background: #0369a1 !important; color: #ffffff !important; border-color: #38bdf8 !important; }
 
 
+
+/* ---- Building picker (node form combobox) ---- */
+.bpicker { position: relative; }
+.bpicker-field { position: relative; display: flex; }
+.bpicker-field input { flex: 1; min-width: 0; padding-right: 30px; font: inherit; font-size: 0.9rem; }
+.bpicker-ghost {
+  position: absolute; inset: 0; padding: 9px 30px 9px 9px; pointer-events: none; z-index: 1;
+  font-size: 0.9rem; color: #64748b; white-space: pre; overflow: hidden;
+}
+.bpicker-ghost-typed { color: transparent; }
+.bpicker-toggle {
+  position: absolute; right: 1px; top: 1px; bottom: 1px; width: 28px; z-index: 2;
+  background: transparent; border: 0; border-left: 1px solid #334155; color: #94a3b8;
+  cursor: pointer; font-size: 0.85rem; border-radius: 0 4px 4px 0;
+}
+.bpicker-toggle:hover:not(:disabled) { color: var(--text); background: #1e293b; }
+.bpicker-toggle:disabled { cursor: not-allowed; opacity: 0.4; }
+.bpicker-list {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 20;
+  max-height: 240px; overflow-y: auto; padding: 4px;
+  background: var(--panel2); border: 1px solid #334155; border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+.bpicker-site {
+  display: flex; align-items: center; gap: 6px; padding: 6px 8px 3px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--sub);
+}
+.bpicker-site-tag {
+  font-size: 9.5px; letter-spacing: 0; text-transform: none; color: var(--accent);
+  border: 1px solid rgba(96, 165, 250, 0.4); border-radius: 8px; padding: 0 5px;
+}
+.bpicker-row {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px;
+  background: transparent; border: 0; color: var(--text); padding: 6px 8px; border-radius: 4px;
+  cursor: pointer; font-size: 0.85rem; text-align: left;
+}
+.bpicker-row.active { background: #1e3a5f; }
+.bpicker-row.current .bpicker-name { color: var(--accent); font-weight: 600; }
+.bpicker-count { font-family: var(--mono); font-size: 11px; color: var(--sub); flex-shrink: 0; }
+.bpicker-empty { padding: 8px; font-size: 0.8rem; color: var(--sub); }

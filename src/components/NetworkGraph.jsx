@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { GraphCanvas, darkTheme, Sphere, Badge } from 'reagraph';
-import { BoxGeometry } from 'three';
+import { GraphCanvas, darkTheme, Badge } from 'reagraph';
+import { iconKindFor, iconTexture } from '../utils/nodeIcons.js';
 
 /**
  * Reagraph-based renderer. Replaces the hand-rolled canvas/D3 draw loop.
@@ -10,7 +10,13 @@ import { BoxGeometry } from 'three';
  * and a single building view go through this same component.
  */
 
-const sharedBoxGeometry = new BoxGeometry(1, 1, 1);
+// Sprite footprint relative to reagraph's node size (a sphere's radius).
+// Core routers get a little extra so the tier reads at a glance.
+function iconScale(node, size) {
+  if (node.data?.kind === 'building') return size * 4;
+  if (node.data?.deviceType === 'router' && node.data?.tier === 'core') return size * 2.5;
+  return size * 2.2;
+}
 
 const theme = {
   ...darkTheme,
@@ -85,7 +91,12 @@ const NetworkGraph = forwardRef(function NetworkGraph(
   positionsRef.current = positions;
   const viewKeyRef = useRef(viewKey);
   viewKeyRef.current = viewKey;
+  const isGlobalView = viewKey.startsWith('global');
   const isMouseDownRef = useRef(false);
+  // The last link the pointer touched. Its info stays up (and it stays
+  // highlighted) until the user clicks somewhere, because links are thin
+  // and the pointer slips off them constantly.
+  const pinnedEdgeRef = useRef(null);
 
   // Track global pointer down / up to completely suppress hover events during node dragging
   // or canvas panning. This avoids 60 FPS re-render storms and hoverchip churn.
@@ -158,6 +169,21 @@ const NetworkGraph = forwardRef(function NetworkGraph(
     return ids;
   }, [hoveredId, selectedId, highlightIds, adjacency, edges, validIdSet]);
 
+  // Links between tiers are drawn straight: big arcs crossing the whole
+  // estate were most of the clutter. Only links between nodes on roughly the
+  // same row stay curved, so they bow around the nodes in between instead of
+  // running through them.
+  const shapedEdges = useMemo(() => {
+    if (!positions) return edges;
+    return edges.map((e) => {
+      const a = positions.get(e.source);
+      const b = positions.get(e.target);
+      if (!a || !b) return e;
+      const sameRow = Math.abs(a.y - b.y) < Math.abs(a.x - b.x) * 0.25;
+      return { ...e, interpolation: sameRow ? 'curved' : 'linear' };
+    });
+  }, [edges, positions]);
+
   const getNodePosition = useCallback((id) => {
     const viewDrags = draggedPositionsRef.current[viewKeyRef.current];
     if (viewDrags && viewDrags[id]) {
@@ -225,18 +251,49 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       clearTimeout(hoverTimeoutRef.current);
     }
     hoverTimeoutRef.current = setTimeout(() => {
-      hoveredIdRef.current = null;
-      setHoveredId(null);
-      onHover?.(null);
+      // Leaving a node falls back to the pinned link, if there is one.
+      const pinned = pinnedEdgeRef.current;
+      hoveredIdRef.current = pinned?.id ?? null;
+      setHoveredId(pinned?.id ?? null);
+      onHover?.(pinned ?? null);
     }, 150);
   }, [onHover]);
+
+  const handleEdgePointerOver = useCallback(
+    (edge) => {
+      if (isMouseDownRef.current || !edge?.id) return;
+      document.body.style.cursor = 'pointer';
+      pinnedEdgeRef.current = edge;
+      handlePointerOver(edge);
+    },
+    [handlePointerOver]
+  );
+
+  const clearPinnedEdge = useCallback(() => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    if (!pinnedEdgeRef.current) return;
+    pinnedEdgeRef.current = null;
+    hoveredIdRef.current = null;
+    setHoveredId(null);
+    onHover?.(null);
+  }, [onHover]);
+
+  // A pinned link from a previous view must not linger after switching views.
+  useEffect(() => {
+    if (pinnedEdgeRef.current && !validIdSet.has(pinnedEdgeRef.current.id)) {
+      clearPinnedEdge();
+    }
+  }, [validIdSet, clearPinnedEdge]);
 
   return (
     <GraphCanvas
       ref={graphRef}
       theme={theme}
       nodes={nodes}
-      edges={edges}
+      edges={shapedEdges}
       layoutType="custom"
       layoutOverrides={layoutOverrides}
       draggable={true}
@@ -246,56 +303,63 @@ const NetworkGraph = forwardRef(function NetworkGraph(
       // "nodes" keeps labels camera-independent so all core, distribution,
       // and building nodes display their label and subLabel clearly.
       labelType="nodes"
+      // Reagraph rescales node.size into [minNodeSize, maxNodeSize], so the
+      // smallest tier (distribution routers, buildings) always lands on the
+      // minimum. Raise it so those nodes stay visible under dense links.
+      // The global view has room for much larger nodes than a building's
+      // tightly packed switch grid.
+      minNodeSize={isGlobalView ? 40 : 20}
+      maxNodeSize={isGlobalView ? 52 : 26}
       edgeArrowPosition="end"
       edgeInterpolation="curved"
       minDistance={200}
       maxDistance={45000}
       selections={validSelections}
       actives={actives}
-      onNodeClick={(node) => onSelect?.(node)}
+      onNodeClick={(node) => {
+        clearPinnedEdge();
+        onSelect?.(node);
+      }}
       onNodeDoubleClick={(node) => onActivate?.(node)}
       onNodePointerOver={handlePointerOver}
       onNodePointerOut={handlePointerOut}
       onNodeContextMenu={(node) => onContextMenu?.(node)}
-      onEdgePointerOver={(edge) => {
-        if (isMouseDownRef.current) return;
-        document.body.style.cursor = 'pointer';
-        handlePointerOver(edge);
-      }}
+      onEdgePointerOver={handleEdgePointerOver}
       onEdgePointerOut={() => {
-        if (isMouseDownRef.current) return;
+        // Deliberately keeps the pinned link's info up; see pinnedEdgeRef.
         document.body.style.cursor = 'default';
-        handlePointerOut();
       }}
       onEdgeClick={(edge) => {
         onSelect?.(edge);
       }}
       onCanvasClick={() => {
+        clearPinnedEdge();
         onSelect?.(null);
       }}
       contextMenu={
         renderContextMenu ? ({ data, onClose }) => renderContextMenu(data, onClose) : undefined
       }
       renderNode={({ node, ...rest }) => {
-        const hasAlarm = node.data?.stats?.activeAlarmCount > 0;
         const alarmCount = node.data?.stats?.activeAlarmCount || 0;
-        const isRouter = node.data?.deviceType === 'router';
-        const isDistRouter = isRouter && node.data?.tier === 'distribution';
-        const boxScale = isDistRouter ? rest.size * 1.1 : rest.size * 1.75;
-        
+        // Colour is always the node's severity (node.fill), never the theme's
+        // activeFill, so hovering doesn't hide health. Hover/selection adds
+        // a white outline instead.
+        const highlighted = Boolean(rest.active || rest.selected);
+        const texture = iconTexture(iconKindFor(node), node.fill, highlighted);
+        const scale = iconScale(node, rest.size);
+
         return (
           <group>
-            {isRouter ? (
-              <mesh
-                geometry={sharedBoxGeometry}
-                scale={[boxScale, boxScale, boxScale]}
-              >
-                <meshBasicMaterial color={rest.color} transparent={true} opacity={rest.opacity ?? 1} />
-              </mesh>
-            ) : (
-              <Sphere node={node} {...rest} />
-            )}
-            {hasAlarm && (
+            <sprite userData={{ id: rest.id, type: 'node' }} scale={[scale, scale, scale]}>
+              <spriteMaterial
+                attach="material"
+                map={texture}
+                transparent={true}
+                depthTest={false}
+                toneMapped={false}
+              />
+            </sprite>
+            {alarmCount > 0 && (
               <Badge
                 node={node}
                 {...rest}
